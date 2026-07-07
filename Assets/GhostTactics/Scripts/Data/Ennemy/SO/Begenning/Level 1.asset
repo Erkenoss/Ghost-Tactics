@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0a04fe2675207f41bd692038a286e55, type: 3}
+  m_Name: Level 1
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.EnnemyData
+  abilities:
+  - {fileID: 11400000, guid: bb7b9265576b3a84e83be44d7c6267fd, type: 2}
+  - {fileID: 11400000, guid: abc78e5d674a89b48bee5b7b337cc505, type: 2}
+  - {fileID: 11400000, guid: 719bb04cda14e8846a68e83e51e50025, type: 2}

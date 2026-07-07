@@ -814,7 +814,24 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    Android: TextMeshPro
+    EmbeddedLinux: TextMeshPro
+    GameCoreScarlett: TextMeshPro
+    GameCoreXboxOne: TextMeshPro
+    Kepler: TextMeshPro
+    LinuxHeadlessSimulation: TextMeshPro
+    Nintendo Switch: TextMeshPro
+    Nintendo Switch 2: TextMeshPro
+    PS4: TextMeshPro
+    PS5: TextMeshPro
+    QNX: TextMeshPro
+    Standalone: TextMeshPro
+    VisionOS: TextMeshPro
+    WebGL: TextMeshPro
+    XboxOne: TextMeshPro
+    iPhone: TextMeshPro
+    tvOS: TextMeshPro
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

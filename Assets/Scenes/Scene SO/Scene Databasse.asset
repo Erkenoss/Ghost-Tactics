@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87bd804f3a9dc6e469677c2e90b1b4f9, type: 3}
+  m_Name: Scene Databasse
+  m_EditorClassIdentifier: Assembly-CSharp::Crimson.Core.Scenes.SceneDatabase
+  containerList:
+  - {fileID: 11400000, guid: d1e717e491ac68b4a9710b9e590b38ae, type: 2}
+  - {fileID: 11400000, guid: 579215228b1d63844a0a6905977e07cf, type: 2}
+  - {fileID: 11400000, guid: 459e77063047c3c4d919d56989a53377, type: 2}
