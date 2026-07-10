@@ -287,7 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 596c03dabc246a04aa5cf06a4a164fce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Core.CombatManager
-  isPersistant: 0
+  isPersistant: 1
 --- !u!4 &933196952
 Transform:
   m_ObjectHideFlags: 0

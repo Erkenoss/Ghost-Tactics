@@ -15,7 +15,8 @@ MonoBehaviour:
   m_DefaultGroup: f6e8771d82c812640839b841b44ac40e
   m_currentHash:
     serializedVersion: 2
-    Hash: 8e67e52cb5b2dcb59d9e9ddcba33e7bb
+    Hash: b21187f7f909cded80c7cfaf6d04ea3b
+  m_ExtractTypeTreeData: 0
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_CatalogRequestsTimeout: 0

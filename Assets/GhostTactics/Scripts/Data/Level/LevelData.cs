@@ -9,6 +9,7 @@ namespace GhostTactics.Data
 
         public int LevelNumber { get { return levelNumber; } }
         public int LevelActionSlot { get { return levelActionSlot; } }
+        public int LevelGhostActionSlot { get { return levelGhostActionSlot; } }
         public EnnemyData EnnemyLevel { get { return ennemyLevel; } }
 
         #endregion
@@ -22,6 +23,10 @@ namespace GhostTactics.Data
         [Tooltip("how many action the player can use in this level to fight the ennemy")]
         [SerializeField]
         private int levelActionSlot = 0;
+
+        [Tooltip("How many action the player can use with the ghost to win the level")]
+        [SerializeField]
+        private int levelGhostActionSlot = 0;
 
         [Tooltip("Use to know how many try the player can be to visualized ennemies actions before to choose his actions")]
         [SerializeField]

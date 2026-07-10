@@ -428,16 +428,37 @@ namespace I2.Loc
 			return true;*/
 		}
 
-		public static IEnumerable<GameObject> SceneRoots()
-		{
-			var prop = new HierarchyProperty(HierarchyType.GameObjects);
-			var expanded = new int[0];
-			while (prop.Next(expanded)) {
-				yield return prop.pptrValue as GameObject;
-			}
-		}
-		
-		public static List<GameObject> SceneRootsList()
+        //public static IEnumerable<GameObject> SceneRoots()
+        //{
+        //	var prop = new HierarchyProperty(HierarchyType.GameObjects);
+        //	var expanded = new int[0];
+        //	while (prop.Next(expanded)) {
+        //		yield return prop.pptrValue as GameObject;
+        //	}
+
+        public static IEnumerable<GameObject> SceneRoots()
+        {
+            var roots = new List<GameObject>();
+
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+
+                if (!scene.IsValid() || !scene.isLoaded)
+                    continue;
+
+                roots.Clear();
+                scene.GetRootGameObjects(roots);
+
+                foreach (GameObject root in roots)
+                {
+                    if (root != null)
+                        yield return root;
+                }
+            }
+        }
+
+        public static List<GameObject> SceneRootsList()
 		{
 			return new List<GameObject>(SceneRoots());
 		}

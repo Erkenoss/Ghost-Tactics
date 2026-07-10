@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.LevelData
   levelNumber: 1
   levelActionSlot: 3
+  levelGhostActionSlot: 1
+  getVisual: 0
   ennemyLevel: {fileID: 11400000, guid: fa600e2f5e6b7a44290235b10420d2c7, type: 2}

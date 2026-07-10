@@ -16,7 +16,7 @@ MonoBehaviour:
   sceneToLoad:
   - name: Main Menu
     asset:
-      m_AssetGUID: 8c9cfa26abfee488c85f1582747f6a02
+      m_AssetGUID: a305d0501f5934247bf182e0bbd73111
       m_SubObjectName: 
       m_SubObjectType: 
       m_SubObjectGUID: 

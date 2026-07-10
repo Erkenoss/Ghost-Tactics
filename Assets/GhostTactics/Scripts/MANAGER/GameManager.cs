@@ -88,6 +88,9 @@ namespace GhostTactics.Core
     public class GameManager : Singleton<GameManager>
     {
         #region Public Fields
+
+        public LevelData CurrentLevel { get { return currentLevel; } }
+
         #endregion
 
         #region Private Fields

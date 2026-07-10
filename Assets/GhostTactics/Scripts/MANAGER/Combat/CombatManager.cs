@@ -7,6 +7,24 @@ using UnityEngine;
 
 namespace GhostTactics.Core
 {
+    public class OnPlayerDie
+    {
+        #region Public Fields
+        #endregion
+
+        #region Private Fields
+        #endregion
+
+        #region MonoBehaviour Callbacks
+        #endregion
+
+        #region Public Methods
+        #endregion
+
+        #region Private Methods
+        #endregion
+    }
+
     public class CombatResolveEvent
     {
         #region Public Fields
@@ -81,11 +99,32 @@ namespace GhostTactics.Core
         #endregion
 
         #region Public Methods
+        #endregion
+
+        #region Private Methods
 
         /// <summary>
-        /// Résolution of the fight with the list of action of the player and the ennemy. Use as bridge to call the combat manager
+        /// Subscribe to the EventBus the differents listeners
         /// </summary>
-        public void FightResolution(CombatResolutionEvent e)
+        private void Subscribe()
+        {
+            EventBus.Subscribe<CombatResolutionEvent>(FightResolution);
+            EventBus.Subscribe<CombatResolveEvent>(FightResolve);
+        }
+
+        /// <summary>
+        /// Unsubscribe to the EventBus the differents listeners
+        /// </summary>
+        private void UnSubscribe()
+        {
+            EventBus.Unsubscribe<CombatResolutionEvent>(FightResolution);
+            EventBus.Unsubscribe<CombatResolveEvent>(FightResolve);
+        }
+
+        /// <summary>
+        /// Resolution of the fight with the list of action of the player and the ennemy. Use as bridge to call the combat manager
+        /// </summary>
+        private void FightResolution(CombatResolutionEvent e)
         {
             if (e.PlayerList == null || e.PlayerList.Count == 0 || e.EnnemyList == null || e.EnnemyList.Count == 0 || e.PlayerList.Count != e.EnnemyList.Count)
             {
@@ -103,32 +142,35 @@ namespace GhostTactics.Core
 
                 if (step.PlayerDied || step.EnnemyDied)
                 {
+                    if (step.PlayerDied)
+                    {
+                        Debug.Log("==== PLAYER DIE ====");
+                        EventBus.Publish<OnPlayerDie>(new OnPlayerDie());
+                    }
+                    else
+                    {
+                        Debug.Log("==== ENNEMY DIE ====");
+                    }
+
                     break;
                 }
             }
 
-            DebugCombatResult(tryStates, state);
             EventBus.Publish<CombatResolveEvent>(new CombatResolveEvent(tryStates, state));
         }
 
-        #endregion
-
-        #region Private Methods
-
         /// <summary>
-        /// Subscribe to the EventBus the differents listeners
+        /// Resolve the fight base on the current CombatState of the CombatResolveEvent class
         /// </summary>
-        private void Subscribe()
+        /// <param name="e"></param>
+        private void FightResolve(CombatResolveEvent e)
         {
-            EventBus.Subscribe<CombatResolutionEvent>(FightResolution);
-        }
+            if (e == null || e.CurrentStepsList == null || e.CurrentStepsList.Count == 0 || e.CurrentState == null)
+            {
+                return;
+            }
 
-        /// <summary>
-        /// Unsubscribe to the EventBus the differents listeners
-        /// </summary>
-        private void UnSubscribe()
-        {
-            EventBus.Unsubscribe<CombatResolutionEvent>(FightResolution);
+            DebugCombatResult(e.CurrentStepsList, e.CurrentState);
         }
 
         /// <summary>

@@ -2,8 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Crimson.Core;
 using GhostTactics.Data;
-using System;
-using UnityEditor.EditorTools;
 
 namespace GhostTactics.UI
 {
