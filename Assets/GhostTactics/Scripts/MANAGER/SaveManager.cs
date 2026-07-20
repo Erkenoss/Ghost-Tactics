@@ -1,13 +1,40 @@
 using UnityEngine;
 using Crimson.Core;
 using System;
+using System.Collections.Generic;
+using Crimson.Core.Settings;
 
 namespace GhostTactics.Core
 {
-    public class LoadPlayer
+    public class OnSavePlayer
     {
 
     }
+
+    public class OnLoadPlayer
+    {
+
+    }
+
+    public class OnSaveSettings
+    {
+        public Settings Setting = null;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="set"></param>
+        public OnSaveSettings(Settings set)
+        {
+            Setting = set;
+        }
+    }
+
+    public class OnLoadSettings
+    {
+
+    }
+
 
     [Serializable]
     public class SavePlayer
@@ -27,6 +54,31 @@ namespace GhostTactics.Core
         /// </summary>
         public int PlayerLevel = 0;
 
+        /// <summary>
+        /// How much time the player can visualized
+        /// </summary>
+        public int VisualizationValue = 0;
+
+        /// <summary>
+        /// Gender of the player we want to save, 0 for male, 1 for female
+        /// </summary>
+        public int PlayerGender = 0;
+
+        /// <summary>
+        /// Use to know if the player has been already created or not
+        /// </summary>
+        public bool HasBeenAlreadyCreated = false;
+
+        /// <summary>
+        /// Result of the player try in the level we want to save
+        /// </summary>
+        public int PlayerTryResult = 0;
+
+        /// <summary>
+        /// Reference of the ghost that the player is currently playing with
+        /// </summary>
+        public List<string> GhostActions = new List<string>();
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -43,6 +95,11 @@ namespace GhostTactics.Core
         {
             PlayerBiome = player.Biome;
             PlayerLevel = player.CurrentLevel;
+            VisualizationValue = player.VisualizationValue;
+            PlayerGender = player.Gender;
+            HasBeenAlreadyCreated = player.HasBeenAlreadyCreated;
+            PlayerTryResult = player.TryResult;
+            GhostActions = player.PlayerGhost.AbilitiesName;
         }
 
         #endregion
@@ -64,6 +121,11 @@ namespace GhostTactics.Core
         private string saveFilePath = string.Empty;
 
         /// <summary>
+        /// Path of the settings save file
+        /// </summary>
+        private string settingsFilePath = string.Empty;
+
+        /// <summary>
         /// PlayerData... Of the player? 
         /// </summary>
         private SavePlayer playerData = null;
@@ -77,6 +139,8 @@ namespace GhostTactics.Core
             base.Awake();
 
             saveFilePath = System.IO.Path.Combine(Application.persistentDataPath, "savegame.json");
+            settingsFilePath = System.IO.Path.Combine(Application.persistentDataPath, "settings.json");
+
             Subscribe();
         }
 
@@ -111,14 +175,21 @@ namespace GhostTactics.Core
         /// <summary>
         /// Load the player data
         /// </summary>
-        private void LoadPlayer(LoadPlayer _player)
+        private void LoadPlayer(OnLoadPlayer _player)
         {
             if (!System.IO.File.Exists(saveFilePath))
             {
                 Player startPlayer = new Player();
                 startPlayer.UpdatePlayerBiome(ETypeLevelContainer.Beginning);
                 startPlayer.UpdatePlayerLevel(1);
-                
+                startPlayer.UpdateVisualizationValue(0);
+                startPlayer.UpdateResult(0);
+                startPlayer.UpdateGender(0);
+                startPlayer.UpdateHasBeenAlreadyCreated(false);
+                startPlayer.CreateGhost(null);
+
+                startPlayer.Subscribe();
+
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.UpdatePlayer(startPlayer);
@@ -137,6 +208,13 @@ namespace GhostTactics.Core
                 Player newPlayer = new Player();
                 newPlayer.UpdatePlayerBiome(ETypeLevelContainer.Beginning);
                 newPlayer.UpdatePlayerLevel(1);
+                newPlayer.UpdateVisualizationValue(0);
+                newPlayer.UpdateResult(0);
+                newPlayer.UpdateGender(0);
+                newPlayer.UpdateHasBeenAlreadyCreated(false);
+                newPlayer.CreateGhost(null);
+
+                newPlayer.Subscribe();
 
                 if (GameManager.Instance != null)
                 {
@@ -149,13 +227,36 @@ namespace GhostTactics.Core
             Player player = new Player();
             player.UpdatePlayerBiome(playerData.PlayerBiome);
             player.UpdatePlayerLevel(playerData.PlayerLevel);
+            player.UpdateVisualizationValue(playerData.VisualizationValue);
+            player.UpdateResult(playerData.PlayerTryResult);
+            player.UpdateGender(playerData.PlayerGender);
+            player.UpdateHasBeenAlreadyCreated(playerData.HasBeenAlreadyCreated);
+            player.CreateGhost(playerData.GhostActions);
 
-            if (GameManager.Instance == null)
+            player.Subscribe();
+
+            if (GameManager.Instance != null)
             {
+                GameManager.Instance.UpdatePlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Load the Setting of the game
+        /// </summary>
+        /// <param name="set"></param>
+        private void LoadSetting(OnLoadSettings set)
+        {
+            if (!System.IO.File.Exists(settingsFilePath))
+            {
+                EventBus.Publish<OnReceiveLoadSetting>(new OnReceiveLoadSetting(null));
                 return;
             }
 
-            GameManager.Instance.UpdatePlayer(player);
+            string json = System.IO.File.ReadAllText(settingsFilePath);
+            Settings settings = JsonUtility.FromJson<Settings>(json);
+        
+            EventBus.Publish<OnReceiveLoadSetting>(new OnReceiveLoadSetting(settings));
         }
 
         /// <summary>
@@ -171,12 +272,29 @@ namespace GhostTactics.Core
         }
 
         /// <summary>
+        /// Save the Settings of the game
+        /// </summary>
+        /// <param name="setting"></param>
+        private void SaveSettings(OnSaveSettings setting)
+        {
+            if (setting == null || setting.Setting == null)
+            {
+                return;
+            }
+
+            string json = JsonUtility.ToJson(setting.Setting, true);
+            System.IO.File.WriteAllText(settingsFilePath, json);
+        }
+
+        /// <summary>
         /// Subscribe the different listener in the EventBus
         /// </summary>
         private void Subscribe()
         {
             EventBus.Subscribe<SavePlayer>(SavePlayer);
-            EventBus.Subscribe<LoadPlayer>(LoadPlayer);
+            EventBus.Subscribe<OnLoadPlayer>(LoadPlayer);
+            EventBus.Subscribe<OnSaveSettings>(SaveSettings);
+            EventBus.Subscribe<OnLoadSettings>(LoadSetting);
         }
 
         /// <summary>
@@ -185,10 +303,10 @@ namespace GhostTactics.Core
         private void Unsubscribe()
         {
             EventBus.Unsubscribe<SavePlayer>(SavePlayer);
-            EventBus.Unsubscribe<LoadPlayer>(LoadPlayer);
+            EventBus.Unsubscribe<OnLoadPlayer>(LoadPlayer);
+            EventBus.Unsubscribe<OnSaveSettings>(SaveSettings);
+            EventBus.Unsubscribe<OnLoadSettings>(LoadSetting);
         }
-
-
 
         #endregion
     }

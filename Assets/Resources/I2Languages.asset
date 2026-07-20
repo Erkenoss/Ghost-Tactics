@@ -16,24 +16,306 @@ MonoBehaviour:
     UserAgreesToHaveItOnTheScene: 0
     UserAgreesToHaveItInsideThePluginsFolder: 0
     GoogleLiveSyncIsUptoDate: 1
-    mTerms: []
+    mTerms:
+    - Term: Main Menu/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Start Button
+      TermType: 0
+      Description: 
+      Languages:
+      - New Game
+      - Nouvelle Partie
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Continu Button
+      TermType: 0
+      Description: 
+      Languages:
+      - Continu
+      - Continuer
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - Sound
+      - Son
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Languages
+      TermType: 0
+      Description: 
+      Languages:
+      - Languages
+      - Langage
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Game
+      TermType: 0
+      Description: 
+      Languages:
+      - Game
+      - Jeu
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Display
+      TermType: 0
+      Description: 
+      Languages:
+      - Display
+      - Affichage
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/General Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - General
+      - General
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Music Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Music '
+      - Musique
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/SFX Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - Effect
+      - Effets
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Ambiance Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - Ambiance
+      - Ambiance
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Voice Sound
+      TermType: 0
+      Description: 
+      Languages:
+      - Voice
+      - Voice
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Vibration
+      TermType: 0
+      Description: 
+      Languages:
+      - Vibration
+      - Vibration
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Speed Fight
+      TermType: 0
+      Description: 
+      Languages:
+      - Speed Fights
+      - Vitesse des Combats
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/FPS
+      TermType: 0
+      Description: 
+      Languages:
+      - FPS
+      - FPS
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Camera Shake
+      TermType: 0
+      Description: 
+      Languages:
+      - Shake
+      - Tremblement
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Reduced Flashing
+      TermType: 0
+      Description: 
+      Languages:
+      - Reduce Flashing
+      - Reduire Flash
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Who Are You?
+      TermType: 0
+      Description: 
+      Languages:
+      - Who are you?
+      - Qui es tu?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Settings
+      TermType: 0
+      Description: 
+      Languages:
+      - Settings
+      - Options
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Default Param
+      TermType: 0
+      Description: 
+      Languages:
+      - Default Parameters
+      - "Param\xE8tre par D\xE9faut"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Normal
+      TermType: 0
+      Description: 
+      Languages:
+      - Normal
+      - Normal
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Fast
+      TermType: 0
+      Description: 
+      Languages:
+      - Fast
+      - Rapide
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Very Fast
+      TermType: 0
+      Description: 
+      Languages:
+      - Very Fast
+      - "Tr\xE8s Rapide"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/First sentence
+      TermType: 0
+      Description: 
+      Languages:
+      - This is the first sentence
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Second sentence
+      TermType: 0
+      Description: 
+      Languages:
+      - This is the second sentence
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Third sentence
+      TermType: 0
+      Description: 
+      Languages:
+      - This is the third sentence
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Fourth sentence
+      TermType: 0
+      Description: 
+      Languages:
+      - This is the fouorth sentence
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: 
-    mLanguages: []
+    mLanguages:
+    - Name: English
+      Code: en
+      Flags: 0
+    - Name: French
+      Code: fr
+      Flags: 0
+    - Name: Polish
+      Code: pl
+      Flags: 0
+    - Name: Spanish
+      Code: es
+      Flags: 0
     IgnoreDeviceLanguage: 0
     _AllowUnloadingLanguages: 0
-    Google_WebServiceURL: 
-    Google_SpreadsheetKey: 
-    Google_SpreadsheetName: 
-    Google_LastUpdatedVersion: 
-    Google_Password: change_this
+    Google_WebServiceURL: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
+    Google_SpreadsheetKey: 10iNmJcICE0dfy2A2-jdLMVVNeCpWhN1FapdKwl_R4kk
+    Google_SpreadsheetName: I2Loc Ghost Tactics Localization
+    Google_LastUpdatedVersion: 1784566959578
+    Google_Password: Ghost-Tactics
     GoogleUpdateFrequency: 3
     GoogleInEditorCheckFrequency: 2
     GoogleUpdateSynchronization: 1
     GoogleUpdateDelay: 0
     Assets: []
-    Spreadsheet_LocalFileName: 
+    Spreadsheet_LocalFileName: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
     Spreadsheet_LocalCSVSeparator: ','
     Spreadsheet_LocalCSVEncoding: utf-8
     Spreadsheet_SpecializationAsRows: 1

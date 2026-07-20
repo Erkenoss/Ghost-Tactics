@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Dodge
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.AbilityData
   ability: 4
-  abilityIcon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: 68980950, guid: 185ab299653307b4cae32eaa61e8e104, type: 3}

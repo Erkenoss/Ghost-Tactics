@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f838a7d0e0fb6e4e8f29d6beca8b291, type: 3}
   m_Name: Level 4
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.LevelData
+  biomeType: 1
+  levelImage: {fileID: 0}
   levelNumber: 5
   levelActionSlot: 10
   levelGhostActionSlot: 2

@@ -15,6 +15,16 @@ MonoBehaviour:
   m_GroupName: Scene
   m_GUID: 3192eb779daf8d4438e558bf5a63c26d
   m_SerializeEntries:
+  - m_GUID: 0628e022e710a634788c12a7aad71568
+    m_Address: Assets/Scenes/LoadScreen Scene.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8be5116be8ffab843a6f1189a61e800c
+    m_Address: Assets/Scenes/Starter Scene.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9e16eed823680e045a6ed64b79f06523
     m_Address: Assets/Scenes/Core Scene.unity
     m_ReadOnly: 0

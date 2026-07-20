@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Backward
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.AbilityData
   ability: 2
-  abilityIcon: {fileID: 10915, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: 455368885, guid: 86cc2042dd5992e4a8160e1f72802fa4, type: 3}

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Idle
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.AbilityData
   ability: 1
-  abilityIcon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  abilityIcon: {fileID: -1258771332, guid: 383f74cc8ff04d541b0741b92725d589, type: 3}

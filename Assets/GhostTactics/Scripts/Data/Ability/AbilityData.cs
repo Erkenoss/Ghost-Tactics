@@ -10,6 +10,7 @@ namespace GhostTactics.Data
 
         public Abilities Ability { get { return ability; } }
         public Sprite AbilityIcon { get { return abilityIcon; } }
+        public bool CanBeRepeated { get { return canBeRepeated; } }
 
         #endregion
 
@@ -22,6 +23,10 @@ namespace GhostTactics.Data
         [Tooltip("Sprite of the ability")]
         [SerializeField]
         private Sprite abilityIcon = null;
+
+        [Tooltip("Is this Ability can be repeated?")]
+        [SerializeField]
+        private bool canBeRepeated = false;
 
         #endregion
 

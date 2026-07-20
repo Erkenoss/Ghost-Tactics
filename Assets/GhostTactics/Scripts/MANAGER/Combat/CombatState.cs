@@ -7,6 +7,11 @@ namespace GhostTactics.Core.Combat
         #region Public Fields
 
         /// <summary>
+        /// It's the player in the game
+        /// </summary>
+        public Player Player = null;
+
+        /// <summary>
         /// Where the player is in this state
         /// </summary>
         public int PlayerPosition = 0;
@@ -57,26 +62,14 @@ namespace GhostTactics.Core.Combat
         /// <param name="playerPos"></param>
         /// <param name="ennemyPos"></param>
         /// <param name="ennemyHealth"></param>
-        public CombatState(int playerPos, int ennemyPos, int ennemyHealth)
+        public CombatState(int playerPos, int ennemyPos, int ennemyHealth, Player player)
         {
             PlayerPosition = playerPos;
             EnnemyPosition = ennemyPos;
             EnnemyHealth = ennemyHealth;
             PlayerAlive = true;
             CurrentStepIndex = 0;
-        }
-
-        /// <summary>
-        /// Create a Clone to continu the flow of the fight
-        /// </summary>
-        /// <returns></returns>
-        public CombatState Clone()
-        {
-            return new CombatState(PlayerPosition, EnnemyPosition, EnnemyHealth)
-            {
-                PlayerAlive = this.PlayerAlive,
-                CurrentStepIndex = this.CurrentStepIndex
-            };
+            Player = player;
         }
 
         #endregion

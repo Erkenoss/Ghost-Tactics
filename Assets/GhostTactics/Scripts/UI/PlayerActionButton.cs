@@ -17,10 +17,6 @@ namespace GhostTactics.UI
         [SerializeField]
         private AbilityData data = null;
 
-        [Tooltip("Image of the button")]
-        [SerializeField]
-        private Image buttonImage = null;
-
         #endregion
 
         #region MonoBehaviour Callbacks

@@ -1,7 +1,9 @@
-using UnityEngine;
-using System.Collections.Generic;
-using GhostTactics.Core;
 using Crimson.Core;
+using Crimson.Utilities;
+using GhostTactics.Core;
+using GhostTactics.Data;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace GhostTactics.UI
 {
@@ -136,6 +138,39 @@ namespace GhostTactics.UI
             panel.SetActive(false);
         }
 
+        /// <summary>
+        /// Save the list of abilities that the player has choose for the ghost
+        /// </summary>
+        public void SaveGhostList()
+        {
+            if (GameManager.Instance == null || ghostChoiceButtonList == null || ghostChoiceButtonList.Count == 0)
+            {
+                return;
+            }
+
+            List<AbilityData> ghostAbilities = new List<AbilityData>();
+        
+            foreach (GhostChoiceButton but in ghostChoiceButtonList)
+            {
+                if (but.Data != null)
+                {
+                    ghostAbilities.Add(but.Data);
+                }
+            }
+
+            if (ghostAbilities == null || ghostAbilities.Count == 0)
+            {
+                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("Get at least one action for you're Ghost"));
+                return;
+            }
+
+            GameManager.Instance.UpdatePlayerGhost(ghostAbilities);
+            EventBus.Publish<OnSavePlayer>(new OnSavePlayer());
+            
+            ResetPanel();
+            HidePanel();
+        }
+
         #endregion
 
         #region Private Methods
@@ -144,7 +179,7 @@ namespace GhostTactics.UI
         /// Base on the current level actually played. Enable the number of button that the player can use to choose as ghost actions
         /// </summary>
         /// <param name="currentLevel"></param>
-        private void EnableButton(CombatResolutionEvent combat)
+        private void EnableButton(OnPlayerDie p)
         {
             if (GameManager.Instance == null || GameManager.Instance.CurrentLevel == null)
             {
@@ -161,7 +196,7 @@ namespace GhostTactics.UI
                 if (i < GameManager.Instance.CurrentLevel.LevelActionSlot && !actionButtonChooseByPlayer[i].gameObject.activeSelf)
                 {
                     actionButtonChooseByPlayer[i].gameObject.SetActive(true);
-                    actionButtonChooseByPlayer[i].Set(combat.PlayerList[i]);
+                    actionButtonChooseByPlayer[i].Set(p.PlayerList[i]);
                 }
                 else
                 {
@@ -216,6 +251,12 @@ namespace GhostTactics.UI
                 return;
             }
 
+            if (action.Button.Data.Ability == Abilities.Idle)
+            {
+                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("The Ghost can't take the Idle Action"));
+                return;
+            }
+
             foreach (GhostChoiceButton button in ghostChoiceButtonList)
             {
                 if (button.Data == null && button.gameObject.activeSelf)
@@ -252,7 +293,7 @@ namespace GhostTactics.UI
         /// </summary>
         private void Subscribe()
         {
-            EventBus.Subscribe<CombatResolutionEvent>(EnableButton);
+            EventBus.Subscribe<OnPlayerDie>(EnableButton);
             EventBus.Subscribe<OnChooseForGhost>(Choose);
             EventBus.Subscribe<OnRemoveGhostChoice>(RemoveGhostActionChoice);
             EventBus.Subscribe<OnPlayerDie>(ShowPanel);
@@ -263,7 +304,7 @@ namespace GhostTactics.UI
         /// </summary>
         private void UnSubscribe()
         {
-            EventBus.Unsubscribe<CombatResolutionEvent>(EnableButton);
+            EventBus.Unsubscribe<OnPlayerDie>(EnableButton);
             EventBus.Unsubscribe<OnChooseForGhost>(Choose);
             EventBus.Unsubscribe<OnRemoveGhostChoice>(RemoveGhostActionChoice);
             EventBus.Unsubscribe<OnPlayerDie>(ShowPanel);

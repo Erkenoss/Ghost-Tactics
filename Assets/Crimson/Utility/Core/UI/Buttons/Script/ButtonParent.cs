@@ -3,6 +3,16 @@ using UnityEngine.UI;
 
 namespace Crimson.Core
 {
+    public class OnDisableButton
+    {
+
+    }
+
+    public class OnEnableButton
+    {
+
+    }
+
     public abstract class ButtonParent : MonoBehaviour
     {
         #region Public Fields
@@ -26,6 +36,7 @@ namespace Crimson.Core
             }
          
             btn.onClick.AddListener(OnClick);
+            SubscribeEvent();
         }
 
         protected virtual void OnDestroy()
@@ -36,6 +47,7 @@ namespace Crimson.Core
             }
 
             btn.onClick.RemoveListener(OnClick);
+            UnsubscribeEvent();
         }
 
         #endregion
@@ -44,6 +56,34 @@ namespace Crimson.Core
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Use to disable the button
+        /// </summary>
+        /// <param name="d"></param>
+        protected virtual void DisableButton(OnDisableButton d)
+        {
+            if (btn == null)
+            {
+                return;
+            }
+
+            btn.enabled = false;
+        }
+
+        /// <summary>
+        /// Use to Enable or disable the button
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void EnableButton(OnEnableButton e)
+        {
+            if (btn == null)
+            {
+                return;
+            }
+
+            btn.enabled = true;
+        }
         
         /// <summary>
         /// Where the player push the button
@@ -51,6 +91,18 @@ namespace Crimson.Core
         protected virtual void OnClick()
         {
 
+        }
+
+        protected virtual void SubscribeEvent()
+        {
+            EventBus.Subscribe<OnDisableButton>(DisableButton);
+            EventBus.Subscribe<OnEnableButton>(EnableButton);
+        }
+
+        protected virtual void UnsubscribeEvent()
+        {
+            EventBus.Unsubscribe<OnDisableButton>(DisableButton);
+            EventBus.Unsubscribe<OnEnableButton>(EnableButton);
         }
         
         #endregion

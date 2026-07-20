@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 namespace GhostTactics.UI
 {
-
     public class ChooseActionButton : ButtonParent
     {
         #region Public Fields

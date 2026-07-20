@@ -4,6 +4,7 @@ using GhostTactics.Data;
 using GhostTactics.Core.Combat;
 using UnityEngine;
 using System.Collections.Generic;
+using Crimson.Utilities;
 
 namespace GhostTactics.Core
 {
@@ -84,6 +85,8 @@ namespace GhostTactics.Core
 
         public List<AbilityData> PlayerList { get { return playerList; } }
         public List<AbilityData> EnnemyList { get { return ennemyList; } }
+        public EnnemyData Ennemy { get { return ennemy; } }
+        public Player Player { get { return player; } }
 
         #endregion
 
@@ -99,6 +102,16 @@ namespace GhostTactics.Core
         /// </summary>
         private List<AbilityData> ennemyList = new List<AbilityData>();
 
+        /// <summary>
+        /// Ennemy of this fight
+        /// </summary>
+        private EnnemyData ennemy = null;
+
+        /// <summary>
+        /// Player of the game
+        /// </summary>
+        private Player player = null;
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -110,10 +123,12 @@ namespace GhostTactics.Core
         /// Constructor
         /// </summary>
         /// <param name="data"></param>
-        public CombatResolutionEvent(List<AbilityData> player, List<AbilityData> ennemy)
+        public CombatResolutionEvent(List<AbilityData> player, List<AbilityData> ennemy, EnnemyData en, Player p)
         {
             this.playerList = player;
-            this.ennemyList = ennemy;   
+            this.ennemyList = ennemy;
+            this.ennemy = en;
+            this.player = p;
         }
 
         #endregion
@@ -272,12 +287,29 @@ namespace GhostTactics.Core
         {
             List<AbilityData> playerAbility = buttonComponent.GetSelectedAbilities();
             
-            if (playerAbility == null || playerAbility.Count == 0)
+            if (playerAbility == null || playerAbility.Count == 0 || playerAbility.Count != s.Ennemy.Abilities.Count)
             {
+                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("You must complete your action bar"));
                 return;
             }
 
-            EventBus.Publish<CombatResolutionEvent>(new CombatResolutionEvent(playerAbility, s.Ennemy.Abilities));
+            s.Player.UpResult();
+            EventBus.Publish<CombatResolutionEvent>(new CombatResolutionEvent(playerAbility, s.Ennemy.Abilities, s.Ennemy, s.Player));
+        }
+
+        /// <summary>
+        /// Get the AbilityData from the AbilitiesContainer by the name of the ability
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public AbilityData GetAbilityByName(string name)
+        {
+            if (container == null || string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            return container.GetAbilityByName(name);
         }
 
         #endregion

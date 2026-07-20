@@ -12,9 +12,7 @@ namespace GhostTactics.UI
 
         #region Private Fields
 
-        /// <summary>
-        /// List of actions selected by the player
-        /// </summary>
+        [Tooltip("List of selected actions")]
         [SerializeField]
         private List<ButtonActionSelected> actionSelectedList = new List<ButtonActionSelected>();
 
@@ -116,17 +114,20 @@ namespace GhostTactics.UI
             }
 
             ButtonActionSelected prevButton = null;
+            ButtonActionSelected nextButton = null;
 
             for (int i = 0; i < actionSelectedList.Count; i++)
             {
                 if (actionSelectedList[i] == buttonToEnable)
                 {
                     prevButton = i > 0 ? actionSelectedList[i - 1] : null;
+                    nextButton = i < actionSelectedList.Count - 1 ? actionSelectedList[i + 1] : null;
+
                     break;
                 }
             }
 
-            if (prevButton != null && prevButton.CurrentData != null && prevButton.CurrentData.Ability == data.Ability)
+            if (prevButton != null && prevButton.CurrentData != null && prevButton.CurrentData.Ability == data.Ability || nextButton != null && nextButton.CurrentData != null && nextButton.CurrentData.Ability == data.Ability)
             {
                 Debug.Log("Can't have the same ability twice side by side");
                 return;

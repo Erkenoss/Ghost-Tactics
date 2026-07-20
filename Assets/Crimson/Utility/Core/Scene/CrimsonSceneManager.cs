@@ -7,6 +7,64 @@ using UnityEngine.SceneManagement;
 
 namespace Crimson.Core.Scenes
 {
+    public class OnSceneGroupLoaded
+    {
+        public SceneGroupSO Group = null;
+
+        public OnSceneGroupLoaded(SceneGroupSO group)
+        {
+            Group = group;
+        }
+    }
+
+    public class OnSceneToLoad
+    {
+        #region Public Fields
+        #endregion
+
+        #region Private Fields
+
+        /// <summary>
+        /// The groups we need to load
+        /// </summary>
+        public List<SceneGroupSO> ToLoad = new List<SceneGroupSO>();
+
+        /// <summary>
+        /// The group  we want to load
+        /// </summary>
+        public SceneGroupSO SceneToLoad = null;
+
+        #endregion
+
+        #region MonoBehaviour Callbacks
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Constructor with list
+        /// </summary>
+        /// <param name="toLoad"></param>
+        public OnSceneToLoad(List<SceneGroupSO> toLoad)
+        {
+            ToLoad = toLoad;
+        }
+
+        /// <summary>
+        /// Constructor with group
+        /// </summary>
+        /// <param name="sceneToLoad"></param>
+        public OnSceneToLoad(SceneGroupSO sceneToLoad)
+        {
+            SceneToLoad = sceneToLoad;
+        }
+
+        #endregion
+
+        #region Private Methods
+        #endregion
+    }
+
     /// <summary>
     /// Class usee to set the differents scene in the SceneContainer SO
     /// </summary>
@@ -51,6 +109,10 @@ namespace Crimson.Core.Scenes
         [SerializeField]
         protected SceneGroupSO playerGroup = null;
 
+        [Tooltip("The load scene group of the game")]
+        [SerializeField]
+        protected SceneGroupSO loadGroup = null;
+
         /// <summary>
         /// Current group actually running
         /// </summary>
@@ -61,6 +123,11 @@ namespace Crimson.Core.Scenes
         /// </summary>
         private Dictionary<string, SceneGroupSO> sceneGroupContainer = new Dictionary<string, SceneGroupSO>();
 
+        /// <summary>
+        /// Groups we want to load
+        /// </summary>
+        private List<SceneGroupSO> pendingGroups = new List<SceneGroupSO>();
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -69,21 +136,105 @@ namespace Crimson.Core.Scenes
         {
             base.Awake();
             BuildDictionary();
+
+            Subscribe();
         }
 
-        protected async virtual void Start()
+        protected virtual void Start()
         {
-            await LoadGroupAsync(firstGroup.name);
+            EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(firstGroup));
         }
 
         protected async virtual void OnDestroy()
         {
             await UnloadAllScene();
+            Unsubscribe();
         }
 
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Use to load the load scene screen
+        /// </summary>
+        /// <param name="scene"></param>
+        public async void LoadLoadGroupEvent(OnSceneToLoad scene)
+        {
+            await LoadLoadGroup(scene);
+        }
+
+        /// <summary>
+        /// Use to load the pending groups
+        /// </summary>
+        /// <param name="minimumDuration"></param>
+        /// <param name="progress"></param>
+        /// <returns></returns>
+        public async Task LoadPendingGroups(float minimumDuration, IProgress<float> progress = null)
+        {
+            if (pendingGroups == null || pendingGroups.Count == 0)
+            {
+                progress?.Report(1f);
+                return;
+            }
+
+            List<SceneGroupSO> loadedGroups = new List<SceneGroupSO>(pendingGroups);
+            Task minimumDurationTask = Task.Delay(Mathf.CeilToInt(minimumDuration * 1000f));
+
+            progress?.Report(0f);
+
+            Progress<float> sceneProgress = new Progress<float>(value => progress?.Report(value * 0.85f));
+
+            await LoadMultipleGroup(pendingGroups, sceneProgress);
+            await minimumDurationTask;
+
+            progress?.Report(0.85f);
+
+            await UnLoadGroupScene(loadGroup);
+
+            progress?.Report(0.95f);
+
+            pendingGroups.Clear();
+
+            foreach (SceneGroupSO group in loadedGroups)
+            {
+                EventBus.Publish<OnSceneGroupLoaded>(new OnSceneGroupLoaded(group));
+            }
+
+            progress?.Report(1f);
+        }
+
+        /// <summary>
+        /// Use to load the Load Scene before all other loads
+        /// </summary>
+        /// <returns></returns>
+        public async Task LoadLoadGroup(OnSceneToLoad scene)
+        {
+            if (scene == null)
+            {
+                return;
+            }
+
+            pendingGroups.Clear();
+
+            if (scene.SceneToLoad != null)
+            {
+                pendingGroups.Add(scene.SceneToLoad);
+            }
+
+            if (scene.ToLoad != null && scene.ToLoad.Count > 0)
+            {
+                pendingGroups.AddRange(scene.ToLoad);
+            }
+
+            if (pendingGroups.Count == 0)
+            {
+                return;
+            }
+
+            await UnloadCurrentGroup();
+            await LoadGroupAsync(loadGroup);
+        }
 
         /// <summary>
         /// Load playerGroup
@@ -119,27 +270,41 @@ namespace Crimson.Core.Scenes
         }
 
         /// <summary>
-        /// Load multiple group in async
+        /// Load multiple groups asynchronously and report their completion.
         /// </summary>
         /// <param name="groups"></param>
+        /// <param name="progress"></param>
         /// <returns></returns>
-        public async Task LoadMultipleGroup(List<SceneGroupSO> groups)
+        public async Task LoadMultipleGroup(List<SceneGroupSO> groups, IProgress<float> progress = null)
         {
             if (groups == null || groups.Count == 0)
             {
+                progress?.Report(1f);
                 return;
             }
 
-            foreach(SceneGroupSO group in groups)
+            List<SceneGroupSO> validGroups = groups.FindAll(group => group != null && group.SceneToLoad != null && group.SceneToLoad.Count > 0);
+
+            if (validGroups.Count == 0)
             {
-                if (group == playerGroup)
-                {
-                    await LoadGroupAsync(group);
-                }
+                progress?.Report(1f);
+                return;
+            }
+
+            int completedGroups = 0;
+            int totalGroups = validGroups.Count;
+
+            if (validGroups.Contains(playerGroup))
+            {
+                await LoadGroupAsync(playerGroup);
+
+                completedGroups++;
+                progress?.Report((float)completedGroups / totalGroups);
             }
 
             List<Task> tasks = new List<Task>();
-            foreach (SceneGroupSO group in groups)
+
+            foreach (SceneGroupSO group in validGroups)
             {
                 if (group == playerGroup)
                 {
@@ -149,7 +314,16 @@ namespace Crimson.Core.Scenes
                 tasks.Add(LoadGroupAsync(group));
             }
 
-            await Task.WhenAll(tasks);
+            while (tasks.Count > 0)
+            {
+                Task completedTask = await Task.WhenAny(tasks);
+
+                tasks.Remove(completedTask);
+                await completedTask;
+
+                completedGroups++;
+                progress?.Report((float)completedGroups / totalGroups);
+            }
         }
 
         /// <summary>
@@ -323,6 +497,22 @@ namespace Crimson.Core.Scenes
             {
                 sceneGroupContainer[group.GroupName] = group;
             }
+        }
+
+        /// <summary>
+        /// Subscribe in the EventBus
+        /// </summary>
+        private void Subscribe()
+        {
+            EventBus.Subscribe<OnSceneToLoad>(LoadLoadGroupEvent);
+        }
+
+        /// <summary>
+        /// Unsubscribe with the EventBus
+        /// </summary>
+        private void Unsubscribe()
+        {
+            EventBus.Unsubscribe<OnSceneToLoad>(LoadLoadGroupEvent);
         }
 
         #endregion
