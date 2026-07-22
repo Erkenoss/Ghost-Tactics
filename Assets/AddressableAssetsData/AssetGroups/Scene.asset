@@ -25,11 +25,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 9e16eed823680e045a6ed64b79f06523
-    m_Address: Assets/Scenes/Core Scene.unity
-    m_ReadOnly: 0
-    m_SerializedLabels: []
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: a305d0501f5934247bf182e0bbd73111
     m_Address: Assets/Scenes/Main Menu.unity
     m_ReadOnly: 0
@@ -43,4 +38,5 @@ MonoBehaviour:
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddee3cdfecc4d0241a03b26d23930718, type: 2}
   m_SchemaSet:
-    m_Schemas: []
+    m_Schemas:
+    - {fileID: 11400000, guid: 2252cc770679243458d61120af5497b4, type: 2}

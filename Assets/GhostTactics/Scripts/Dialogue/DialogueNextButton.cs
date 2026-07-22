@@ -1,4 +1,5 @@
 using Crimson.Core;
+using GhostTactics.UI;
 using UnityEngine;
 
 namespace GhostTactics.Core.Dialogue
@@ -21,7 +22,7 @@ namespace GhostTactics.Core.Dialogue
 
         protected override void OnClick()
         {
-            Debug.Log("Here");
+            EventBus.Publish<OnNextLine>(new OnNextLine());
         }
 
         #endregion

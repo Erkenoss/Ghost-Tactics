@@ -247,12 +247,32 @@ MonoBehaviour:
       - 
       Flags: 00000000
       Languages_Touch: []
+    - Term: Main Menu/BackMainMenu
+      TermType: 0
+      Description: 
+      Languages:
+      - Main Menu
+      - Menu Principal
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Confirm
+      TermType: 0
+      Description: 
+      Languages:
+      - Confirm
+      - Confirmer
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
     - Term: Dialogue/First sentence
       TermType: 0
       Description: 
       Languages:
       - This is the first sentence
-      - 
+      - "C'est la premi\xE8re phrase"
       - 
       - 
       Flags: 00000000
@@ -262,7 +282,7 @@ MonoBehaviour:
       Description: 
       Languages:
       - This is the second sentence
-      - 
+      - C'est la seconde phrase
       - 
       - 
       Flags: 00000000
@@ -272,7 +292,7 @@ MonoBehaviour:
       Description: 
       Languages:
       - This is the third sentence
-      - 
+      - "C'est la troisi\xE8me phrase"
       - 
       - 
       Flags: 00000000
@@ -281,8 +301,8 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - This is the fouorth sentence
-      - 
+      - This is the fourth sentence
+      - "C'est la quatri\xE8me phrase"
       - 
       - 
       Flags: 00000000
@@ -308,7 +328,7 @@ MonoBehaviour:
     Google_WebServiceURL: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
     Google_SpreadsheetKey: 10iNmJcICE0dfy2A2-jdLMVVNeCpWhN1FapdKwl_R4kk
     Google_SpreadsheetName: I2Loc Ghost Tactics Localization
-    Google_LastUpdatedVersion: 1784566959578
+    Google_LastUpdatedVersion: 1784619153136
     Google_Password: Ghost-Tactics
     GoogleUpdateFrequency: 3
     GoogleInEditorCheckFrequency: 2

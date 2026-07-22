@@ -1,35 +1,35 @@
 using Crimson.Core;
-using Crimson.Core.Audio;
+using Crimson.Core.Scenes;
 using UnityEngine;
 
 namespace GhostTactics.UI
 {
-    public class MainMenuController : MonoBehaviour
+    public class BackMainMenu : ButtonParent
     {
         #region Public Fields
         #endregion
 
         #region Private Fields
 
-        [Tooltip("Context for the music")]
+        [Tooltip("The main menu group to load the scene")]
         [SerializeField]
-        private EMusicContext musicContext = EMusicContext.None;
+        private SceneGroupSO mainMenuGroup = null;
 
         #endregion
 
         #region MonoBehaviour Callbacks
-
-        private void OnEnable()
-        {
-            EventBus.Publish<OnNewMusicContainer>(new OnNewMusicContainer(musicContext));
-        }
-
         #endregion
 
         #region Public Methods
         #endregion
 
         #region Private Methods
+
+        protected override void OnClick()
+        {
+            EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenuGroup));
+        }
+
         #endregion
     }
 }

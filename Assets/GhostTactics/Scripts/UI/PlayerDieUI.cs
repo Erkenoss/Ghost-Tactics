@@ -165,7 +165,6 @@ namespace GhostTactics.UI
             }
 
             GameManager.Instance.UpdatePlayerGhost(ghostAbilities);
-            EventBus.Publish<OnSavePlayer>(new OnSavePlayer());
             
             ResetPanel();
             HidePanel();

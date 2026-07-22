@@ -44,6 +44,11 @@ namespace GhostTactics.Core
 
     }
 
+    public class OnSwitchLevel
+    {
+
+    }
+
     public class OnGhostAction
     {
         #region Public Fields
@@ -212,6 +217,8 @@ namespace GhostTactics.Core
 
             player.UpdateGhostAbilities(ghostAbilities);
             player.UpResult();
+
+            SavePlayer(new OnSavePlayer());
             LoadLevel();
         }
 
@@ -322,7 +329,7 @@ namespace GhostTactics.Core
         /// <summary>
         /// Change to pass at the next level
         /// </summary>
-        private void SwitchLevel(OnEnnemyDie e)
+        private void SwitchLevel(OnSwitchLevel e)
         {
             if (e == null || currentLevel == null)
             {
@@ -414,7 +421,7 @@ namespace GhostTactics.Core
             EventBus.Subscribe<OnSceneGroupLoaded>(SceneGroupLoaded);
 
             EventBus.Subscribe<OnSavePlayer>(SavePlayer);
-            EventBus.Subscribe<OnEnnemyDie>(SwitchLevel);
+            EventBus.Subscribe<OnSwitchLevel>(SwitchLevel);
             
             EventBus.Subscribe<ConfirmTry>(Confirm);
             EventBus.Subscribe<Visualization>(Visualized);
@@ -431,7 +438,7 @@ namespace GhostTactics.Core
             EventBus.Unsubscribe<OnSceneGroupLoaded>(SceneGroupLoaded);
             
             EventBus.Unsubscribe<OnSavePlayer>(SavePlayer);
-            EventBus.Unsubscribe<OnEnnemyDie>(SwitchLevel);
+            EventBus.Unsubscribe<OnSwitchLevel>(SwitchLevel);
             
             EventBus.Unsubscribe<ConfirmTry>(Confirm);
             EventBus.Unsubscribe<Visualization>(Visualized);

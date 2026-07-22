@@ -3065,7 +3065,6 @@ MonoBehaviour:
   isPersistant: 1
   allScene: {fileID: 11400000, guid: 27759404f3bc0964b94d26a1f7f797b7, type: 2}
   firstGroup: {fileID: 11400000, guid: 6f007e95d5da7414e9031fe60654e4cb, type: 2}
-  coreGroup: {fileID: 11400000, guid: d1e717e491ac68b4a9710b9e590b38ae, type: 2}
   playerGroup: {fileID: 0}
   loadGroup: {fileID: 11400000, guid: c7e903783c9afa344b89a57e05a86c94, type: 2}
 --- !u!4 &1387264288

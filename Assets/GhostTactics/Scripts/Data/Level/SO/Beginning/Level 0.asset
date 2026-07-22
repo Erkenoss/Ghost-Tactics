@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f838a7d0e0fb6e4e8f29d6beca8b291, type: 3}
   m_Name: Level 0
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.LevelData
+  hasPreviousDialogue: 1
+  hasNextDialogue: 1
   biomeType: 1
   levelImage: {fileID: 7516842982780778002, guid: ed09924a45a2ea64db011471dedb5d2e, type: 3}
   levelNumber: 1

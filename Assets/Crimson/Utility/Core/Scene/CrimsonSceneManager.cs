@@ -101,10 +101,6 @@ namespace Crimson.Core.Scenes
         [SerializeField]
         protected SceneGroupSO firstGroup = null;
 
-        [Tooltip("GameCore group scene. NEVER UNLOAD")]
-        [SerializeField]
-        protected SceneGroupSO coreGroup = null;
-
         [Tooltip("Player group scene. Sometime unloaded")]
         [SerializeField]
         protected SceneGroupSO playerGroup = null;
@@ -128,6 +124,8 @@ namespace Crimson.Core.Scenes
         /// </summary>
         private List<SceneGroupSO> pendingGroups = new List<SceneGroupSO>();
 
+        private SceneGroupSO previousGroup = null;
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -145,9 +143,8 @@ namespace Crimson.Core.Scenes
             EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(firstGroup));
         }
 
-        protected async virtual void OnDestroy()
+        protected virtual void OnDestroy()
         {
-            await UnloadAllScene();
             Unsubscribe();
         }
 
@@ -183,12 +180,23 @@ namespace Crimson.Core.Scenes
 
             progress?.Report(0f);
 
-            Progress<float> sceneProgress = new Progress<float>(value => progress?.Report(value * 0.85f));
+            Progress<float> sceneProgress = new Progress<float>(
+                value => progress?.Report(value * 0.85f)
+            );
 
             await LoadMultipleGroup(pendingGroups, sceneProgress);
             await minimumDurationTask;
 
             progress?.Report(0.85f);
+
+            if (previousGroup != null && previousGroup != currentGroup)
+            {
+                await UnLoadGroupScene(previousGroup);
+            }
+
+            previousGroup = null;
+
+            progress?.Report(0.9f);
 
             await UnLoadGroupScene(loadGroup);
 
@@ -198,7 +206,7 @@ namespace Crimson.Core.Scenes
 
             foreach (SceneGroupSO group in loadedGroups)
             {
-                EventBus.Publish<OnSceneGroupLoaded>(new OnSceneGroupLoaded(group));
+                EventBus.Publish(new OnSceneGroupLoaded(group));
             }
 
             progress?.Report(1f);
@@ -232,7 +240,7 @@ namespace Crimson.Core.Scenes
                 return;
             }
 
-            await UnloadCurrentGroup();
+            previousGroup = currentGroup;
             await LoadGroupAsync(loadGroup);
         }
 
@@ -337,21 +345,21 @@ namespace Crimson.Core.Scenes
             {
                 return;
             }
-        
-            List<Task> tasks = new List<Task>();
 
-            if (group != coreGroup && group != playerGroup)
-            {
-                currentGroup = group;
-            }
+            List<Task> tasks = new List<Task>();
 
             foreach (SceneReference scene in group.SceneToLoad)
             {
-                var task = scene.Asset.LoadSceneAsync(LoadSceneMode.Additive);
-                tasks.Add(task.Task);
+                var handle = scene.Asset.LoadSceneAsync(LoadSceneMode.Additive);
+                tasks.Add(handle.Task);
             }
 
             await Task.WhenAll(tasks);
+
+            if (group != playerGroup && group != loadGroup)
+            {
+                currentGroup = group;
+            }
         }
 
         /// <summary>
@@ -361,28 +369,12 @@ namespace Crimson.Core.Scenes
         /// <returns></returns>
         public async Task LoadGroupAsync(string name)
         {
-            if (sceneGroupContainer.TryGetValue(name, out SceneGroupSO group))
+            if (!sceneGroupContainer.TryGetValue(name, out SceneGroupSO group))
             {
-                if (group == null || group.SceneToLoad == null || group.SceneToLoad.Count == 0)
-                {
-                    return;
-                }
-
-                List<Task> tasks = new List<Task>();
-
-                if (group != coreGroup && group != playerGroup)
-                {
-                    currentGroup = group;
-                }
-
-                foreach (SceneReference scene in group.SceneToLoad)
-                {
-                    var task = scene.Asset.LoadSceneAsync(LoadSceneMode.Additive);
-                    tasks.Add(task.Task);
-                }
-
-                await Task.WhenAll(tasks);
+                return;
             }
+
+            await LoadGroupAsync(group);
         }
 
         /// <summary>
@@ -421,7 +413,6 @@ namespace Crimson.Core.Scenes
             {
                 return;
             }
-
 
             List<Task> tasks = new List<Task>();
 
@@ -466,17 +457,6 @@ namespace Crimson.Core.Scenes
             }
 
             tasks.Clear();
-
-            if (coreGroup != null && coreGroup.SceneToLoad != null && coreGroup.SceneToLoad.Count > 0)
-            {
-                foreach (SceneReference scene in coreGroup.SceneToLoad)
-                {
-                    var task = scene.Asset.UnLoadScene();
-                    tasks.Add(task.Task);
-                }
-
-                await Task.WhenAll(tasks);
-            }
         }
 
         #endregion

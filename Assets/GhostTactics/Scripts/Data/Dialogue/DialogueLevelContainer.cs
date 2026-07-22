@@ -14,6 +14,7 @@ namespace GhostTactics.Core.Dialogue
         public string CharacterName { get { return characterName; } }
         public LocalizedString Line { get { return line; } }
         public bool IsPlayer { get { return isplayer; } }
+        public bool IsThinking { get { return isThinking; } }
 
         #endregion
 
@@ -35,6 +36,10 @@ namespace GhostTactics.Core.Dialogue
         [SerializeField]
         private bool isplayer = false;
 
+        [Tooltip("Is this sentence a thought?")]
+        [SerializeField]
+        private bool isThinking = false; 
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -52,16 +57,21 @@ namespace GhostTactics.Core.Dialogue
     {
         #region Public Fields
 
-        public List<DialogueLine> DialogueLines { get { return dialogueLines; } }
+        public List<DialogueLine> PrevDialogueLines { get { return prevDialogueLines; } }
+        public List<DialogueLine> NextDialogueLines { get { return nextDialogueLines; } }
         public int Level { get { return level; } }
 
         #endregion
 
         #region Private Fields
 
-        [Tooltip("List of dialogue line for this level")]
+        [Tooltip("List of dialogue line for this level previous the fight")]
         [SerializeField]
-        private List<DialogueLine> dialogueLines = new List<DialogueLine>();
+        private List<DialogueLine> prevDialogueLines = new List<DialogueLine>();
+
+        [Tooltip("List of dialogue line for this level after the fight")]
+        [SerializeField]
+        private List<DialogueLine> nextDialogueLines  = new List<DialogueLine>();
 
         [Tooltip("Level of this Dialogue Level Container")]
         [SerializeField]
