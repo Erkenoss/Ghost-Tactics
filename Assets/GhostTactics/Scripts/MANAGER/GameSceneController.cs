@@ -3,12 +3,23 @@ using UnityEngine;
 using GhostTactics.UI;
 using Crimson.Core.Audio;
 using GhostTactics.Data;
+using UnityEngine.UI;
 
 namespace GhostTactics.Core
 {
     public class OnEndDialogue
     {
 
+    }
+
+    public class OnTimelineChecked
+    {
+        public bool Check = false;
+
+        public OnTimelineChecked(bool check)
+        {
+            Check = check;
+        }
     }
 
     public class GameSceneController : MonoBehaviour
@@ -25,6 +36,10 @@ namespace GhostTactics.Core
         [Tooltip("Where the dialogue will be display")]
         [SerializeField]
         private GameObject dialogueBackground = null;
+
+        [Tooltip("Where the fight will be")]
+        [SerializeField]
+        private GameObject combatArea = null;
 
         [Tooltip("The music combat context. Use when combat")]
         [SerializeField]
@@ -81,6 +96,7 @@ namespace GhostTactics.Core
                 return;
             }
 
+
             currentLevel = level.Data;
 
             if (!previousDialAlreadyDone && level.Data.HasPreviousDialogue)
@@ -90,11 +106,21 @@ namespace GhostTactics.Core
                 dialogueBackground.SetActive(true);
                 dialogueUI.UpdateViewAtLunch(level.Data, hasAPreviousDial);
                 EventBus.Publish<OnNewMusicContainer>(new OnNewMusicContainer(ambianceContext));
+
+                if (combatArea != null)
+                {
+                    combatArea.SetActive(false);
+                }
             }
             else
             {
                 dialogueBackground.SetActive(false);
                 EventBus.Publish<OnNewMusicContainer>(new OnNewMusicContainer(combatContext));
+
+                if (combatArea != null)
+                {
+                    combatArea.SetActive(true);
+                }
             }
         }
 
@@ -120,6 +146,11 @@ namespace GhostTactics.Core
                 dialogueUI.UpdateViewAtLunch(currentLevel, hasAPreviousDial);
                 EventBus.Publish<OnNewMusicContainer>(new OnNewMusicContainer(ambianceContext));
             }
+
+            if (combatArea != null)
+            {
+                combatArea.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -139,11 +170,22 @@ namespace GhostTactics.Core
             {
                 EventBus.Publish<OnNewMusicContainer>(new OnNewMusicContainer(combatContext));
                 hasAPreviousDial = false;
+
+                if (combatArea != null)
+                {
+                    combatArea.SetActive(true);
+                }
             }
             else
             {
-                EventBus.Publish<OnSwitchLevel>(new OnSwitchLevel());
                 previousDialAlreadyDone = false;
+
+                if (combatArea != null)
+                {
+                    combatArea.SetActive(false);
+                }
+
+                EventBus.Publish<OnSwitchLevel>(new OnSwitchLevel());
             }
         }
 

@@ -317,19 +317,6 @@ namespace GhostTactics.Core
         #region Private Methods
 
         /// <summary>
-        /// Return the result of two abilities.
-        /// </summary>
-        /// <param name="pAbility"></param>
-        /// <param name="eAbility"></param>
-        /// <returns></returns>
-        private TryState CreateTryState(Abilities pAbility, Abilities eAbility)
-        {
-            TryState newState = new TryState();
-
-            return null;
-        }
-
-        /// <summary>
         /// Subscribe to the EventBus the differents listeners
         /// </summary>
         private void Subscribe()

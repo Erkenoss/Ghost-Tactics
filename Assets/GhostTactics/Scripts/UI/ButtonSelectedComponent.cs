@@ -1,7 +1,9 @@
-using UnityEngine;
-using System.Collections.Generic;
+using Crimson.Utilities;
 using GhostTactics.Core;
 using GhostTactics.Data;
+using System.Collections.Generic;
+using UnityEngine;
+using Crimson.Core;
 
 namespace GhostTactics.UI
 {
@@ -17,7 +19,7 @@ namespace GhostTactics.UI
         private List<ButtonActionSelected> actionSelectedList = new List<ButtonActionSelected>();
 
         /// <summary>
-        /// Count of the current level. Limit of actions that the player can select in the level. It will be updated at the end of each level
+        /// Use to know how many slot the player have to play in the level
         /// </summary>
         private int levelCount = 0;
 
@@ -50,9 +52,12 @@ namespace GhostTactics.UI
                 return;
             }
 
+            levelCount = actionNumber;
+
             for (int i = 0; i < actionSelectedList.Count; i++)
             {
                 actionSelectedList[i].ResetButton();
+                actionSelectedList[i].UpdateNumber(i + 1);
 
                 if (i < actionNumber)
                 {
@@ -82,26 +87,12 @@ namespace GhostTactics.UI
         }
 
         /// <summary>
-        /// Update the valule of levelCount
-        /// </summary>
-        /// <param name="count"></param>
-        public void NewLevel(int count)
-        {
-            if(count == 0 || count == levelCount)
-            {
-                return;
-            }
-
-            levelCount = count;
-        }
-
-        /// <summary>
         /// Add an action in the list of actions selected by the player
         /// </summary>
         /// <param name="data"></param>
         public void AddAction(AbilityData data)
         {
-            if (actionSelectedList == null || actionSelectedList.Count == 0 || actionSelectedList.Count == levelCount || data == null)
+            if (actionSelectedList == null || actionSelectedList.Count == 0 || data == null)
             {
                 return;
             }
@@ -129,11 +120,24 @@ namespace GhostTactics.UI
 
             if (prevButton != null && prevButton.CurrentData != null && prevButton.CurrentData.Ability == data.Ability || nextButton != null && nextButton.CurrentData != null && nextButton.CurrentData.Ability == data.Ability)
             {
-                Debug.Log("Can't have the same ability twice side by side");
+                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("Can't have the same ability twice side by side"));
                 return;
             }
 
             buttonToEnable.UpdateButton(data);
+
+            foreach (ButtonActionSelected but in actionSelectedList)
+            {
+                if (but.gameObject.activeSelf)
+                {
+                    if (but.CurrentData == null)
+                    {
+                        return;
+                    }
+                }
+            }
+
+            EventBus.Publish<OnTimelineChecked>(new OnTimelineChecked(true));
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using Crimson.Core;
+using Crimson.Core.Audio;
 using GhostTactics.Core.Combat;
 using GhostTactics.Data;
 using System.Collections;
@@ -128,55 +129,25 @@ namespace GhostTactics.Core
         #endregion
     }
 
-    public class CombatResolveEvent
-    {
-        #region Public Fields
-
-        public List<TryState> CurrentStepsList { get { return currentStepsList; } }
-        public CombatState CurrentState { get { return currentState; } }
-
-        #endregion
-
-        #region Private Fields
-
-        /// <summary>
-        /// List of the different steps in a fight
-        /// </summary>
-        List<TryState> currentStepsList = new List<TryState>();
-
-        /// <summary>
-        /// Current state of the fight
-        /// </summary>
-        private CombatState currentState = null;
-
-        #endregion
-
-        #region MonoBehaviour Callbacks
-        #endregion
-
-        #region Public Methods
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public CombatResolveEvent(List<TryState> steps, CombatState state)
-        {
-            currentStepsList = steps;
-            currentState = state;
-        }
-
-        #endregion
-
-        #region Private Methods
-        #endregion
-    }
-
     public class CombatManager : Singleton<CombatManager>
     {
         #region Public Fields
         #endregion
 
         #region Private Fields
+
+        [Tooltip("How many time waiting for Idle if no animation are played except Idle itself")]
+        [SerializeField]
+        private float idleStepDuration = 0.4f;
+
+        [Tooltip("How many time to fade the screen")]
+        [SerializeField]
+        private float fadeDuration = 0.4f;
+
+        /// <summary>
+        /// Controller to manage the fight like movement on the target
+        /// </summary>
+        private CombatController controller = null;
 
         /// <summary>
         /// List of the current tries in a fight
@@ -203,6 +174,11 @@ namespace GhostTactics.Core
         /// </summary>
         private CombatState currentState = null;
 
+        /// <summary>
+        /// Container of animation with character as key
+        /// </summary>
+        private readonly Dictionary<ECharacterSide, ECharacterAnimation> pendingAnimations = new Dictionary<ECharacterSide, ECharacterAnimation>();
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -222,6 +198,34 @@ namespace GhostTactics.Core
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Register the controller at the start of the game scene
+        /// </summary>
+        /// <param name="control"></param>
+        public void RegisterController(CombatController control)
+        {
+            if (control == null)
+            {
+                return;
+            }
+
+            controller = control;
+        }
+
+        /// <summary>
+        /// When a fight start
+        /// </summary>
+        public void StartFight()
+        {
+            if (controller == null)
+            {
+                return;
+            }
+
+            PlayAndTrackAnimation(ECharacterAnimation.Respawn, ECharacterSide.Player);
+        }
+
         #endregion
 
         #region Private Methods
@@ -246,87 +250,77 @@ namespace GhostTactics.Core
         /// <returns></returns>
         private IEnumerator FightResolutionCoroutine(CombatResolutionEvent e)
         {
-            if (e.PlayerList == null || e.PlayerList.Count == 0 || e.EnnemyList == null || e.EnnemyList.Count == 0 || e.PlayerList.Count != e.EnnemyList.Count)
+            if (e == null || e.Player == null || e.Ennemy == null || e.PlayerList == null || e.PlayerList.Count == 0 || e.EnnemyList == null || e.EnnemyList.Count == 0 || e.PlayerList.Count != e.EnnemyList.Count)
             {
+                fightCoroutine = null;
                 yield break;
             }
 
             tryStates.Clear();
-            currentState = new CombatState(-1, 1, e.Ennemy.EnnemyHealth, e.Player);
+
+            if (currentState == null)
+            {
+                currentState = new CombatState(-1, 1, e.Ennemy.EnnemyHealth, e.Player);
+            }
 
             for (int i = 0; i < e.PlayerList.Count; i++)
             {
-                TryState step = CreateTryState(i, e.PlayerList[i], e.EnnemyList[i], currentState);
+                AbilityData playerAbility = e.PlayerList[i];
+                AbilityData enemyAbility = e.EnnemyList[i];
+
+                TryState step = CreateTryState(i, playerAbility, enemyAbility, currentState);
                 currentTry = step;
 
-                ApplyMovement(currentState, e.PlayerList[i], true, currentState.PositionSwapped);
-                ApplyMovement(currentState, e.EnnemyList[i], false, currentState.PositionSwapped);
+                yield return ResolveCombatStep(currentState, step, playerAbility, enemyAbility);
 
-                if (currentState.Distance == 0)
+                step.PlayerEndPosition = currentState.PlayerPosition;
+                step.EnnemyEndPosition = currentState.EnnemyPosition;
+                step.EnnemyEndHealth = currentState.EnnemyHealth;
+                step.DistanceEnd = currentState.Distance;
+                step.PlayerDied = !currentState.PlayerAlive;
+                step.EnnemyDied = currentState.EnnemyHealth <= 0;
+
+                tryStates.Add(step);
+
+                if (!step.PlayerDied && !step.EnnemyDied)
                 {
-                    ResolveContact(currentState, currentTry);
+                    continue;
                 }
 
-                if (!step.ContactTriggered)
-                {
-                    ResolveAttacks(currentState, currentTry, e.PlayerList[i], e.EnnemyList[i]);
-                }
-
-
-                if (waitingForGhost)
-                {
-                    Time.timeScale = 0.15f;
-
-                    yield return new WaitUntil(() => !waitingForGhost);
-
-                    Time.timeScale = 1f;
-                }
-
-                currentTry.PlayerEndPosition = currentState.PlayerPosition;
-                currentTry.EnnemyEndPosition = currentState.EnnemyPosition;
-                currentTry.EnnemyEndHealth = currentState.EnnemyHealth;
-                currentTry.DistanceEnd = currentState.Distance;
-                currentTry.PlayerDied = !currentState.PlayerAlive;
-                currentTry.EnnemyDied = currentState.EnnemyHealth <= 0;
-
-                tryStates.Add(currentTry);
-
-                if (currentTry.PlayerDied || currentTry.EnnemyDied)
-                {
-                    if (currentTry.PlayerDied)
-                    {
-                        Debug.Log("==== PLAYER DIE ====");
-                        EventBus.Publish<OnPlayerDie>(new OnPlayerDie(e.PlayerList));
-                    }
-                    else
-                    {
-                        Debug.Log("==== ENNEMY DIE ====");
-                        EventBus.Publish<OnEnnemyDie>(new OnEnnemyDie());
-                        EventBus.Publish<OnSavePlayer>(new OnSavePlayer());
-                    }
-
-                    break;
-                }
+                yield return EndFight(step.PlayerDied, step.EnnemyDied, e.PlayerList);
+                break;
             }
 
-            EventBus.Publish<CombatResolveEvent>(new CombatResolveEvent(tryStates, currentState));
-            EventBus.Publish<OnSavePlayer>(new OnSavePlayer());
-            EventBus.Publish<ResetAll>(new ResetAll());
+            EventBus.Publish(new OnSavePlayer());
+            EventBus.Publish(new ResetAll());
+
+            currentTry = null;
             fightCoroutine = null;
         }
 
         /// <summary>
-        /// Resolve the fight base on the current CombatState of the CombatResolveEvent class
+        /// Calculates a target position without modifying the CombatState.
         /// </summary>
-        /// <param name="e"></param>
-        private void FightResolve(CombatResolveEvent e)
+        private int CalculateMovementTarget(int currentPosition, AbilityData ability, bool isPlayer, bool isSwapped)
         {
-            if (e == null || e.CurrentStepsList == null || e.CurrentStepsList.Count == 0 || e.CurrentState == null)
+            if (ability == null)
             {
-                return;
+                return currentPosition;
             }
 
-            DebugCombatResult(e.CurrentStepsList, e.CurrentState);
+            int direction = isPlayer ? 1 : -1;
+            int targetPosition = currentPosition;
+
+            if (ability.Ability == Abilities.Forward)
+            {
+                targetPosition += direction;
+            }
+            else if (ability.Ability == Abilities.Backward)
+            {
+                targetPosition -= direction;
+            }
+
+            return Mathf.Clamp(targetPosition, -2, 2);
         }
 
         /// <summary>
@@ -361,11 +355,6 @@ namespace GhostTactics.Core
         private void ApplyMovement(CombatState state, AbilityData ability, bool isPlayer, bool isSwapped)
         {
             int direction = isPlayer ? 1 : -1;
-
-            if (isSwapped)
-            {
-                direction *= -1;
-            }
 
             if (ability.Ability == Abilities.Forward)
             {
@@ -430,9 +419,29 @@ namespace GhostTactics.Core
             int attackRange = 1;
             int playerDamage = 50;
 
+            AbilityData ghostDodge = null;
+
+            if (state.Player.PlayerGhost.ActionsGhost != null && state.Player.PlayerGhost.ActionsGhost.Count > 0)
+            {
+                ghostDodge = GetGhostAbility(state.Player, Abilities.Dodge);
+            }
+
             if (playerAttack && ennemyAttack)
             {
-                /// Other feature
+                if (ghostDodge != null)
+                {
+                    state.EnnemyHealth -= playerDamage;
+                    tryState.PlayerHitEnnemy = true;
+
+                    EventBus.Publish(new OnEnnemyIsHit(playerDamage));
+
+                    waitingForGhost = true;
+
+                    EventBus.Publish(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
+                    EventBus.Publish(new OnDisableButton());
+
+                    return;
+                }
             }
             else if (playerDodging && ennemyAttack && state.Distance <= attackRange)
             {
@@ -460,23 +469,14 @@ namespace GhostTactics.Core
             }
             else if (ennemyAttack && !playerDodging && state.Distance <= attackRange)
             {
-                if (state.Player.PlayerGhost.ActionsGhost != null && state.Player.PlayerGhost.ActionsGhost.Count > 0)
+                //GetGhostAbility(state.Player, Abilities.Backward);
+                if (ghostDodge != null)
                 {
-                    AbilityData ghostDodge = GetGhostAbility(state.Player, Abilities.Backward);
+                    waitingForGhost = true;
 
-                    if (ghostDodge == null)
-                    {
-                        ghostDodge = GetGhostAbility(state.Player, Abilities.Dodge);
-                    }
-                   
-                    if (ghostDodge != null)
-                    {
-                        waitingForGhost = true;
-
-                        EventBus.Publish<OnGhostAction>(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
-                        EventBus.Publish<OnDisableButton>(new OnDisableButton());
-                        return;
-                    }
+                    EventBus.Publish<OnGhostAction>(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
+                    EventBus.Publish<OnDisableButton>(new OnDisableButton());
+                    return;
                 }
 
                 state.PlayerAlive = false;
@@ -519,10 +519,7 @@ namespace GhostTactics.Core
             }
 
             ResolveGhostAction(g.Data);
-
             waitingForGhost = false;
-
-            Debug.Log($"=== GHOST USED {g.Data.Ability} ===");
         }
         
         /// <summary>
@@ -552,12 +549,32 @@ namespace GhostTactics.Core
         }
 
         /// <summary>
+        /// currentState become null when new level
+        /// </summary>
+        /// <param name="lvl"></param>
+        private void NextLevel(NextLevel lvl)
+        {
+            currentState = null;
+        }
+
+        /// <summary>
+        /// Reset the current CombatState
+        /// </summary>
+        private void ResetCurrentState()
+        {
+            currentState = null;
+        }
+
+        /// <summary>
         /// Resolve the dodge of the ghost
         /// </summary>
         private void ResolveGhostDodge()
         {
+            EventBus.Publish<OnGhostAnimationPlay>(new OnGhostAnimationPlay(EGhostAnimation.Interupt));
+
             currentTry.PlayerDodged = true;
             currentTry.EnnemyHitPlayer = false;
+            currentState.PlayerAlive = true;
         }
 
         /// <summary>
@@ -587,6 +604,227 @@ namespace GhostTactics.Core
                 ResolveContact(currentState, currentTry);
             }
         }
+
+        /// <summary>
+        /// When an animation ended
+        /// </summary>
+        /// <param name="end"></param>
+        private void AnimationEnded(OnAnimationEnded end)
+        {
+            if (!pendingAnimations.TryGetValue(end.Side, out ECharacterAnimation expectedAnimation))
+            {
+                return;
+            }
+
+            if (end.Animation != expectedAnimation)
+            {
+                return;
+            }
+
+            pendingAnimations.Remove(end.Side);
+        }
+
+        /// <summary>
+        /// When the ghost animation ended
+        /// </summary>
+        /// <param name="end"></param>
+        private void GhostAnimationEnded(OnGhostAnimationEnded end)
+        {
+
+        }
+
+        /// <summary>
+        /// Play character animation
+        /// </summary>
+        /// <param name="animation"></param>
+        /// <param name="side"></param>
+        private void PlayAndTrackAnimation(ECharacterAnimation animation, ECharacterSide side)
+        {
+            if (animation == ECharacterAnimation.None)
+            {
+                return;
+            }
+
+            if (animation != ECharacterAnimation.Idle)
+            {
+                pendingAnimations[side] = animation;
+            }
+
+            EventBus.Publish(new OnAnimationPlay(animation, side));
+        }
+
+        /// <summary>
+        /// Plays and resolves both character actions simultaneously.
+        /// </summary>
+        private IEnumerator ResolveCombatStep(CombatState state, TryState step, AbilityData playerAbility, AbilityData enemyAbility)
+        {
+            if (state == null || step == null || controller == null)
+            {
+                yield break;
+            }
+
+            int playerStartPosition = state.PlayerPosition;
+            int enemyStartPosition = state.EnnemyPosition;
+
+            int playerTargetPosition = CalculateMovementTarget(playerStartPosition, playerAbility, true, false);
+            int enemyTargetPosition = CalculateMovementTarget(enemyStartPosition, enemyAbility, false, false);
+
+            bool playerRequestedMovement = playerTargetPosition != playerStartPosition;
+            bool enemyRequestedMovement = enemyTargetPosition != enemyStartPosition;
+
+            bool playerBlocked = playerRequestedMovement && playerTargetPosition == enemyStartPosition && enemyAbility.Ability != Abilities.Backward;
+            bool enemyBlocked = enemyRequestedMovement && enemyTargetPosition == playerStartPosition && playerAbility.Ability != Abilities.Backward;
+            bool sameTarget = playerRequestedMovement && enemyRequestedMovement && playerTargetPosition == enemyTargetPosition;
+
+            if (sameTarget)
+            {
+                playerBlocked = true;
+                enemyBlocked = true;
+            }
+
+            if (playerBlocked)
+            {
+                playerTargetPosition = playerStartPosition;
+            }
+
+            if (enemyBlocked)
+            {
+                enemyTargetPosition = enemyStartPosition;
+            }
+
+            bool playerMoves = playerTargetPosition != playerStartPosition;
+            bool enemyMoves = enemyTargetPosition != enemyStartPosition;
+
+            ECharacterAnimation playerAnimation = GetStepAnimation(playerAbility, playerMoves);
+            ECharacterAnimation enemyAnimation = GetStepAnimation(enemyAbility, enemyMoves);
+
+            pendingAnimations.Clear();
+
+            PlayAndTrackAnimation(playerAnimation, ECharacterSide.Player);
+            PlayAndTrackAnimation(enemyAnimation, ECharacterSide.Enemy);
+
+            if (playerMoves)
+            {
+                controller.MoveCharacter(ECharacterSide.Player, playerTargetPosition);
+            }
+
+            if (enemyMoves)
+            {
+                controller.MoveCharacter(ECharacterSide.Enemy, enemyTargetPosition);
+            }
+
+            state.PlayerPosition = playerTargetPosition;
+            state.EnnemyPosition = enemyTargetPosition;
+
+            if (!step.ContactTriggered)
+            {
+                ResolveAttacks(state, step, playerAbility, enemyAbility);
+            }
+
+            if (waitingForGhost)
+            {
+                Time.timeScale = 0.15f;
+                yield return new WaitUntil(() => !waitingForGhost);
+                Time.timeScale = 1f;
+            }
+
+            if (pendingAnimations.Count > 0 || controller.IsAnyCharacterMoving)
+            {
+                yield return new WaitUntil(() => pendingAnimations.Count == 0 && !controller.IsAnyCharacterMoving);
+            }
+            else
+            {
+                yield return new WaitForSeconds(idleStepDuration);
+            }
+
+            if (playerAnimation != ECharacterAnimation.Idle && playerAnimation != ECharacterAnimation.None)
+            {
+                EventBus.Publish(new OnAnimationPlay(ECharacterAnimation.Idle, ECharacterSide.Player));
+            }
+
+            if (enemyAnimation != ECharacterAnimation.Idle && enemyAnimation != ECharacterAnimation.None)
+            {
+                EventBus.Publish(new OnAnimationPlay(ECharacterAnimation.Idle, ECharacterSide.Enemy));
+            }
+        }
+
+        /// <summary>
+        /// Returns the animation associated with the resolved ability.
+        /// </summary>
+        private ECharacterAnimation GetStepAnimation(AbilityData ability, bool movementAccepted)
+        {
+            if (ability == null)
+            {
+                return ECharacterAnimation.Idle;
+            }
+
+            switch (ability.Ability)
+            {
+                case Abilities.Forward: 
+                    return movementAccepted ? ECharacterAnimation.Dash : ECharacterAnimation.Idle;
+
+                case Abilities.Backward:
+                    return movementAccepted ? ECharacterAnimation.BackDash : ECharacterAnimation.Idle;
+
+                case Abilities.Attack:
+                    return ECharacterAnimation.Attack;
+
+                case Abilities.Dodge:
+                    return ECharacterAnimation.Dodge;
+
+                case Abilities.Idle:
+                case Abilities.none:
+                default:
+                    return ECharacterAnimation.Idle;
+            }
+        }
+
+        /// <summary>
+        /// Coroutine to manage the end of a fight.
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator EndFight(bool isPlayerDie, bool isEnemyDie, List<AbilityData> playerList)
+        {
+            pendingAnimations.Clear();
+
+            if (isPlayerDie)
+            {
+                PlayAndTrackAnimation(ECharacterAnimation.Death, ECharacterSide.Player);
+                EventBus.Publish<OnPlayerSoundEvent>(new OnPlayerSoundEvent(EPlayerContext.Death, EAudio.Voice));
+            }
+            else if (isEnemyDie)
+            {
+                PlayAndTrackAnimation(ECharacterAnimation.Death, ECharacterSide.Enemy);
+            }
+
+            yield return new WaitUntil(() => pendingAnimations.Count == 0);
+
+            UIManager uiManager = UIManager.Instance;
+
+            if (uiManager != null)
+            {
+                yield return uiManager.FadeToBlack(fadeDuration);
+            }
+
+            currentState = null;
+
+            if (isPlayerDie)
+            {
+                EventBus.Publish(new OnPlayerDie(playerList));
+                ResetCurrentState();
+            }
+            else if (isEnemyDie)
+            {
+                EventBus.Publish(new OnEnnemyDie());
+                ResetCurrentState();
+            }
+
+            if (uiManager != null)
+            {
+                yield return uiManager.FadeFromBlack(fadeDuration);
+            }
+        }
+
 
         /// <summary>
         /// Debug a fight
@@ -642,8 +880,10 @@ namespace GhostTactics.Core
         private void Subscribe()
         {
             EventBus.Subscribe<CombatResolutionEvent>(FightResolution);
-            EventBus.Subscribe<CombatResolveEvent>(FightResolve);
             EventBus.Subscribe<OnGhostUseAction>(GhostUseAction);
+            EventBus.Subscribe<NextLevel>(NextLevel);
+            EventBus.Subscribe<OnAnimationEnded>(AnimationEnded);
+            EventBus.Subscribe<OnGhostAnimationEnded>(GhostAnimationEnded);
         }
 
         /// <summary>
@@ -652,8 +892,10 @@ namespace GhostTactics.Core
         private void UnSubscribe()
         {
             EventBus.Unsubscribe<CombatResolutionEvent>(FightResolution);
-            EventBus.Unsubscribe<CombatResolveEvent>(FightResolve);
             EventBus.Unsubscribe<OnGhostUseAction>(GhostUseAction);
+            EventBus.Unsubscribe<NextLevel>(NextLevel);
+            EventBus.Unsubscribe<OnAnimationEnded>(AnimationEnded);
+            EventBus.Unsubscribe<OnGhostAnimationEnded>(GhostAnimationEnded);
         }
 
         #endregion

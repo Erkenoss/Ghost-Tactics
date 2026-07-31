@@ -36,6 +36,16 @@ namespace Crimson.Core.Media.Video
 
         #region Private Methods
 
+        protected override void SubscribeEvent()
+        {
+            
+        }
+
+        protected override void UnsubscribeEvent()
+        {
+            
+        }
+
         protected override void OnClick()
         {
             EventBus.Publish<OnSkipVideo>(new OnSkipVideo());

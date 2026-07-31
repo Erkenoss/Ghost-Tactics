@@ -1,6 +1,7 @@
 using Crimson.Core;
 using System.Collections.Generic;
 using GhostTactics.Data;
+using UnityEngine;
 
 namespace GhostTactics.Core
 {
@@ -181,47 +182,11 @@ namespace GhostTactics.Core
         }
 
         /// <summary>
-        /// Clean the Ability llist of the ghost
-        /// </summary>
-        public void CleanGhost(OnCleanGhost g)
-        {
-            if (PlayerGhost == null)
-            {
-                return;
-            }
-
-            playerGhost.ClearActionsList();
-        }
-
-        /// <summary>
-        /// Remove the ability given in the ghost
-        /// </summary>
-        /// <param name="action"></param>
-        public void RemoveGhostAction(OnRemoveGhostAction action)
-        {
-            if (action.Data == null || playerGhost == null)
-            {
-                return;
-            }
-
-            playerGhost.RemoveAction(action.Data);
-        }
-
-        /// <summary>
         /// Save the player
         /// </summary>
         public void Save()
         {
             EventBus.Publish<SavePlayer>(new SavePlayer(this));
-        }
-
-        /// <summary>
-        /// Subscribe with the EventBus
-        /// </summary>
-        public void Subscribe()
-        {
-            EventBus.Subscribe<OnCleanGhost>(CleanGhost);
-            EventBus.Subscribe<OnRemoveGhostAction>(RemoveGhostAction);
         }
 
         #endregion

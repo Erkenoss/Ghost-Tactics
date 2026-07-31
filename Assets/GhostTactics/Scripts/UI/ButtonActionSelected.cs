@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Crimson.Core;
 using GhostTactics.Data;
+using TMPro;
+using GhostTactics.Core;
 
 namespace GhostTactics.UI
 {
@@ -19,6 +21,10 @@ namespace GhostTactics.UI
         [SerializeField]
         private Image buttonImage = null;
 
+        [Tooltip("TMPro where the number of the slot is display")]
+        [SerializeField]
+        private TextMeshProUGUI numberText = null;
+        
         /// <summary>
         /// Current data of the button.
         /// </summary>
@@ -32,6 +38,20 @@ namespace GhostTactics.UI
         #region Public Methods
 
         /// <summary>
+        /// Update the value of the slot
+        /// </summary>
+        /// <param name="num"></param>
+        public void UpdateNumber(int num)
+        {
+            if (numberText == null)
+            {
+                return;
+            }
+
+            numberText.text = num.ToString();
+        }
+
+        /// <summary>
         /// Reset the value of the button
         /// </summary>
         public void ResetButton()
@@ -43,6 +63,8 @@ namespace GhostTactics.UI
 
             buttonImage.sprite = null;
             currentData = null;
+
+            EventBus.Publish<OnTimelineChecked>(new OnTimelineChecked(false));
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Crimson.Core
 {
@@ -51,7 +50,6 @@ namespace Crimson.Core
             {
                 events[typeof(T)] = Delegate.Remove(existing, listener);
             }
-
         }
 
         /// <summary>

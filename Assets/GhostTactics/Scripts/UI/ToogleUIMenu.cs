@@ -60,6 +60,8 @@ namespace GhostTactics.UI
 
         protected override void OnClick()
         {
+            base.OnClick();
+
             EventBus.Publish<OnTooglePanelEvent>(new OnTooglePanelEvent(panelToToogle));
         }
 

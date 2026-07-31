@@ -25,8 +25,19 @@ namespace GhostTactics.UI
 
         #region Private Methods
 
+        protected override void SubscribeEvent()
+        {
+            
+        }
+
+        protected override void UnsubscribeEvent()
+        {
+            
+        }
+
         protected override void OnClick()
         {
+            base.OnClick();
             EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenuGroup));
         }
 

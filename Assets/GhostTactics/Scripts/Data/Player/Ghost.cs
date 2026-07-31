@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using GhostTactics.Core;
 using GhostTactics.Data;
 
@@ -53,7 +54,7 @@ public class Ghost
     /// <param name="data"></param>
     public void RemoveAction(AbilityData data)
     {
-        if (data == null || actionsGhost == null || actionsGhost.Count == 0 || abilitiesName == null || abilitiesName.Count == 0)
+        if (data == null)
         { 
             return; 
         }
@@ -73,6 +74,9 @@ public class Ghost
             return;
         }
 
+        actionsGhost.Clear();
+        abilitiesName.Clear();
+
         foreach (string ability in abilityName)
         {
             AbilityData data = ActionManager.Instance.GetAbilityByName(ability);
@@ -83,6 +87,7 @@ public class Ghost
             }
             
             actionsGhost.Add(data);
+            abilitiesName.Add(data.Ability.ToString());
         }
     }
 

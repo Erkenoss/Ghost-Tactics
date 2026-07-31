@@ -378,7 +378,7 @@ namespace Crimson.Core.Settings
                     continue;
                 }
 
-                settings.SoundDictionary.Add(new SoundSetting(0, audio.ToString()));
+                settings.SoundDictionary.Add(new SoundSetting(0.5f, audio.ToString()));
                 EventBus.Publish<OnSetMixerValue>(new OnSetMixerValue(audio, 0.5f, true));
             }
 

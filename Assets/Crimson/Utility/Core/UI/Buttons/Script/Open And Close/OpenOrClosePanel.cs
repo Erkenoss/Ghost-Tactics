@@ -30,6 +30,8 @@ namespace Crimson.Utilities
 
         protected override void OnClick()
         {
+            base.OnClick();
+
             if (panelToCloseOrOpen == null)
             {
                 return;

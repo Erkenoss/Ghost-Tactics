@@ -1,4 +1,3 @@
-using UnityEngine.UI;
 using Crimson.Core;
 using GhostTactics.Data;
 using UnityEngine;

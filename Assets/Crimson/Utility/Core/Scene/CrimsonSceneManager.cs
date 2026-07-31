@@ -206,7 +206,7 @@ namespace Crimson.Core.Scenes
 
             foreach (SceneGroupSO group in loadedGroups)
             {
-                EventBus.Publish(new OnSceneGroupLoaded(group));
+                EventBus.Publish<OnSceneGroupLoaded>(new OnSceneGroupLoaded(group));
             }
 
             progress?.Report(1f);

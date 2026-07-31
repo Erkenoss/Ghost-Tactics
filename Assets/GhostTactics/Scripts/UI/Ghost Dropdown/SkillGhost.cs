@@ -1,3 +1,4 @@
+using GhostTactics.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ namespace GhostTactics.UI
     {
         #region Public Fields
      
-        public Image Img { get { return img; } }
+        public Abilities GhostAbility { get { return ghostAbility; } }
 
         #endregion
 
@@ -16,6 +17,11 @@ namespace GhostTactics.UI
         [Tooltip("Image where the icon will be display")]
         [SerializeField]
         private Image img = null;
+
+        /// <summary>
+        /// Ability of the ghost givven on this slot
+        /// </summary>
+        private Abilities ghostAbility = Abilities.none;
 
         #endregion
 
@@ -35,14 +41,15 @@ namespace GhostTactics.UI
             }
 
             img.sprite = null;
-            ViewGameObject(false);
+            ghostAbility = Abilities.none;
+            gameObject.SetActive(false);
         }
 
         /// <summary>
         /// Set the Icon in the Img
         /// </summary>
         /// <param name="icon"></param>
-        public void SetImage(Sprite icon)
+        public void SetImage(Sprite icon, Abilities a)
         {
             if (img == null || icon == null)
             {
@@ -50,16 +57,9 @@ namespace GhostTactics.UI
             }
 
             img.sprite = icon;
+            ghostAbility = a;
+            gameObject.SetActive(true);
         }
-
-        /// <summary>
-        /// Enable or disable the gameObject container
-        /// </summary>
-        public void ViewGameObject(bool isOpen)
-        {
-            gameObject.SetActive(isOpen);
-        }
-
         
         #endregion
 

@@ -1,9 +1,10 @@
 using Crimson.Core;
 using Crimson.Core.Scenes;
 using GhostTactics.Data;
-using UnityEngine;
-using System.Collections.Generic;
 using GhostTactics.UI;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace GhostTactics.Core
 {
@@ -155,6 +156,11 @@ namespace GhostTactics.Core
         [SerializeField]
         private List<LevelContainer> containers = new List<LevelContainer>();
 
+
+        [Tooltip("Duration of the fade before loading the game scene")]
+        [SerializeField]
+        private float fadeDuration = 0.4f;
+
         /// <summary>
         /// The current container of the current level
         /// </summary>
@@ -170,6 +176,26 @@ namespace GhostTactics.Core
         /// </summary>
         private Player player = null;
 
+        /// <summary>
+        /// Use to manage the focus of the application
+        /// </summary>
+        private bool hasFocus = true;
+
+        /// <summary>
+        /// Use to manage the pause of the application
+        /// </summary>
+        private bool isSystemPaused = false;
+
+        /// <summary>
+        /// Get the value of hasFocus of isSystemPause to manage the application with the exactly same result
+        /// </summary>
+        private bool isapplicationSuspended => !hasFocus || isSystemPaused;
+
+        /// <summary>
+        /// Use to know the preivous state of the pause or focus application
+        /// </summary>
+        private bool previousSuspensionState = false;
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -184,6 +210,18 @@ namespace GhostTactics.Core
         private void Start()
         {
             EventBus.Publish<OnLoadPlayer>(new OnLoadPlayer());
+        }
+
+        protected virtual void OnApplicationFocus(bool _hasFocus)
+        {
+            hasFocus = _hasFocus;
+            RefreshSuspensionState();
+        }
+
+        protected virtual void OnApplicationPause(bool pauseStatus)
+        {
+            isSystemPaused = pauseStatus;
+            RefreshSuspensionState();
         }
 
         private void OnDestroy()
@@ -218,8 +256,8 @@ namespace GhostTactics.Core
             player.UpdateGhostAbilities(ghostAbilities);
             player.UpResult();
 
+            EventBus.Publish<OnUpdateDropdown>(new OnUpdateDropdown(ghostAbilities));
             SavePlayer(new OnSavePlayer());
-            LoadLevel();
         }
 
         /// <summary>
@@ -259,7 +297,20 @@ namespace GhostTactics.Core
                 return;
             }
             
-            EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(gameGroup));
+            StartCoroutine(LoadLevelCoroutine());
+        }
+
+        /// <summary>
+        /// Fades the screen before loading the game scene.
+        /// </summary>
+        private IEnumerator LoadLevelCoroutine()
+        {
+            if (UIManager.Instance != null)
+            {
+                yield return UIManager.Instance.FadeToBlack(fadeDuration);
+            }
+
+            EventBus.Publish(new OnSceneToLoad(gameGroup));
         }
 
         /// <summary>
@@ -268,6 +319,7 @@ namespace GhostTactics.Core
         public void LoadLevel()
         {
             EventBus.Publish<NextLevel>(new NextLevel(currentLevel, player));
+            EventBus.Publish<OnUpdateDropdown>(new OnUpdateDropdown(player.PlayerGhost.ActionsGhost));
         }
         
         /// <summary>
@@ -284,17 +336,19 @@ namespace GhostTactics.Core
         #region Private Methods
 
         /// <summary>
-        /// When the ghost can dodge, slow the time in the game to use the dodge of the ghost
+        /// USe to manage the application pause or focus
         /// </summary>
-        /// <param name="g"></param>
-        private void GhostDodge(OnGhostAction g)
+        private void RefreshSuspensionState()
         {
-            if (g == null)
+            bool isSuspended = !hasFocus || isSystemPaused;
+
+            if (isSuspended == previousSuspensionState)
             {
                 return;
             }
 
-            Debug.Log("Combat paused: Ghost can dodge");
+            previousSuspensionState = isSuspended;
+            EventBus.Publish(new OnApplicationSuspensionChanged(isSuspended));
         }
 
         /// <summary>
@@ -341,6 +395,12 @@ namespace GhostTactics.Core
             if (next == null)
             {
                 LevelContainer nextContainer = GetLevelContainer(currentContainer);
+
+                if (nextContainer == null)
+                {
+                    return;
+                }
+
                 next = nextContainer.Container[0];
                 
                 currentContainer = nextContainer;
@@ -399,7 +459,7 @@ namespace GhostTactics.Core
         }
 
         /// <summary>
-        /// When the gamme group is loaded
+        /// When the game group is loaded
         /// </summary>
         /// <param name="e"></param>
         private void SceneGroupLoaded(OnSceneGroupLoaded e)
@@ -410,7 +470,37 @@ namespace GhostTactics.Core
             }
 
             EventBus.Publish<NextLevel>(new NextLevel(currentLevel, player));
+            EventBus.Publish<OnUpdateDropdown>(new OnUpdateDropdown(player.PlayerGhost.ActionsGhost));
         }
+
+        /// <summary>
+        /// Clean the ghost list of action of the current insstance of the player
+        /// </summary>
+        /// <param name="c"></param>
+        private void CleanGhost(OnCleanGhost c)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            player.PlayerGhost.ClearActionsList();
+        }
+
+        /// <summary>
+        /// Remove an action in the ghost list of action of the current player instance
+        /// </summary>
+        /// <param name="r"></param>
+        private void RemoveGhostAction(OnRemoveGhostAction r)
+        {
+            if (r.Data == null || player == null)
+            {
+                return;
+            }
+
+            player.PlayerGhost.RemoveAction(r.Data);
+        }
+
 
         /// <summary>
         /// Subscribe the listener in the EventBus
@@ -426,7 +516,8 @@ namespace GhostTactics.Core
             EventBus.Subscribe<ConfirmTry>(Confirm);
             EventBus.Subscribe<Visualization>(Visualized);
 
-            EventBus.Subscribe<OnGhostAction>(GhostDodge);
+            EventBus.Subscribe<OnCleanGhost>(CleanGhost);
+            EventBus.Subscribe<OnRemoveGhostAction>(RemoveGhostAction);
         }
 
         /// <summary>
@@ -443,7 +534,8 @@ namespace GhostTactics.Core
             EventBus.Unsubscribe<ConfirmTry>(Confirm);
             EventBus.Unsubscribe<Visualization>(Visualized);
 
-            EventBus.Unsubscribe<OnGhostAction>(GhostDodge);
+            EventBus.Unsubscribe<OnCleanGhost>(CleanGhost);
+            EventBus.Unsubscribe<OnRemoveGhostAction>(RemoveGhostAction);
         }
 
         #endregion

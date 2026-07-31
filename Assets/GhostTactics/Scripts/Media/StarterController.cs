@@ -1,10 +1,11 @@
 using Crimson.Core;
 using Crimson.Core.Media.Video;
-using UnityEngine;
-using UnityEngine.Video;
-using System.Collections;
 using Crimson.Core.Scenes;
-using System.Threading.Tasks;
+using GhostTactics.Core;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 namespace GhostTactics.Media
 {
@@ -15,17 +16,17 @@ namespace GhostTactics.Media
 
         #region Private Fields
 
+        [Tooltip("Button we want to skip the trailer")]
+        [SerializeField]
+        private Button skipButton = null;
+
         [Tooltip("Trailer of the game")]
         [SerializeField]
         private VideoClip trailer = null;
 
-        [Tooltip("Where the video player woill display the trailer")]
+        [Tooltip("Where the video player will display the trailer")]
         [SerializeField]
         private RenderTexture videoPlayertextureTarget = null;
-
-        [Tooltip("Black overlay used to fade the startup screen")]
-        [SerializeField]
-        private CanvasGroup fadeCanvasGroup = null;
 
         [Tooltip("Logo displayed before the trailer")]
         [SerializeField]
@@ -43,9 +44,14 @@ namespace GhostTactics.Media
         [SerializeField]
         private float logoDuration = 2f;
 
-        [Tooltip("The main meenu scene we want to load")]
+        [Tooltip("The main menu scene we want to load")]
         [SerializeField]
         private SceneGroupSO mainMenuScene = null;
+
+        /// <summary>
+        /// Used to prevent the startup ending coroutine from running several times.
+        /// </summary>
+        private bool startupEnding = false;
 
         #endregion
 
@@ -55,27 +61,32 @@ namespace GhostTactics.Media
         {
             Subscribe();
 
-            if (fadeCanvasGroup == null || logoDisplay == null || videoDisplay == null)
+            if (logoDisplay == null || videoDisplay == null || UIManager.Instance == null)
             {
                 yield break;
             }
 
-            fadeCanvasGroup.alpha = 1f;
+            UIManager.Instance.SetFadeInstantly(1f);
 
             logoDisplay.SetActive(true);
             videoDisplay.SetActive(false);
 
-            yield return Fade(0f);
+            yield return UIManager.Instance.FadeFromBlack(fadeDuration);
             yield return new WaitForSecondsRealtime(logoDuration);
-            yield return Fade(1f);
+            yield return UIManager.Instance.FadeToBlack(fadeDuration);
 
             logoDisplay.SetActive(false);
             videoDisplay.SetActive(true);
 
-            EventBus.Publish<OnNewVideoEnvironement>(new OnNewVideoEnvironement(videoPlayertextureTarget));
-            EventBus.Publish<OnPlayVideo>(new OnPlayVideo(trailer, false));
+            if (skipButton != null)
+            {
+                skipButton.interactable = true;
+            }
 
-            yield return Fade(0f);
+            EventBus.Publish(new OnNewVideoEnvironement(videoPlayertextureTarget));
+            EventBus.Publish(new OnPlayVideo(trailer, false));
+
+            yield return UIManager.Instance.FadeFromBlack(fadeDuration);
         }
 
         private void OnDestroy()
@@ -86,17 +97,31 @@ namespace GhostTactics.Media
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Skip the trailer and continue to the main menu.
+        /// </summary>
+        public void SkipTrailer()
+        {
+            if (startupEnding)
+            {
+                return;
+            }
+
+            StartCoroutine(EndStartup());
+        }
+
         #endregion
 
         #region Private Methods
 
         /// <summary>
-        /// use to know when the trailer is finished
+        /// Use to know when the trailer is finished.
         /// </summary>
         /// <param name="evt"></param>
         private void EndTrailer(OnVideoEndedEvent evt)
         {
-            if (evt == null)
+            if (evt == null || startupEnding)
             {
                 return;
             }
@@ -105,52 +130,30 @@ namespace GhostTactics.Media
         }
 
         /// <summary>
-        /// Fade the startup screen to the target alpha
-        /// </summary>
-        /// <param name="targetAlpha"></param>
-        /// <returns></returns>
-        private IEnumerator Fade(float targetAlpha)
-        {
-            if (fadeCanvasGroup == null)
-            {
-                yield break;
-            }
-
-            if (fadeDuration <= 0f)
-            {
-                fadeCanvasGroup.alpha = targetAlpha;
-                yield break;
-            }
-
-            float startAlpha = fadeCanvasGroup.alpha;
-            float timer = 0f;
-
-            while (timer < fadeDuration)
-            {
-                timer += Time.unscaledDeltaTime;
-
-                float progression = Mathf.Clamp01(timer / fadeDuration);
-
-                fadeCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, progression);
-
-                yield return null;
-            }
-
-            fadeCanvasGroup.alpha = targetAlpha;
-        }
-
-        /// <summary>
-        /// Fade the trailer and continue to the next scene
+        /// Fade the trailer and continue to the next scene.
         /// </summary>
         /// <returns></returns>
         private IEnumerator EndStartup()
         {
-            yield return Fade(1f);
-            EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenuScene));
+            if (startupEnding)
+            {
+                yield break;
+            }
+
+            startupEnding = true;
+
+            if (skipButton != null)
+            {
+                skipButton.interactable = false;
+            }
+
+            yield return UIManager.Instance.FadeToBlack(fadeDuration);
+
+            EventBus.Publish(new OnSceneToLoad(mainMenuScene));
         }
 
         /// <summary>
-        /// Sub in the EventBus
+        /// Subscribe to the EventBus.
         /// </summary>
         private void Subscribe()
         {
@@ -158,7 +161,7 @@ namespace GhostTactics.Media
         }
 
         /// <summary>
-        /// Unsub with the EventBus
+        /// Unsubscribe from the EventBus.
         /// </summary>
         private void Unsubscribe()
         {

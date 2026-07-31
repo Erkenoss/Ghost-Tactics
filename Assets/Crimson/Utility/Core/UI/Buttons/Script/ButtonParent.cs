@@ -1,3 +1,4 @@
+using Crimson.Core.Audio;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,14 @@ namespace Crimson.Core
         [Tooltip("Button of this script")]
         [SerializeField]
         protected Button btn = null;
+
+        [Tooltip("Clip of the button to set UI Sound")]
+        [SerializeField]
+        protected AudioClip btnClip  = null;
+
+        [Tooltip("Where the clip will be set")]
+        [SerializeField]
+        protected EAudio audioType = EAudio.None;
 
         #endregion
 
@@ -90,7 +99,10 @@ namespace Crimson.Core
         /// </summary>
         protected virtual void OnClick()
         {
-
+            if (btnClip != null && audioType != EAudio.None)
+            {
+               EventBus.Publish<OnPlaySoundEvent>(new OnPlaySoundEvent(audioType, btnClip, false));
+            }
         }
 
         protected virtual void SubscribeEvent()

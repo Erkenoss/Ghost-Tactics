@@ -21,6 +21,16 @@ namespace Crimson.Core.Audio
         SFX
     }
 
+    public enum EPlayerContext
+    {
+        None,
+        Respawn,
+        Death,
+        Effort,
+        Defense,
+        Hurt
+    }
+
     public enum EMusicContext
     {
         None,
@@ -29,6 +39,27 @@ namespace Crimson.Core.Audio
         Exploration,
         Combat,
         Boss
+    }
+
+    public enum ESFXContext
+    {
+        None,
+        Voice,
+        UI,
+        SFX,
+        Effect
+    }
+
+    public class OnPlayerSoundEvent
+    {
+        public EPlayerContext Context = EPlayerContext.None;
+        public EAudio Type = EAudio.None;
+        
+        public OnPlayerSoundEvent(EPlayerContext context, EAudio type)
+        {
+            Context = context;
+            Type = type;
+        }
     }
 
     public class OnNewMusicContainer
@@ -176,6 +207,48 @@ namespace Crimson.Core.Audio
         #endregion
     }
 
+    [Serializable]
+    public class SFXContainer
+    {
+        #region Public Fields
+
+        public ESFXContext Context { get { return context; } }
+        public SFXClipContainer Container { get { return container; } }
+
+        #endregion
+
+        #region Private Fields
+
+        [Tooltip("Type of SFX")]
+        [SerializeField]
+        private ESFXContext context = ESFXContext.None;
+
+        [Tooltip("Container of SFX")]
+        [SerializeField]
+        private SFXClipContainer container = null;
+
+        #endregion
+
+        #region MonoBehaviour Callbacks
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Return a free AudioSource
+        /// </summary>
+        /// <returns></returns>
+        public AudioClip GetClip(string name)
+        {
+            return container.SfxList.Find(m => m.name == name);
+        }
+
+        #endregion
+
+        #region Private Methods
+        #endregion
+    }
+
     public class OnPlaySoundEvent
     {
         #region Public Fields
@@ -208,7 +281,7 @@ namespace Crimson.Core.Audio
         /// <summary>
         /// Constructor
         /// </summary>
-        public OnPlaySoundEvent(EAudio type, AudioClip clip, bool isLoop)
+        public OnPlaySoundEvent(EAudio type, AudioClip clip, bool isLoop = false)
         {
             Type = type;
             Clip = clip;
@@ -244,6 +317,14 @@ namespace Crimson.Core.Audio
         [SerializeField]
         private List<MusicContainer> allSounds = new List<MusicContainer>();
 
+        [Tooltip("All generic SFX of the game here")]
+        [SerializeField]
+        private List<SFXContainer> allSFX = new List<SFXContainer>();
+
+        [Tooltip("The container of the player sound")]
+        [SerializeField]
+        private PlayerSoundContainer playerSound = null;
+
         /// <summary>
         /// AudioSource currently played music
         /// </summary>
@@ -278,6 +359,11 @@ namespace Crimson.Core.Audio
         /// The index to play the music lits container
         /// </summary>
         private int currentIndexMusic = -1;
+
+        /// <summary>
+        /// Use to manage when the application focus or pause is suspended
+        /// </summary>
+        private bool isApplicationSuspended = false;
 
         #endregion
 
@@ -317,6 +403,43 @@ namespace Crimson.Core.Audio
         #endregion
 
         #region Private Methods
+
+
+        /// <summary>
+        /// Base on context, play a sound randomly
+        /// </summary>
+        /// <param name="context"></param>
+        private void PlayRandomPlayerSound(OnPlayerSoundEvent e)
+        {
+            if (e.Context == EPlayerContext.None || playerSound == null)
+            {
+                return;
+            }
+
+            SoundContext ctx = playerSound.GetSoundContext(e.Context);
+
+            if (ctx == null)
+            {
+                return;
+            }
+
+            PlayerSoundType playerSoundType = ctx.GetPlayerSoundType(e.Type);
+
+            if (playerSoundType == null)
+            {
+                return;
+            }
+
+            AudioClip clip =  playerSoundType.ClipType[UnityEngine.Random.Range(0, playerSoundType.ClipType.Count)];
+
+            if (clip == null)
+            {
+                return;
+            }
+
+            Play(new OnPlaySoundEvent(e.Type, clip, false));
+        }
+
 
         /// <summary>
         /// Play an AudioClip on a source base on it's type
@@ -431,6 +554,11 @@ namespace Crimson.Core.Audio
             if (source == null)
             {
                 return;
+            }
+
+            if (source.isPlaying)
+            {
+                source.Stop();
             }
 
             source.PlayOneShot(clip);
@@ -552,6 +680,12 @@ namespace Crimson.Core.Audio
 
                 while (timer < timeFader)
                 {
+                    if (isApplicationSuspended)
+                    {
+                        yield return null;
+                        continue;
+                    }
+
                     timer += Time.unscaledDeltaTime;
 
                     float progression = Mathf.Clamp01(timer / timeFader);
@@ -612,8 +746,19 @@ namespace Crimson.Core.Audio
         {
             float triggerTime = Mathf.Max(source.clip.length - Mathf.Abs(timeFader), 0f);
 
-            while (source == currentMusicSource && source.isPlaying && source.time < triggerTime)
+            while (source == currentMusicSource)
             {
+                if (isApplicationSuspended)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                if (source.time >= triggerTime)
+                {
+                    break;
+                }
+
                 yield return null;
             }
 
@@ -694,8 +839,16 @@ namespace Crimson.Core.Audio
                 }
             }
 
-            AudioClip nextClip = currentMusicContainer.MusicList[currentIndexMusic];
-            PlayMusic(nextClip, false);
+            PlayMusic(currentMusicContainer.MusicList[currentIndexMusic], false);
+        }
+
+        /// <summary>
+        /// Manage the suspension of the application
+        /// </summary>
+        /// <param name="focus"></param>
+        private void SuspendedApplication(OnApplicationSuspensionChanged focus)
+        {
+            isApplicationSuspended = focus.IsSuspended;
         }
 
         /// <summary>
@@ -706,6 +859,8 @@ namespace Crimson.Core.Audio
             EventBus.Subscribe<OnPlaySoundEvent>(Play);
             EventBus.Subscribe<OnSetMixerValue>(SetMixer);
             EventBus.Subscribe<OnNewMusicContainer>(PlayMusicContainer);
+            EventBus.Subscribe<OnApplicationSuspensionChanged>(SuspendedApplication);
+            EventBus.Subscribe<OnPlayerSoundEvent>(PlayRandomPlayerSound);
         }
 
         /// <summary>
@@ -716,6 +871,8 @@ namespace Crimson.Core.Audio
             EventBus.Unsubscribe<OnPlaySoundEvent>(Play);
             EventBus.Unsubscribe<OnSetMixerValue>(SetMixer);
             EventBus.Unsubscribe<OnNewMusicContainer>(PlayMusicContainer);
+            EventBus.Unsubscribe<OnApplicationSuspensionChanged>(SuspendedApplication);
+            EventBus.Unsubscribe<OnPlayerSoundEvent>(PlayRandomPlayerSound);
         }
 
         #endregion

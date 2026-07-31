@@ -31,6 +31,8 @@ namespace GhostTactics.UI
                 return;
             }
 
+            base.OnClick();
+
             playerDie.SaveGhostList();
 
         }

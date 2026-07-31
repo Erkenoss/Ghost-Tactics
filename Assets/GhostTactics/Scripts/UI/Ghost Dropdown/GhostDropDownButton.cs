@@ -6,6 +6,21 @@ using GhostTactics.Data;
 
 namespace GhostTactics.UI
 {
+    public class OnUpdateDropdown
+    {
+        public List<AbilityData> GhostList = new List<AbilityData>();
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ghostList"></param>
+        public OnUpdateDropdown(List<AbilityData> ghostList)
+        {
+            GhostList = ghostList;
+        }
+    }
+
+
     public class GhostDropDownButton : ButtonParent
     {
         #region Public Fields
@@ -26,11 +41,6 @@ namespace GhostTactics.UI
         /// </summary>
         private bool isOpen = false;
 
-        /// <summary>
-        /// The currentLevel of the game
-        /// </summary>
-        private LevelData currentLevel = null;
-
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -45,63 +55,96 @@ namespace GhostTactics.UI
         /// Update the list base on the Player receive with the next level
         /// </summary>
         /// <param name="level"></param>
-        private void UpdateSkillGhostList(NextLevel level)
+        private void UpdateSkillGhostList(OnUpdateDropdown level)
         {
-            if (level == null || level.Player == null || level.Player.PlayerGhost == null || level.Player.PlayerGhost.ActionsGhost == null || level.Player.PlayerGhost.ActionsGhost.Count == 0)
+            if (level?.GhostList == null || skillGhosts == null || skillGhosts.Count == 0)
             {
-                CleanGhostList();
-                return;
-            }
-
-            if (skillGhosts == null || skillGhosts.Count == 0)
-            {
-                return;
-            }
-
-            for (int i = 0; i < skillGhosts.Count; i++)
-            {
-                if (i < level.Player.PlayerGhost.ActionsGhost.Count && level.Player.PlayerGhost.ActionsGhost[i] != null && level.Player.PlayerGhost.ActionsGhost[i].AbilityIcon != null)
+                if (btn != null)
                 {
-                    skillGhosts[i].SetImage(level.Player.PlayerGhost.ActionsGhost[i].AbilityIcon);
+                    btn.enabled = false;
+                    btn.interactable = false;
+                }
+
+                if (animator != null)
+                {
+                    animator.SetBool("IsOpen", false);
+                }
+
+                return;
+            }
+
+            if (btn != null)
+            {
+                btn.enabled = true;
+                btn.interactable = true;
+            }
+
+            for (int i = 0; i < skillGhosts.Count && i < level.GhostList.Count; i++)
+            {
+                if (skillGhosts[i] != null && level.GhostList[i]?.AbilityIcon != null)
+                {
+                    skillGhosts[i].SetImage(level.GhostList[i].AbilityIcon, level.GhostList[i].Ability);
+                }
+                else
+                {
+                    skillGhosts[i].ResetSkill();
                 }
             }
-
-            currentLevel = level.Data;
         }
 
         /// <summary>
-        /// Clean the ghost list without clear it
+        /// When the player use a ghost action, reset the GhostSkill with this ability
         /// </summary>
-        private void CleanGhostList()
+        /// <param name="action"></param>
+        private void GhostUseAction(OnGhostUseAction action)
         {
             if (skillGhosts == null || skillGhosts.Count == 0)
             {
                 return;
             }
 
-            foreach(SkillGhost ghost in skillGhosts)
+            int i = 0;
+
+            foreach (SkillGhost skill in skillGhosts)
             {
-                ghost.ResetSkill();
+                if (skill.GhostAbility == action.Data.Ability)
+                {
+                    skill.ResetSkill();
+                }
+
+                if (skill.GhostAbility == Abilities.none)
+                {
+                    i++;
+                }
+            }
+
+            if (i == skillGhosts.Count && btn != null)
+            {
+                btn.enabled = false;
+                btn.interactable = false;
+
+                if (animator != null)
+                {
+                    animator.SetBool("IsOpen", false);
+                }
             }
         }
 
         protected override void SubscribeEvent()
         {
-            base.SubscribeEvent();
-
-            EventBus.Subscribe<NextLevel>(UpdateSkillGhostList);
+            EventBus.Subscribe<OnUpdateDropdown>(UpdateSkillGhostList);
+            EventBus.Subscribe<OnGhostUseAction>(GhostUseAction);
         }
 
         protected override void UnsubscribeEvent()
         {
-            base.UnsubscribeEvent();
-
-            EventBus.Unsubscribe<NextLevel>(UpdateSkillGhostList);
+            EventBus.Unsubscribe<OnUpdateDropdown>(UpdateSkillGhostList);
+            EventBus.Unsubscribe<OnGhostUseAction>(GhostUseAction);
         }
 
         protected override void OnClick()
         {
-            if (animator == null || skillGhosts == null || skillGhosts.Count == 0)
+            if (animator == null)
             {
                 return;
             }
@@ -109,6 +152,7 @@ namespace GhostTactics.UI
             isOpen = !isOpen;
             animator.SetBool("IsOpen", isOpen);
         }
+
         #endregion
     }
 }

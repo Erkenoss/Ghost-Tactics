@@ -136,6 +136,13 @@ namespace GhostTactics.UI
 
             ResetPanel();
             panel.SetActive(false);
+
+            if (CombatManager.Instance == null)
+            {
+                return;
+            }
+
+            CombatManager.Instance.StartFight();
         }
 
         /// <summary>

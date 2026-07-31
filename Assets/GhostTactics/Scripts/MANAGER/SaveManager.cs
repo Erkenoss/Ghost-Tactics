@@ -188,8 +188,6 @@ namespace GhostTactics.Core
                 startPlayer.UpdateHasBeenAlreadyCreated(false);
                 startPlayer.CreateGhost(null);
 
-                startPlayer.Subscribe();
-
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.UpdatePlayer(startPlayer);
@@ -214,8 +212,6 @@ namespace GhostTactics.Core
                 newPlayer.UpdateHasBeenAlreadyCreated(false);
                 newPlayer.CreateGhost(null);
 
-                newPlayer.Subscribe();
-
                 if (GameManager.Instance != null)
                 {
                     GameManager.Instance.UpdatePlayer(newPlayer);
@@ -225,6 +221,7 @@ namespace GhostTactics.Core
             }
 
             Player player = new Player();
+
             player.UpdatePlayerBiome(playerData.PlayerBiome);
             player.UpdatePlayerLevel(playerData.PlayerLevel);
             player.UpdateVisualizationValue(playerData.VisualizationValue);
@@ -232,8 +229,6 @@ namespace GhostTactics.Core
             player.UpdateGender(playerData.PlayerGender);
             player.UpdateHasBeenAlreadyCreated(playerData.HasBeenAlreadyCreated);
             player.CreateGhost(playerData.GhostActions);
-
-            player.Subscribe();
 
             if (GameManager.Instance != null)
             {

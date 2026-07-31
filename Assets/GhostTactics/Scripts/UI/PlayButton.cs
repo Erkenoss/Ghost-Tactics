@@ -21,6 +21,7 @@ namespace GhostTactics.UI
 
         protected override void OnClick()
         {
+            base.OnClick();
             EventBus.Publish<StartGameEvent>(new StartGameEvent());
         }
 

@@ -88,6 +88,7 @@ namespace GhostTactics.UI
         {
             if (selected)
             {
+                base.OnClick();
                 EventBus.Publish<OnConfirmGender>(new OnConfirmGender());
             }
             else
