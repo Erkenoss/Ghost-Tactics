@@ -1635,6 +1635,7 @@ MonoBehaviour:
   gameGroup: {fileID: 11400000, guid: 459e77063047c3c4d919d56989a53377, type: 2}
   containers:
   - {fileID: 11400000, guid: 6e270337ca6c059479874751d69b5cc4, type: 2}
+  fadeDuration: 0.4
 --- !u!4 &803141177
 Transform:
   m_ObjectHideFlags: 0

@@ -152,10 +152,13 @@ namespace GhostTactics.Core
         [SerializeField]
         private SceneGroupSO gameGroup = null;
 
+        [Tooltip("Group scene for the main menu")]
+        [SerializeField]
+        private SceneGroupSO mainMenu = null;
+        
         [Tooltip("All Level Container in the game")]
         [SerializeField]
         private List<LevelContainer> containers = new List<LevelContainer>();
-
 
         [Tooltip("Duration of the fade before loading the game scene")]
         [SerializeField]
@@ -392,12 +395,19 @@ namespace GhostTactics.Core
 
             LevelData next = GetContainer(currentLevel.BiomeType, currentLevel.LevelNumber + 1);
 
+            if (next.EnnemyLevel == null)
+            {
+                EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
+                return;
+            }
+
             if (next == null)
             {
                 LevelContainer nextContainer = GetLevelContainer(currentContainer);
 
                 if (nextContainer == null)
                 {
+                    EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
                     return;
                 }
 
