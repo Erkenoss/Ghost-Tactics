@@ -22,6 +22,7 @@ namespace Crimson.Core.Settings
         Vibration,
         CameraShake,
         ReduceFlashing,
+        Description
     }
 
     public class OnReceiveLoadSetting
@@ -120,7 +121,7 @@ namespace Crimson.Core.Settings
         #region Public Fields
 
         /// <summary>
-        /// 0 for true, 1 for false
+        /// 1 for true, 0 for false
         /// </summary>
         public int Value = 0;
 
@@ -264,11 +265,11 @@ namespace Crimson.Core.Settings
                         {
                             if (boo.Value == 0)
                             {
-                                return true;
+                                return false;
                             }
                             else
                             {
-                                return false;
+                                return true;
                             }
                         }
                     }
@@ -312,7 +313,7 @@ namespace Crimson.Core.Settings
                 {
                     if (Enum.TryParse(boo.Setting, out SettingBoolType type))
                     {
-                        // New event to apply setting here
+                        EventBus.Publish<OnUpdateBoolSlider>(new OnUpdateBoolSlider(boo.Value, type));
                     }
                 }
             }
@@ -347,7 +348,7 @@ namespace Crimson.Core.Settings
         /// </summary>
         private void ResetSettings(OnResetSetting reset)
         {
-
+            InitSettings();
         }
 
         /// <summary>
@@ -367,8 +368,10 @@ namespace Crimson.Core.Settings
                     continue;
                 }
 
+                Debug.Log(set.ToString());
+
                 settings.BooleanDicitionary.Add(new BoolSetting(0, set.ToString()));
-                // New event to apply setting here
+                EventBus.Publish<OnUpdateBoolSlider>(new OnUpdateBoolSlider(0, set));
             }
 
             foreach (EAudio audio in Enum.GetValues(typeof(EAudio)))
@@ -420,6 +423,7 @@ namespace Crimson.Core.Settings
         /// <param name="b"></param>
         private void ChangeBoolSetting(OnBoolSettingChanges b)
         {
+
             if (b == null || settings == null || settings.BooleanDicitionary == null || settings.BooleanDicitionary.Count == 0)
             {
                 return;
@@ -431,6 +435,8 @@ namespace Crimson.Core.Settings
             {
                 if (boolToChange == set.Setting)
                 {
+                    Debug.Log(b.Value);
+                    Debug.Log(b.Type);
                     set.Value = b.Value;
                     break;
                 }

@@ -145,6 +145,7 @@ namespace GhostTactics.Core
         #region Public Fields
 
         public AbilityData Data { get { return data; } }
+        public PlayerActionButton Btn { get { return btn; } }
 
         #endregion
 
@@ -154,6 +155,11 @@ namespace GhostTactics.Core
         /// Data pass in the constructor of the class to know which ability is selected by the player
         /// </summary>
         private AbilityData data = null;
+
+        /// <summary>
+        /// Btn send to manage the infos bubble
+        /// </summary>
+        private PlayerActionButton btn = null;
 
         #endregion
 
@@ -166,7 +172,7 @@ namespace GhostTactics.Core
         /// Constructor
         /// </summary>
         /// <param name="data"></param>
-        public AbilityChoice (AbilityData data)
+        public AbilityChoice (AbilityData data, PlayerActionButton btn)
         {
             this.data = data;
         }
@@ -193,10 +199,12 @@ namespace GhostTactics.Core
         /// </summary>
         private ButtonSelectedComponent buttonComponent = null;
 
+#if UNITY_ANDROID
         /// <summary>
-        /// List of try states when the player do a try
+        /// Current Btn selected by the player
         /// </summary>
-        private List<TryState> tryStateList = new List<TryState>();
+        private PlayerActionButton currentBtn = null;
+#endif
 
         #endregion
 
@@ -232,70 +240,34 @@ namespace GhostTactics.Core
             buttonComponent = component;
         }
 
+
+#if UNITY_ANDROID
         /// <summary>
-        /// When the player choose an ability, this method is call by the EventBus and update the buttonComponent
+        /// Update the value of the currentBtn
         /// </summary>
-        /// <param name="choice"></param>
-        public void OnAbilityChoice(AbilityChoice choice)
+        /// <param name="newBtn"></param>
+        public void UpdateCurrentBtn(PlayerActionButton newBtn)
         {
-            if (buttonComponent == null || choice == null)
+            if (newBtn == null)
             {
                 return;
             }
 
-            buttonComponent.AddAction(choice.Data);
-        }
-        
-        /// <summary>
-        /// When the player come on a new level
-        /// </summary>
-        /// <param name="nextLevel"></param>
-        public void OnNextLevel(NextLevel nextLevel)
-        {
-            if (buttonComponent == null || nextLevel == null)
+            if (currentBtn == newBtn)
             {
-                if (buttonComponent == null)
-                {
-                    Debug.LogError("ButtonComponent is null in ActionManager");
-                }
-
+                currentBtn.Hide();
+                currentBtn = null;
                 return;
             }
 
-            buttonComponent.EnableButtonAction(nextLevel.Data.LevelActionSlot);
-        }
-
-        /// <summary>
-        /// /Use as bridge to reset all button in the buttonComponent
-        /// </summary>
-        /// <param name="all"></param>
-        public void ResetAllAbilities(ResetAll all)
-        {
-            if (buttonComponent == null || all == null)
+            if (currentBtn != null)
             {
-                return;
+                currentBtn.Hide();
             }
 
-            buttonComponent.ResetAllButton();
+            currentBtn = newBtn;
         }
-
-        /// <summary>
-        /// Use to call Fight Resolution with the EventBus and start the resolution of the fight
-        /// </summary>
-        /// <param name="s"></param>
-        public void StartResolution(StartResolution s)
-        {
-            List<AbilityData> playerAbility = buttonComponent.GetSelectedAbilities();
-            
-            if (playerAbility == null || playerAbility.Count == 0 || playerAbility.Count != s.Ennemy.Abilities.Count)
-            {
-                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("You must complete your action bar"));
-                return;
-            }
-
-            s.Player.UpResult();
-            EventBus.Publish<CombatResolutionEvent>(new CombatResolutionEvent(playerAbility, s.Ennemy.Abilities, s.Ennemy, s.Player));
-        }
+#endif
 
         /// <summary>
         /// Get the AbilityData from the AbilitiesContainer by the name of the ability
@@ -315,6 +287,71 @@ namespace GhostTactics.Core
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// /Use as bridge to reset all button in the buttonComponent
+        /// </summary>
+        /// <param name="all"></param>
+        public void ResetAllAbilities(ResetAll all)
+        {
+            if (buttonComponent == null || all == null)
+            {
+                return;
+            }
+
+            buttonComponent.ResetAllButton();
+        }
+
+        /// <summary>
+        /// When the player choose an ability, this method is call by the EventBus and update the buttonComponent
+        /// </summary>
+        /// <param name="choice"></param>
+        private void OnAbilityChoice(AbilityChoice choice)
+        {
+            if (buttonComponent == null || choice == null)
+            {
+                return;
+            }
+
+            buttonComponent.AddAction(choice.Data);
+        }
+
+        /// <summary>
+        /// When the player come on a new level
+        /// </summary>
+        /// <param name="nextLevel"></param>
+        private void OnNextLevel(NextLevel nextLevel)
+        {
+            if (buttonComponent == null || nextLevel == null)
+            {
+                if (buttonComponent == null)
+                {
+                    Debug.LogError("ButtonComponent is null in ActionManager");
+                }
+
+                return;
+            }
+
+            buttonComponent.EnableButtonAction(nextLevel.Data.LevelActionSlot);
+        }
+
+        /// <summary>
+        /// Use to call Fight Resolution with the EventBus and start the resolution of the fight
+        /// </summary>
+        /// <param name="s"></param>
+        private void StartResolution(StartResolution s)
+        {
+            List<AbilityData> playerAbility = buttonComponent.GetSelectedAbilities();
+
+            if (playerAbility == null || playerAbility.Count == 0 || playerAbility.Count != s.Ennemy.Abilities.Count)
+            {
+                EventBus.Publish<OnPopUpMessage>(new OnPopUpMessage("You must complete your action bar"));
+                return;
+            }
+
+            s.Player.UpResult();
+            EventBus.Publish<CombatResolutionEvent>(new CombatResolutionEvent(playerAbility, s.Ennemy.Abilities, s.Ennemy, s.Player));
+        }
 
         /// <summary>
         /// Subscribe to the EventBus the differents listeners

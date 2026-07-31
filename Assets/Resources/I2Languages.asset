@@ -41,7 +41,7 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - Continu
+      - Continue
       - Continuer
       - 
       - 
@@ -62,7 +62,7 @@ MonoBehaviour:
       Description: 
       Languages:
       - Languages
-      - Langage
+      - Langages
       - 
       - 
       Flags: 00000000
@@ -153,6 +153,16 @@ MonoBehaviour:
       Languages:
       - Speed Fights
       - Vitesse des Combats
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Description
+      TermType: 0
+      Description: 
+      Languages:
+      - Description
+      - Description
       - 
       - 
       Flags: 00000000
@@ -267,6 +277,56 @@ MonoBehaviour:
       - 
       Flags: 00000000
       Languages_Touch: []
+    - Term: Combat Scene/Idle_Infos
+      TermType: 0
+      Description: 
+      Languages:
+      - Wait for one action
+      - Attendre pendant une action
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Combat Scene/Backdash_Infos
+      TermType: 0
+      Description: 
+      Languages:
+      - Go backward
+      - "Se d\xE9place en arri\xE8re"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Combat Scene/Dash_Infos
+      TermType: 0
+      Description: 
+      Languages:
+      - Go forward
+      - "Se d\xE9place en avant"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Combat Scene/Dodge_Infos
+      TermType: 0
+      Description: 
+      Languages:
+      - Dodge an attack
+      - Esquiver une attaque
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Combat Scene/Attack_Infos
+      TermType: 0
+      Description: 
+      Languages:
+      - Attack the enemy
+      - Attaquer l'ennemi
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
     - Term: Dialogue/First sentence
       TermType: 0
       Description: 
@@ -328,7 +388,7 @@ MonoBehaviour:
     Google_WebServiceURL: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
     Google_SpreadsheetKey: 10iNmJcICE0dfy2A2-jdLMVVNeCpWhN1FapdKwl_R4kk
     Google_SpreadsheetName: I2Loc Ghost Tactics Localization
-    Google_LastUpdatedVersion: 1784619153136
+    Google_LastUpdatedVersion: 1785535417616
     Google_Password: Ghost-Tactics
     GoogleUpdateFrequency: 3
     GoogleInEditorCheckFrequency: 2

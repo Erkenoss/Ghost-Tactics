@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +14,10 @@ namespace Crimson.Core
         [Tooltip("Slider of this script")]
         [SerializeField]
         protected Slider sld = null;
+
+        [Tooltip("Text of the slider")]
+        [SerializeField]
+        protected TextMeshProUGUI text = null;
 
         #endregion
 
@@ -48,12 +53,21 @@ namespace Crimson.Core
         #region Private Methods
 
         /// <summary>
+        /// Update a text in the slider if text != null
+        /// </summary>
+        /// <param name="value"></param>
+        protected virtual void UpdateTextDisplay(float value)
+        {
+
+        }
+        
+        /// <summary>
         /// When the value changed, this method is called
         /// </summary>
         /// <param name="value"></param>
         protected virtual void OnValueChanged(float value)
         {
-
+            UpdateTextDisplay(value);
         }
 
         /// <summary>
