@@ -5,21 +5,24 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Core Scene.unity
     guid: 9e16eed823680e045a6ed64b79f06523
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Main Menu.unity
     guid: a305d0501f5934247bf182e0bbd73111
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Game Scene.unity
     guid: a44e4ae6c74226d4a8ffadd42e3af66d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Starter Scene.unity
     guid: 8be5116be8ffab843a6f1189a61e800c
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/LoadScreen Scene.unity
     guid: 0628e022e710a634788c12a7aad71568
+  - enabled: 1
+    path: Assets/Crimson/Game/Map2D/Scene/Map Scene.unity
+    guid: 6aeebe386e2e1634e8291138873620a9
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 215d27e44f438824fa82928dd1383057, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}

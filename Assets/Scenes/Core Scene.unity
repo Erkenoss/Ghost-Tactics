@@ -444,7 +444,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &91471357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1633,6 +1633,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   isPersistant: 1
   gameGroup: {fileID: 11400000, guid: 459e77063047c3c4d919d56989a53377, type: 2}
+  mainMenu: {fileID: 0}
   containers:
   - {fileID: 11400000, guid: 6e270337ca6c059479874751d69b5cc4, type: 2}
   fadeDuration: 0.4

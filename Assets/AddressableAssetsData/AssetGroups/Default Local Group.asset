@@ -14,7 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Addressables.Editor::UnityEditor.AddressableAssets.Settings.AddressableAssetGroup
   m_GroupName: Default Local Group
   m_GUID: f6e8771d82c812640839b841b44ac40e
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: 6aeebe386e2e1634e8291138873620a9
+    m_Address: Assets/Crimson/Game/Map2D/Map Scene.unity
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: ddee3cdfecc4d0241a03b26d23930718, type: 2}
   m_SchemaSet:
