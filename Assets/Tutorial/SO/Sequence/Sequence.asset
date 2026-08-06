@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94fe7f71ae43f6345b7628b0feec415f, type: 3}
+  m_Name: Sequence
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSequenceSO
+  stepType: 0
+  isCompleted: 0
+  isSkipped: 0
+  scriptName: GhostTactics.Core.CombatManager
+  methodNameToCall: StartFight
+  tutoGUID: c8b144efafc7404bad4d1226b9784ea7
+  stepGUID: 3f443f9f6679474aa13b4e8733f8c0c3
+  sequenceType: 0
+  sequenceSOList: []
