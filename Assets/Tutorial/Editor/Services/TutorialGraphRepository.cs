@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Tutorial.Editor.Persistence;
 using UnityEditor;
 using UnityEngine;
+
+using Tutorial.Runtime.Persistence;
+
 
 namespace Tutorial.Editor.Services
 {
@@ -23,62 +25,109 @@ namespace Tutorial.Editor.Services
         #region Graph Creation
 
         /// <summary>
-        /// Create a new TutorialGraphAsset at the requested Project path
+        /// Create a new empty TutorialGraphAsset at the supplied project path
         /// </summary>
         /// <param name="assetPath"></param>
-        /// <param name="graph"></param>
+        /// <param name="createdGraph"></param>
+        /// <param name="failureReason"></param>
         /// <returns></returns>
-        public bool TryCreateGraph(string assetPath, out TutorialGraphAsset graph)
+        public bool TryCreateGraph(string assetPath, out TutorialGraphAsset createdGraph, out string failureReason)
         {
-            graph = null;
+            createdGraph = null;
+            failureReason = string.Empty;
 
-            if (!TryPrepareGraphAssetPath(assetPath, out string preparedAssetPath))
+            if (!TryValidateGraphAssetPath(assetPath, out failureReason))
             {
                 return false;
             }
 
-            string folderPath = GetFolderPath(preparedAssetPath);
+            TutorialGraphAsset graph = ScriptableObject.CreateInstance<TutorialGraphAsset>();
 
-            if (!TryEnsureFolderExists(folderPath))
+            if (graph == null)
             {
-                Debug.LogError($"Unable to create or access the tutorial graph folder '{folderPath}'.");
-
+                failureReason = "Unable to instantiate the TutorialGraphAsset.";
                 return false;
             }
 
-            preparedAssetPath = AssetDatabase.GenerateUniqueAssetPath(preparedAssetPath);
-
-            TutorialGraphAsset createdGraph = ScriptableObject.CreateInstance<TutorialGraphAsset>();
-
-            if (createdGraph == null)
-            {
-                Debug.LogError("Unable to instantiate a TutorialGraphAsset.");
-
-                return false;
-            }
-
-            createdGraph.name = Path.GetFileNameWithoutExtension(preparedAssetPath);
-            createdGraph.InitializeNewGraph();
+            graph.name = Path.GetFileNameWithoutExtension(assetPath);
 
             try
             {
-                AssetDatabase.CreateAsset(createdGraph, preparedAssetPath);
-                Undo.RegisterCreatedObjectUndo(createdGraph, "Create tutorial graph");
+                AssetDatabase.CreateAsset(graph, assetPath);
+                Undo.RegisterCreatedObjectUndo(graph, "Create tutorial graph");
 
-                EditorUtility.SetDirty(createdGraph);
-                AssetDatabase.SaveAssetIfDirty(createdGraph);
+                EditorUtility.SetDirty(graph);
+                AssetDatabase.SaveAssetIfDirty(graph);
+                AssetDatabase.ImportAsset(assetPath);
 
-                graph = createdGraph;
+                createdGraph = graph;
 
                 return true;
             }
             catch (Exception exception)
             {
                 Debug.LogException(exception);
-                CleanupFailedAssetCreation(createdGraph, preparedAssetPath);
+
+                if (AssetDatabase.LoadAssetAtPath<TutorialGraphAsset>(assetPath) != null)
+                {
+                    AssetDatabase.DeleteAsset(assetPath);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(graph);
+                }
+
+                failureReason = $"Unable to create the tutorial graph: {exception.Message}";
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Validate a TutorialGraphAsset creation path
+        /// </summary>
+        /// <param name="assetPath"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        private static bool TryValidateGraphAssetPath(string assetPath, out string failureReason)
+        {
+            failureReason = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(assetPath))
+            {
+                failureReason = "The tutorial graph path is empty.";
+                return false;
+            }
+
+            assetPath = assetPath.Replace('\\', '/');
+
+            if (!assetPath.StartsWith("Assets/", StringComparison.Ordinal) && assetPath != "Assets")
+            {
+                failureReason = "The tutorial graph must be created inside the Assets folder.";
+                return false;
+            }
+
+            if (!string.Equals(Path.GetExtension(assetPath), ".asset", StringComparison.OrdinalIgnoreCase))
+            {
+                failureReason = "The tutorial graph must use the .asset extension.";
+                return false;
+            }
+
+            string folderPath = Path.GetDirectoryName(assetPath)?.Replace('\\', '/');
+
+            if (string.IsNullOrWhiteSpace(folderPath) || !AssetDatabase.IsValidFolder(folderPath))
+            {
+                failureReason = "The tutorial graph folder does not exist.";
+                return false;
+            }
+
+            if (AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(assetPath) != null)
+            {
+                failureReason = "An asset already exists at the selected path.";
+                return false;
+            }
+
+            return true;
         }
 
         #endregion
@@ -214,31 +263,42 @@ namespace Tutorial.Editor.Services
         }
 
         /// <summary>
-        /// Find every TutorialGraphAsset contained inside the Unity Project
+        /// Find every TutorialGraphAsset currently stored in the project
         /// </summary>
         /// <returns></returns>
         public IReadOnlyList<TutorialGraphAsset> FindAllGraphs()
         {
-            List<TutorialGraphAsset> graphs = new List<TutorialGraphAsset>();
-            string[] assetGuids = AssetDatabase.FindAssets(GraphSearchFilter);
+            string[] graphGuids = AssetDatabase.FindAssets("t:TutorialGraphAsset");
+            List<TutorialGraphAsset> graphs = new List<TutorialGraphAsset>(graphGuids.Length);
 
-            foreach (string assetGuid in assetGuids)
+            foreach (string graphGuid in graphGuids)
             {
-                string assetPath = AssetDatabase.GUIDToAssetPath(assetGuid);
+                string assetPath = AssetDatabase.GUIDToAssetPath(graphGuid);
                 TutorialGraphAsset graph = AssetDatabase.LoadAssetAtPath<TutorialGraphAsset>(assetPath);
 
-                if (graph == null)
+                if (graph != null)
                 {
-                    continue;
+                    graphs.Add(graph);
                 }
-
-                graph.EnsureInitialized();
-                graphs.Add(graph);
             }
 
-            graphs.Sort(CompareGraphs);
+            graphs.Sort(CompareGraphsByName);
 
             return graphs;
+        }
+
+        /// <summary>
+        /// Compare two tutorial graphs by asset name
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        private static int CompareGraphsByName(TutorialGraphAsset left, TutorialGraphAsset right)
+        {
+            string leftName = left != null ? left.name : string.Empty;
+            string rightName = right != null ? right.name : string.Empty;
+
+            return string.Compare(leftName, rightName, StringComparison.OrdinalIgnoreCase);
         }
 
         #endregion

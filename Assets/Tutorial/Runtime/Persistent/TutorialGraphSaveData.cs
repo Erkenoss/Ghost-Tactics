@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Tutorial.Editor.Persistence
+namespace Tutorial.Runtime.Persistence
 {
     #region Enums
 

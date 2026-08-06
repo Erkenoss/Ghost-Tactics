@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Tutorial.Editor.Persistence
+namespace Tutorial.Runtime.Persistence
 {
     /// <summary>
     /// Persistent asset containing the complete saved state of a tutorial graph
@@ -23,37 +23,21 @@ namespace Tutorial.Editor.Persistence
         [SerializeField]
         private TutorialGraphSaveData saveData = new TutorialGraphSaveData();
 
+        /// <summary>
+        /// Use to know if we can replay the tutorial or not
+        /// </summary>
+        [SerializeField]
+        private ETutorialReplayPolicy replayPolicy = ETutorialReplayPolicy.Disabled;
+
         #endregion
 
         #region Properties
 
-        /// <summary>
-        /// Unique identifier of this tutorial graph
-        /// </summary>
         public string GraphGuid => graphGuid;
-
-        /// <summary>
-        /// Persistent graph data
-        /// </summary>
-        public TutorialGraphSaveData SaveData
-        {
-            get
-            {
-                EnsureInitialized();
-
-                return saveData;
-            }
-        }
-
-        /// <summary>
-        /// Current graph save format version
-        /// </summary>
+        public TutorialGraphSaveData SaveData => saveData;
         public int Version => saveData != null ? saveData.Version : 0;
-
-        /// <summary>
-        /// Whether the graph contains a valid identity and data container
-        /// </summary>
         public bool IsInitialized => !string.IsNullOrWhiteSpace(graphGuid) && saveData != null;
+        public ETutorialReplayPolicy ReplayPolicy => replayPolicy;
 
         #endregion
 

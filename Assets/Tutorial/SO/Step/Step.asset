@@ -15,7 +15,7 @@ MonoBehaviour:
   stepType: 0
   isCompleted: 0
   isSkipped: 0
-  scriptName: GhostTactics.Core.CombatManager
-  methodNameToCall: StartFight
+  scriptName: Tutorial.Runtime.Component.TutoIdentifier
+  methodNameToCall: Skip
   tutoGUID: c8b144efafc7404bad4d1226b9784ea7
   stepGUID: 9d7850a6e226471bb44af9bacefe68b6

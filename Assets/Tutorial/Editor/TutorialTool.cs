@@ -1,6 +1,6 @@
 using Tutorial.Editor.Controllers;
 using Tutorial.Editor.Core;
-using Tutorial.Editor.Persistence;
+using Tutorial.Runtime.Persistence;
 using Tutorial.Editor.Services;
 using Tutorial.Editor.Settings;
 using Tutorial.Editor.Views;
@@ -21,17 +21,10 @@ namespace Tutorial.Editor
     {
         #region Constants
 
-        private const string WindowMenuPath =
-            "Window/Tutorial/Tutorial Tool";
-
-        private const string WindowTitle =
-            "Tutorial Tool";
-
-        private const float InspectorWidth =
-            320f;
-
-        private static readonly Vector2 MinimumWindowSize =
-            new Vector2(900f, 520f);
+        private const string WindowMenuPath = "Window/Tutorial/Tutorial Tool";
+        private const string WindowTitle = "Tutorial Tool";
+        private const float InspectorWidth = 320f;
+        private static readonly Vector2 MinimumWindowSize = new Vector2(900f, 520f);
 
         #endregion
 
@@ -67,6 +60,16 @@ namespace Tutorial.Editor
         /// </summary>
         private VisualElement statusBarHost = null;
 
+        /// <summary>
+        /// Host displaying the current central tool screen
+        /// </summary>
+        private VisualElement contentHost = null;
+
+        /// <summary>
+        /// Host containing the graph canvas and inspector
+        /// </summary>
+        private VisualElement editorHost = null;
+
         #endregion
 
         #region Tool State
@@ -80,11 +83,6 @@ namespace Tutorial.Editor
         /// Session associated with the currently edited tutorial graph
         /// </summary>
         private TutorialGraphSession graphSession = null;
-
-        /// <summary>
-        /// Graph currently displayed inside the canvas
-        /// </summary>
-        private TutorialGraphAsset openedGraph = null;
 
         #endregion
 
@@ -106,7 +104,7 @@ namespace Tutorial.Editor
         private TutorialSequenceAssetService sequenceAssetService = null;
 
         /// <summary>
-        /// Service responsible for the save runtime resgistry
+        /// Service responsible for the save runtime registry
         /// </summary>
         private TutorialGraphRuntimeRegistry runtimeRegistry = null;
 
@@ -131,7 +129,7 @@ namespace Tutorial.Editor
         private TutorialGraphPersistenceService graphPersistenceService = null;
 
         /// <summary>
-        /// Services to manage save of the tutorial
+        /// Service responsible for automatic graph saves
         /// </summary>
         private TutorialGraphAutosaveService autosaveService = null;
 
@@ -164,6 +162,21 @@ namespace Tutorial.Editor
         /// </summary>
         private TutorialGraphStatusBarView graphStatusBarView = null;
 
+        /// <summary>
+        /// View displayed when no tutorial graph is currently opened
+        /// </summary>
+        private TutorialGraphLauncherView graphLauncherView = null;
+
+        /// <summary>
+        /// View used to browse existing tutorial graphs
+        /// </summary>
+        private TutorialGraphBrowserView graphBrowserView = null;
+
+        /// <summary>
+        /// View used to create a new tutorial graph
+        /// </summary>
+        private TutorialGraphCreationView graphCreationView = null;
+
         #endregion
 
         #region Controllers
@@ -183,6 +196,11 @@ namespace Tutorial.Editor
         /// </summary>
         private TutorialCanvasController canvasController = null;
 
+        /// <summary>
+        /// Controller responsible for the tutorial graph editing session
+        /// </summary>
+        private TutorialSessionController sessionController = null;
+
         #endregion
 
         #region Window Lifecycle
@@ -195,7 +213,6 @@ namespace Tutorial.Editor
         {
             TutorialTool window = GetWindow<TutorialTool>();
             window.titleContent = new GUIContent(WindowTitle);
-
             window.minSize = MinimumWindowSize;
             window.Show();
         }
@@ -258,6 +275,17 @@ namespace Tutorial.Editor
             splitView.Add(canvas);
             splitView.Add(inspectorPanel);
 
+            editorHost = splitView;
+
+            contentHost = new VisualElement
+            {
+                name = "tutorial-content-host"
+            };
+
+            contentHost.style.flexGrow = 1f;
+            contentHost.style.position = Position.Relative;
+            contentHost.Add(editorHost);
+
             statusBarHost = new VisualElement
             {
                 name = "tutorial-status-bar-host"
@@ -274,7 +302,7 @@ namespace Tutorial.Editor
             windowRoot.style.flexDirection = FlexDirection.Column;
 
             windowRoot.Add(toolbarHost);
-            windowRoot.Add(splitView);
+            windowRoot.Add(contentHost);
             windowRoot.Add(statusBarHost);
 
             rootVisualElement.Add(windowRoot);
@@ -304,7 +332,6 @@ namespace Tutorial.Editor
             };
 
             connectionLayer.style.position = Position.Absolute;
-
             connectionLayer.style.left = 0f;
             connectionLayer.style.right = 0f;
             connectionLayer.style.top = 0f;
@@ -317,16 +344,14 @@ namespace Tutorial.Editor
             };
 
             dropHint.style.position = Position.Absolute;
-
             dropHint.style.left = 0f;
             dropHint.style.right = 0f;
             dropHint.style.top = 0f;
             dropHint.style.bottom = 0f;
-
             dropHint.style.unityTextAlign = TextAnchor.MiddleCenter;
             dropHint.style.whiteSpace = WhiteSpace.Normal;
             dropHint.style.color = new Color(0.55f, 0.55f, 0.55f);
-            
+
             canvas.Add(connectionLayer);
             canvas.Add(dropHint);
         }
@@ -343,12 +368,10 @@ namespace Tutorial.Editor
 
             inspectorPanel.style.flexGrow = 1f;
             inspectorPanel.style.minWidth = 0f;
-
             inspectorPanel.style.paddingLeft = 8f;
             inspectorPanel.style.paddingRight = 8f;
             inspectorPanel.style.paddingTop = 8f;
             inspectorPanel.style.paddingBottom = 8f;
-
             inspectorPanel.style.backgroundColor = new Color(0.18f, 0.18f, 0.18f);
         }
 
@@ -365,9 +388,16 @@ namespace Tutorial.Editor
 
             graphToolbarView = new TutorialGraphToolbarView(typeof(TutorialGraphAsset));
             graphStatusBarView = new TutorialGraphStatusBarView();
+            graphLauncherView = new TutorialGraphLauncherView();
+            graphBrowserView = new TutorialGraphBrowserView();
+            graphCreationView = new TutorialGraphCreationView();
 
             toolbarHost.Add(graphToolbarView.Root);
             statusBarHost.Add(graphStatusBarView.Root);
+
+            contentHost.Insert(0, graphLauncherView.Root);
+            contentHost.Insert(1, graphBrowserView.Root);
+            contentHost.Insert(2, graphCreationView.Root);
 
             graphStatusBarView.DisplayNoGraph();
             graphStatusBarView.SetAutosaveEnabled(projectSettings.AutosaveEnabled);
@@ -389,41 +419,25 @@ namespace Tutorial.Editor
 
             bindingController = new TutorialBindingController(graphState, canvas, guidService, inspectorView, connectionRenderer);
             sequenceController = new TutorialSequenceController(graphState, canvas, sequenceAssetService, connectionRenderer);
-
             nodeFactory = new TutorialNodeFactory(canvas, bindingController, sequenceController, connectionRenderer);
 
             sequenceFolderView = new TutorialSequenceFolderView(sequenceAssetService);
             toolbarHost.Insert(0, sequenceFolderView.Root);
 
-            canvasController = new TutorialCanvasController(rootVisualElement, canvas, connectionLayer, dropHint, graphState, runtimeRegistry, nodeFactory, inspectorView, bindingController, sequenceController, connectionRenderer);
-
+            canvasController = new TutorialCanvasController(editorHost, canvas, connectionLayer, dropHint, graphState, runtimeRegistry, nodeFactory, inspectorView, bindingController, sequenceController, connectionRenderer);
             autosaveService = new TutorialGraphAutosaveService(graphSession, graphPersistenceService, projectSettings.AutosaveDelay);
+
+            sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, autosaveService, editorHost, graphLauncherView, graphBrowserView, graphCreationView, graphToolbarView, graphStatusBarView, canvasController, bindingController, sequenceController);
 
             if (projectSettings.AutosaveEnabled)
             {
                 autosaveService.Enable();
             }
 
-            graphToolbarView.GraphSelectionChanged += OnGraphSelectionChanged;
-            graphToolbarView.OpenRequested += OnOpenGraphRequested;
-            graphToolbarView.SaveRequested += OnSaveGraphRequested;
-            graphToolbarView.LocateRequested += OnLocateGraphRequested;
-
-            autosaveService.Saved += OnGraphSaved;
-            autosaveService.SaveFailed += OnGraphSaveFailed;
-
-            canvasController.GraphChanged += OnGraphChanged;
-            bindingController.BindingChanged += OnGraphChanged;
-            sequenceController.SequenceChanged += OnGraphChanged;
-
-            canvasController.GraphChanged += autosaveService.RequestSave;
-            bindingController.BindingChanged += autosaveService.RequestSave;
-            sequenceController.SequenceChanged += autosaveService.RequestSave;
-
             connectionRenderer.Enable();
             canvasController.Enable();
-
             inspectorView.DisplayPlaceholder();
+            sessionController.Enable();
         }
 
         /// <summary>
@@ -431,58 +445,15 @@ namespace Tutorial.Editor
         /// </summary>
         private void DisposeTool()
         {
-            if (graphToolbarView != null)
-            {
-                graphToolbarView.GraphSelectionChanged -= OnGraphSelectionChanged;
-                graphToolbarView.OpenRequested -= OnOpenGraphRequested;
-                graphToolbarView.SaveRequested -= OnSaveGraphRequested;
-                graphToolbarView.LocateRequested -= OnLocateGraphRequested;
-            }
-
-            if (autosaveService != null)
-            {
-                autosaveService.Saved -= OnGraphSaved;
-                autosaveService.SaveFailed -= OnGraphSaveFailed;
-            }
-
-            if (canvasController != null)
-            {
-                canvasController.GraphChanged -= OnGraphChanged;
-            }
-
-            if (bindingController != null)
-            {
-                bindingController.BindingChanged -= OnGraphChanged;
-            }
-
-            if (sequenceController != null)
-            {
-                sequenceController.SequenceChanged -= OnGraphChanged;
-            }
-
-            if (autosaveService != null)
-            {
-                if (canvasController != null)
-                {
-                    canvasController.GraphChanged -= autosaveService.RequestSave;
-                }
-
-                if (bindingController != null)
-                {
-                    bindingController.BindingChanged -= autosaveService.RequestSave;
-                }
-
-                if (sequenceController != null)
-                {
-                    sequenceController.SequenceChanged -= autosaveService.RequestSave;
-                }
-
-                autosaveService.Dispose();
-                autosaveService = null;
-            }
+            sessionController?.Dispose();
+            sessionController = null;
 
             canvasController?.Dispose();
             connectionRenderer?.Dispose();
+
+            autosaveService?.Dispose();
+            autosaveService = null;
+
             runtimeRegistry?.Clear();
 
             canvasController = null;
@@ -506,206 +477,21 @@ namespace Tutorial.Editor
             graphSession = null;
             graphState = null;
 
+            graphLauncherView = null;
+            graphBrowserView = null;
+            graphCreationView = null;
+            graphToolbarView = null;
+            graphStatusBarView = null;
+
             canvas = null;
             connectionLayer = null;
             dropHint = null;
             inspectorPanel = null;
 
-            graphToolbarView = null;
-            graphStatusBarView = null;
-            sequenceFolderView = null;
-
-            openedGraph = null;
-
+            contentHost = null;
+            editorHost = null;
             toolbarHost = null;
             statusBarHost = null;
-        }
-
-        #endregion
-
-        #region Graph Commands
-
-        /// <summary>
-        /// Update graph commands when the selected graph changes
-        /// </summary>
-        /// <param name="selectedGraph"></param>
-        private void OnGraphSelectionChanged(UnityEngine.Object selectedGraph)
-        {
-            bool hasSelection = selectedGraph is TutorialGraphAsset;
-
-            graphToolbarView.SetCommandAvailability(hasSelection, openedGraph != null, hasSelection || openedGraph != null);
-
-            if (!hasSelection)
-            {
-                graphStatusBarView.SetStatus("Select a TutorialGraphAsset", ETutorialGraphStatus.Normal);
-
-                return;
-            }
-
-            if (selectedGraph == openedGraph)
-            {
-                graphStatusBarView.SetStatus("Active graph selected", ETutorialGraphStatus.Normal);
-
-                return;
-            }
-
-            graphStatusBarView.SetStatus("Graph selected - press Open", ETutorialGraphStatus.Normal);
-        }
-
-        /// <summary>
-        /// Open and reconstruct the selected tutorial graph
-        /// </summary>
-        private void OnOpenGraphRequested()
-        {
-            if (graphToolbarView.SelectedGraph is not TutorialGraphAsset graph)
-            {
-                graphStatusBarView.SetStatus("No valid graph selected", ETutorialGraphStatus.Warning);
-
-                return;
-            }
-
-            if (openedGraph == graph)
-            {
-                graphStatusBarView.SetStatus("Graph already opened", ETutorialGraphStatus.Normal);
-
-                return;
-            }
-
-            if (graphSession.IsDirty && !autosaveService.TryFlush(out string saveFailureReason))
-            {
-                graphStatusBarView.SetStatus(saveFailureReason, ETutorialGraphStatus.Error);
-
-                return;
-            }
-
-            graphStatusBarView.SetStatus("Preparing graph...", ETutorialGraphStatus.Normal);
-
-            if (!graphPersistenceService.TryCreateLoadPlan(graph, out TutorialGraphLoadPlan loadPlan, out string failureReason))
-            {
-                graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
-
-                return;
-            }
-
-            autosaveService.CancelPendingSave();
-            canvasController.ClearVisualGraph();
-
-            if (!canvasController.TryRestoreNodes(loadPlan, out failureReason))
-            {
-                canvasController.ClearVisualGraph();
-                graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
-
-                return;
-            }
-
-            if (!canvasController.TryRestoreConnections(loadPlan, out failureReason))
-            {
-                canvasController.ClearVisualGraph();
-                graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
-
-                return;
-            }
-
-            /*
-             * This call associates the reconstructed asset with the editing session.
-             * Keep the equivalent method name used by your TutorialGraphSession.
-             */
-            graphSession.SetActiveGraph(graph);
-            graphSession.MarkSaved();
-
-            openedGraph = graph;
-
-            graphToolbarView.SetSelectedGraph(graph);
-            graphToolbarView.SetCommandAvailability(true, true, true);
-
-            graphStatusBarView.DisplayGraph(graph, runtimeRegistry.Count);
-            graphStatusBarView.SetStatus("Graph loaded", ETutorialGraphStatus.Success);
-
-            Selection.activeObject = graph;
-        }
-
-        /// <summary>
-        /// Immediately save the active graph
-        /// </summary>
-        private void OnSaveGraphRequested()
-        {
-            if (openedGraph == null)
-            {
-                graphStatusBarView.SetStatus("No active graph to save", ETutorialGraphStatus.Warning);
-
-                return;
-            }
-
-            if (!autosaveService.TrySaveNow(out string failureReason))
-            {
-                graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
-
-                return;
-            }
-
-            graphStatusBarView.DisplayGraph(openedGraph, runtimeRegistry.Count);
-            graphStatusBarView.SetStatus("Graph saved", ETutorialGraphStatus.Success);
-        }
-
-        /// <summary>
-        /// Locate the selected or active graph inside the Project window
-        /// </summary>
-        private void OnLocateGraphRequested()
-        {
-            UnityEngine.Object graph = graphToolbarView.SelectedGraph != null ? graphToolbarView.SelectedGraph : openedGraph;
-
-            if (graph == null)
-            {
-                graphStatusBarView.SetStatus("No graph to locate", ETutorialGraphStatus.Warning);
-
-                return;
-            }
-
-            Selection.activeObject = graph;
-            EditorGUIUtility.PingObject(graph);
-
-            graphStatusBarView.SetStatus("Graph located", ETutorialGraphStatus.Success);
-        }
-
-        #endregion
-
-        #region Graph Status
-
-        /// <summary>
-        /// Display that the active graph contains unsaved changes
-        /// </summary>
-        private void OnGraphChanged()
-        {
-            if (openedGraph == null)
-            {
-                return;
-            }
-
-            graphStatusBarView.DisplayGraph(openedGraph, runtimeRegistry.Count);
-            graphStatusBarView.SetStatus("Unsaved changes", ETutorialGraphStatus.Warning);
-        }
-
-        /// <summary>
-        /// Display a successful graph save
-        /// </summary>
-        private void OnGraphSaved()
-        {
-            if (openedGraph == null)
-            {
-                return;
-            }
-
-            graphStatusBarView.DisplayGraph(openedGraph, runtimeRegistry.Count);
-            graphStatusBarView.SetStatus("Saved", ETutorialGraphStatus.Success);
-        }
-
-        /// <summary>
-        /// Display an automatic graph save failure
-        /// </summary>
-        /// <param name="failureReason"></param>
-        private void OnGraphSaveFailed(string failureReason)
-        {
-            graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
         }
 
         #endregion
