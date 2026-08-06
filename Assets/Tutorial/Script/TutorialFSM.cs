@@ -5,6 +5,8 @@ namespace Tutorial
     public enum EStepType
     {
         None = 0,
+        Gameplay,
+        UI
     }
 
     public enum ESequenceType

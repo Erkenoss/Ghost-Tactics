@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Crimson.Core;
 
 namespace Tutorial
 {
@@ -156,6 +155,32 @@ namespace Tutorial
             }
 
             step.OnTrigger();
+        }
+
+        /// <summary>
+        /// Replace the current sequence with the given ordered steps
+        /// </summary>
+        /// <param name="steps"></param>
+        public void SetSequence(IEnumerable<StepSO> steps)
+        {
+            sequenceSOList ??= new List<StepSO>();
+            sequenceSOList.Clear();
+
+            if (steps == null)
+            {
+                return;
+            }
+
+            foreach (StepSO step in steps)
+            {
+                if (step == null ||
+                    step == this)
+                {
+                    continue;
+                }
+
+                sequenceSOList.Add(step);
+            }
         }
 
         #endregion
