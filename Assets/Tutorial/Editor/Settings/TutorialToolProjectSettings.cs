@@ -17,21 +17,6 @@ namespace Tutorial.Editor.Settings
         /// </summary>
         private const string SettingsFilePath = "ProjectSettings/TutorialToolSettings.asset";
 
-        /// <summary>
-        /// Default delay applied before an automatic graph save
-        /// </summary>
-        public const float DefaultAutosaveDelay = 1.25f;
-
-        /// <summary>
-        /// Minimum accepted autosave delay
-        /// </summary>
-        public const float MinimumAutosaveDelay = 0.1f;
-
-        /// <summary>
-        /// Maximum accepted autosave delay
-        /// </summary>
-        public const float MaximumAutosaveDelay = 60f;
-
         #endregion
 
         #region Public Properties
@@ -58,22 +43,6 @@ namespace Tutorial.Editor.Settings
             }
         }
 
-        /// <summary>
-        /// Whether automatic graph saving is enabled
-        /// </summary>
-        public bool AutosaveEnabled
-        {
-            get { return autosaveEnabled; }
-        }
-
-        /// <summary>
-        /// Delay applied before an automatic graph save
-        /// </summary>
-        public double AutosaveDelay
-        {
-            get { return autosaveDelay; }
-        }
-
         #endregion
 
         #region Serialized Fields
@@ -89,18 +58,6 @@ namespace Tutorial.Editor.Settings
         /// </summary>
         [SerializeField]
         private string graphFolderGuid = string.Empty;
-
-        /// <summary>
-        /// Whether automatic graph saving is enabled
-        /// </summary>
-        [SerializeField]
-        private bool autosaveEnabled = true;
-
-        /// <summary>
-        /// Delay applied before an automatic graph save
-        /// </summary>
-        [SerializeField]
-        private float autosaveDelay = DefaultAutosaveDelay;
 
         #endregion
 
@@ -228,44 +185,6 @@ namespace Tutorial.Editor.Settings
 
         #endregion
 
-        #region Autosave
-
-        /// <summary>
-        /// Enable or disable automatic graph saving
-        /// </summary>
-        /// <param name="isEnabled"></param>
-        public void SetAutosaveEnabled(bool isEnabled)
-        {
-            if (autosaveEnabled == isEnabled)
-            {
-                return;
-            }
-
-            autosaveEnabled = isEnabled;
-
-            SaveSettings();
-        }
-
-        /// <summary>
-        /// Set the delay applied before an automatic graph save
-        /// </summary>
-        /// <param name="delay"></param>
-        public void SetAutosaveDelay(float delay)
-        {
-            float validatedDelay = Mathf.Clamp(delay, MinimumAutosaveDelay, MaximumAutosaveDelay);
-
-            if (Mathf.Approximately(autosaveDelay, validatedDelay))
-            {
-                return;
-            }
-
-            autosaveDelay = validatedDelay;
-
-            SaveSettings();
-        }
-
-        #endregion
-
         #region Reset
 
         /// <summary>
@@ -275,8 +194,6 @@ namespace Tutorial.Editor.Settings
         {
             sequenceFolderGuid = string.Empty;
             graphFolderGuid = string.Empty;
-            autosaveEnabled = true;
-            autosaveDelay = DefaultAutosaveDelay;
 
             SaveSettings();
         }

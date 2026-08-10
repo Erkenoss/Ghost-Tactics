@@ -11,13 +11,33 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bbf3e7be544d3284e9f7b97bc72ed6c1, type: 3}
   m_Name: TutorialGraph
-  m_EditorClassIdentifier: Assembly-CSharp-Editor::Tutorial.Editor.Persistence.TutorialGraphAsset
-  graphGuid: cc835f8456454678a13f56a0174fa6e5
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Persistence.TutorialGraphAsset
+  graphGuid: 5096efa81630495c9578c724393ab061
   saveData:
     Version: 1
-    Nodes: []
-    Bindings: []
+    Nodes:
+    - NodeGuid: da51173744c74a8c917290c0369d2e12
+      NodeType: 1
+      AssetGuid: 6510bb222d414574f8157b42707eda8d
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 43.2, y: 99.2}
+    - NodeGuid: fcd88697fbf44b27a0613904b2bac76f
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 2f92ebf8e0554c1e9b2759fc38726872
+      SceneAssetGuid: a305d0501f5934247bf182e0bbd73111
+      ScenePath: Assets/Scenes/Main Menu.unity
+      Position: {x: 356.8, y: 122.40001}
+    Bindings:
+    - SourceNodeGuid: da51173744c74a8c917290c0369d2e12
+      TargetNodeGuid: fcd88697fbf44b27a0613904b2bac76f
     Sequences: []
     View:
       PanPosition: {x: 0, y: 0}
       Zoom: 1
+  replayPolicy: 0
+  runtimeNodeReferences:
+  - nodeGuid: da51173744c74a8c917290c0369d2e12
+    step: {fileID: 11400000, guid: 6510bb222d414574f8157b42707eda8d, type: 2}

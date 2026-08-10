@@ -288,34 +288,63 @@ namespace Tutorial.Editor.Services
                 return false;
             }
 
-            if (!TryCaptureNodes(out List<TutorialNodeSaveData> savedNodes, out HashSet<string> registeredNodeGuids, out failureReason))
+            Debug.Log("[TUTO SAVE] 1 - Capture start");
+
+            if (!TryCaptureNodes(out List<TutorialNodeSaveData> savedNodes, out Dictionary<string, StepSO> runtimeStepReferences, out HashSet<string> registeredNodeGuids, out failureReason))
             {
                 return false;
             }
+
+            Debug.Log($"[TUTO SAVE] 2 - Nodes captured - Runtime Step references: {runtimeStepReferences.Count}");
 
             if (!TryCaptureBindings(registeredNodeGuids, out List<TutorialBindingSaveData> savedBindings, out failureReason))
             {
                 return false;
             }
 
+            Debug.Log("[TUTO SAVE] 3 - Bindings captured");
+
             if (!TryCaptureSequences(registeredNodeGuids, out List<TutorialSequenceSaveData> savedSequences, out failureReason))
             {
                 return false;
             }
 
+            Debug.Log("[TUTO SAVE] 4 - Sequences captured");
+
             TutorialGraphViewSaveData savedView = CreateViewSaveData(panPosition, zoom);
+
+            Debug.Log("[TUTO SAVE] 5 - Before Undo.RecordObject");
 
             Undo.RecordObject(graph, "Save tutorial graph");
 
+            Debug.Log("[TUTO SAVE] 6 - After Undo.RecordObject - Before EnsureInitialized");
+
             graph.EnsureInitialized();
 
+            Debug.Log("[TUTO SAVE] 7 - After EnsureInitialized");
+
             TutorialGraphSaveData saveData = graph.SaveData;
+
+            Debug.Log("[TUTO SAVE] 8 - Before graph data assignment");
 
             saveData.Version = TutorialGraphSaveData.CurrentVersion;
             saveData.Nodes = savedNodes;
             saveData.Bindings = savedBindings;
             saveData.Sequences = savedSequences;
             saveData.View = savedView;
+
+            Debug.Log("[TUTO SAVE] 9 - After graph data assignment - Before runtime references");
+
+            if (!graph.TrySetRuntimeNodeReferences(runtimeStepReferences, out failureReason))
+            {
+                return false;
+            }
+
+            Debug.Log($"[TUTO SAVE] 10 - Runtime references assigned: {graph.RuntimeNodeReferences.Count}");
+
+            EditorUtility.SetDirty(graph);
+
+            Debug.Log("[TUTO SAVE] 11 - Graph marked dirty - Before repository save");
 
             if (!graphRepository.TrySaveGraph(graph))
             {
@@ -324,10 +353,14 @@ namespace Tutorial.Editor.Services
                 return false;
             }
 
+            Debug.Log("[TUTO SAVE] 12 - Repository save completed");
+
             if (session.ActiveGraph == graph)
             {
                 session.MarkSaved();
             }
+
+            Debug.Log("[TUTO SAVE] 13 - Save completed");
 
             return true;
         }
@@ -340,12 +373,14 @@ namespace Tutorial.Editor.Services
         /// Capture every runtime node currently displayed inside the graph
         /// </summary>
         /// <param name="savedNodes"></param>
+        /// <param name="runtimeStepReferences"></param>
         /// <param name="registeredNodeGuids"></param>
         /// <param name="failureReason"></param>
         /// <returns></returns>
-        private bool TryCaptureNodes(out List<TutorialNodeSaveData> savedNodes, out HashSet<string> registeredNodeGuids, out string failureReason)
+        private bool TryCaptureNodes(out List<TutorialNodeSaveData> savedNodes, out Dictionary<string, StepSO> runtimeStepReferences, out HashSet<string> registeredNodeGuids, out string failureReason)
         {
             savedNodes = new List<TutorialNodeSaveData>();
+            runtimeStepReferences = new Dictionary<string, StepSO>(StringComparer.Ordinal);
             registeredNodeGuids = new HashSet<string>(StringComparer.Ordinal);
             failureReason = string.Empty;
 
@@ -354,6 +389,7 @@ namespace Tutorial.Editor.Services
                 if (!TryCreateNodeSaveData(runtimeNode, out TutorialNodeSaveData nodeData, out failureReason))
                 {
                     savedNodes.Clear();
+                    runtimeStepReferences.Clear();
                     registeredNodeGuids.Clear();
 
                     return false;
@@ -364,12 +400,18 @@ namespace Tutorial.Editor.Services
                     failureReason = $"The NodeGuid '{nodeData.NodeGuid}' is registered more than once.";
 
                     savedNodes.Clear();
+                    runtimeStepReferences.Clear();
                     registeredNodeGuids.Clear();
 
                     return false;
                 }
 
                 savedNodes.Add(nodeData);
+
+                if (runtimeNode.Target is StepSO step)
+                {
+                    runtimeStepReferences.Add(nodeData.NodeGuid, step);
+                }
             }
 
             return true;

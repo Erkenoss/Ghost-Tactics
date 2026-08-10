@@ -55,11 +55,6 @@ namespace Tutorial.Editor.Views
         /// </summary>
         private readonly Label nodeCountLabel = null;
 
-        /// <summary>
-        /// Label displaying autosave state
-        /// </summary>
-        private readonly Label autosaveLabel = null;
-
         #endregion
 
         #region Constructor
@@ -84,7 +79,6 @@ namespace Tutorial.Editor.Views
             graphLabel = CreateLabel("No graph");
             statusLabel = CreateLabel("Idle");
             nodeCountLabel = CreateLabel("0 nodes");
-            autosaveLabel = CreateLabel("Autosave: Off");
 
             graphLabel.style.minWidth = 220f;
             statusLabel.style.flexGrow = 1f;
@@ -95,7 +89,6 @@ namespace Tutorial.Editor.Views
             Root.Add(CreateSeparator());
             Root.Add(nodeCountLabel);
             Root.Add(CreateSeparator());
-            Root.Add(autosaveLabel);
         }
 
         #endregion
@@ -133,16 +126,6 @@ namespace Tutorial.Editor.Views
         {
             int validatedCount = Mathf.Max(0, nodeCount);
             nodeCountLabel.text = validatedCount == 1 ? "1 node" : $"{validatedCount} nodes";
-        }
-
-        /// <summary>
-        /// Update autosave display
-        /// </summary>
-        /// <param name="isEnabled"></param>
-        public void SetAutosaveEnabled(bool isEnabled)
-        {
-            autosaveLabel.text = isEnabled ? "Autosave: On" : "Autosave: Off";
-            autosaveLabel.style.color = isEnabled ? SuccessColor : NormalColor;
         }
 
         /// <summary>

@@ -128,11 +128,6 @@ namespace Tutorial.Editor
         /// </summary>
         private TutorialGraphPersistenceService graphPersistenceService = null;
 
-        /// <summary>
-        /// Service responsible for automatic graph saves
-        /// </summary>
-        private TutorialGraphAutosaveService autosaveService = null;
-
         #endregion
 
         #region Views
@@ -245,6 +240,11 @@ namespace Tutorial.Editor
         /// </summary>
         private void OnDisable()
         {
+            if (graphSession != null && graphSession.IsDirty && sessionController != null)
+            {
+                sessionController.TrySaveActiveGraph();
+            }
+
             DisposeTool();
         }
 
@@ -400,7 +400,6 @@ namespace Tutorial.Editor
             contentHost.Insert(2, graphCreationView.Root);
 
             graphStatusBarView.DisplayNoGraph();
-            graphStatusBarView.SetAutosaveEnabled(projectSettings.AutosaveEnabled);
 
             graphState = new TutorialGraphState();
             graphSession = new TutorialGraphSession();
@@ -425,14 +424,9 @@ namespace Tutorial.Editor
             toolbarHost.Insert(0, sequenceFolderView.Root);
 
             canvasController = new TutorialCanvasController(editorHost, canvas, connectionLayer, dropHint, graphState, runtimeRegistry, nodeFactory, inspectorView, bindingController, sequenceController, connectionRenderer);
-            autosaveService = new TutorialGraphAutosaveService(graphSession, graphPersistenceService, projectSettings.AutosaveDelay);
 
-            sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, autosaveService, editorHost, graphLauncherView, graphBrowserView, graphCreationView, graphToolbarView, graphStatusBarView, canvasController, bindingController, sequenceController);
-
-            if (projectSettings.AutosaveEnabled)
-            {
-                autosaveService.Enable();
-            }
+            sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, editorHost, graphLauncherView, 
+                                                              graphBrowserView, graphCreationView, graphToolbarView, graphStatusBarView, canvasController, bindingController, sequenceController);
 
             connectionRenderer.Enable();
             canvasController.Enable();
@@ -450,9 +444,6 @@ namespace Tutorial.Editor
 
             canvasController?.Dispose();
             connectionRenderer?.Dispose();
-
-            autosaveService?.Dispose();
-            autosaveService = null;
 
             runtimeRegistry?.Clear();
 

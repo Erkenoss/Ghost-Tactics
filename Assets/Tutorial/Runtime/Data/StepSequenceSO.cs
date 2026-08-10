@@ -20,7 +20,7 @@ namespace Tutorial.Runtime.Data
         /// </summary>
         [Tooltip("Type of the sequence")]
         [SerializeField]
-        private ESequenceType sequenceType = ESequenceType.none;
+        private ESequenceType sequenceType = ESequenceType.None;
 
         /// <summary>
         /// List of differents step to manage a list of step

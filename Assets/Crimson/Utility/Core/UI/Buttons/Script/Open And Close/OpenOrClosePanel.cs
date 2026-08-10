@@ -24,6 +24,12 @@ namespace Crimson.Utilities
         #endregion
 
         #region Public Methods
+
+        public void PlayTuto()
+        {
+
+        }
+
         #endregion
 
         #region Private Methods
@@ -31,6 +37,8 @@ namespace Crimson.Utilities
         protected override void OnClick()
         {
             base.OnClick();
+
+            PlayTuto();
 
             if (panelToCloseOrOpen == null)
             {

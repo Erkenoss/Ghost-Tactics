@@ -54,11 +54,6 @@ namespace Tutorial.Editor.Controllers
         /// </summary>
         private readonly TutorialGraphPersistenceService graphPersistenceService = null;
 
-        /// <summary>
-        /// Service responsible for delayed and immediate graph saves
-        /// </summary>
-        private readonly TutorialGraphAutosaveService autosaveService = null;
-
         #endregion
 
         #region Views
@@ -130,13 +125,12 @@ namespace Tutorial.Editor.Controllers
 
         #region Constructor
 
-        public TutorialSessionController(TutorialGraphSession graphSession, TutorialGraphRuntimeRegistry runtimeRegistry, TutorialGraphRepository graphRepository, TutorialGraphPersistenceService graphPersistenceService, TutorialGraphAutosaveService autosaveService, VisualElement editorHost, TutorialGraphLauncherView graphLauncherView, TutorialGraphBrowserView graphBrowserView, TutorialGraphCreationView graphCreationView, TutorialGraphToolbarView graphToolbarView, TutorialGraphStatusBarView graphStatusBarView, TutorialCanvasController canvasController, TutorialBindingController bindingController, TutorialSequenceController sequenceController)
+        public TutorialSessionController(TutorialGraphSession graphSession, TutorialGraphRuntimeRegistry runtimeRegistry, TutorialGraphRepository graphRepository, TutorialGraphPersistenceService graphPersistenceService, VisualElement editorHost, TutorialGraphLauncherView graphLauncherView, TutorialGraphBrowserView graphBrowserView, TutorialGraphCreationView graphCreationView, TutorialGraphToolbarView graphToolbarView, TutorialGraphStatusBarView graphStatusBarView, TutorialCanvasController canvasController, TutorialBindingController bindingController, TutorialSequenceController sequenceController)
         {
             this.graphSession = graphSession ?? throw new ArgumentNullException(nameof(graphSession));
             this.runtimeRegistry = runtimeRegistry ?? throw new ArgumentNullException(nameof(runtimeRegistry));
             this.graphRepository = graphRepository ?? throw new ArgumentNullException(nameof(graphRepository));
             this.graphPersistenceService = graphPersistenceService ?? throw new ArgumentNullException(nameof(graphPersistenceService));
-            this.autosaveService = autosaveService ?? throw new ArgumentNullException(nameof(autosaveService));
 
             this.editorHost = editorHost ?? throw new ArgumentNullException(nameof(editorHost));
 
@@ -181,9 +175,6 @@ namespace Tutorial.Editor.Controllers
             graphCreationView.CreateRequested += OnCreationCreateRequested;
             graphCreationView.BackRequested += OnCreationBackRequested;
 
-            autosaveService.Saved += OnGraphSaved;
-            autosaveService.SaveFailed += OnGraphSaveFailed;
-
             canvasController.GraphChanged += OnGraphChanged;
             bindingController.BindingChanged += OnGraphChanged;
             sequenceController.SequenceChanged += OnGraphChanged;
@@ -218,9 +209,6 @@ namespace Tutorial.Editor.Controllers
 
             graphCreationView.CreateRequested -= OnCreationCreateRequested;
             graphCreationView.BackRequested -= OnCreationBackRequested;
-
-            autosaveService.Saved -= OnGraphSaved;
-            autosaveService.SaveFailed -= OnGraphSaveFailed;
 
             canvasController.GraphChanged -= OnGraphChanged;
             bindingController.BindingChanged -= OnGraphChanged;
@@ -344,7 +332,6 @@ namespace Tutorial.Editor.Controllers
                 return false;
             }
 
-            autosaveService.CancelPendingSave();
             canvasController.ClearVisualGraph();
 
             if (!canvasController.TryRestoreNodes(loadPlan, out failureReason))
@@ -392,7 +379,7 @@ namespace Tutorial.Editor.Controllers
                 return true;
             }
 
-            if (autosaveService.TryFlush(out string failureReason))
+            if (graphPersistenceService.TrySaveActiveGraph(out string failureReason))
             {
                 return true;
             }
@@ -483,7 +470,7 @@ namespace Tutorial.Editor.Controllers
         #region Graph Saving
 
         /// <summary>
-        /// Immediately save the active graph
+        /// Save the active graph
         /// </summary>
         /// <returns></returns>
         public bool TrySaveActiveGraph()
@@ -491,12 +478,14 @@ namespace Tutorial.Editor.Controllers
             if (activeGraph == null)
             {
                 graphStatusBarView.SetStatus("No active graph to save", ETutorialGraphStatus.Warning);
+
                 return false;
             }
 
-            if (!autosaveService.TrySaveNow(out string failureReason))
+            if (!graphPersistenceService.TrySaveActiveGraph(out string failureReason))
             {
                 graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
+
                 return false;
             }
 
@@ -689,33 +678,10 @@ namespace Tutorial.Editor.Controllers
                 return;
             }
 
-            autosaveService.RequestSave();
+            graphSession.MarkDirty();
 
             graphStatusBarView.DisplayGraph(activeGraph, runtimeRegistry.Count);
             graphStatusBarView.SetStatus("Unsaved changes", ETutorialGraphStatus.Warning);
-        }
-
-        /// <summary>
-        /// Display a successful automatic save
-        /// </summary>
-        private void OnGraphSaved()
-        {
-            if (activeGraph == null)
-            {
-                return;
-            }
-
-            graphStatusBarView.DisplayGraph(activeGraph, runtimeRegistry.Count);
-            graphStatusBarView.SetStatus("Saved", ETutorialGraphStatus.Success);
-        }
-
-        /// <summary>
-        /// Display an automatic save failure
-        /// </summary>
-        /// <param name="failureReason"></param>
-        private void OnGraphSaveFailed(string failureReason)
-        {
-            graphStatusBarView.SetStatus(failureReason, ETutorialGraphStatus.Error);
         }
 
         #endregion

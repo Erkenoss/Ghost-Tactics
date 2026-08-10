@@ -153,10 +153,23 @@ namespace Tutorial.Editor.Services
                 return false;
             }
 
+            System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
             graph.EnsureInitialized();
 
+            Debug.Log($"[TUTO SAVE] EnsureInitialized: {stopwatch.Elapsed.TotalMilliseconds:F2} ms");
+
+            stopwatch.Restart();
+
             EditorUtility.SetDirty(graph);
+
+            Debug.Log($"[TUTO SAVE] SetDirty: {stopwatch.Elapsed.TotalMilliseconds:F2} ms");
+
+            stopwatch.Restart();
+
             AssetDatabase.SaveAssetIfDirty(graph);
+
+            Debug.Log($"[TUTO SAVE] SaveAssetIfDirty: {stopwatch.Elapsed.TotalMilliseconds:F2} ms");
 
             return true;
         }

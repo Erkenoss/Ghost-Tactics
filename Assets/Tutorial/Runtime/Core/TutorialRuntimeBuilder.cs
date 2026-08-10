@@ -69,9 +69,9 @@ namespace Tutorial.Runtime.Core
                 return FailBuild(createdInstance, cycleError, out runtimeInstance);
             }
 
-            if (!TryConfigureRuntimeEntry(createdInstance, out string entryError))
+            if (!TryConfigureRuntimeRoots(createdInstance, out string rootError))
             {
-                return FailBuild(createdInstance, entryError, out runtimeInstance);
+                return FailBuild(createdInstance, rootError, out runtimeInstance);
             }
 
             if (!TryValidateRuntimeFlow(createdInstance, out string flowError))
@@ -681,15 +681,15 @@ namespace Tutorial.Runtime.Core
 
         #endregion
 
-        #region Entry Node
+        #region Root Nodes
 
         /// <summary>
-        /// Find and configure the unique entry node of the runtime graph
+        /// Find and configure every root node of the runtime graph
         /// </summary>
         /// <param name="runtimeInstance"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private static bool TryConfigureRuntimeEntry(TutorialRuntimeInstance runtimeInstance, out string error)
+        private static bool TryConfigureRuntimeRoots(TutorialRuntimeInstance runtimeInstance, out string error)
         {
             error = string.Empty;
 
@@ -703,35 +703,28 @@ namespace Tutorial.Runtime.Core
                 }
             }
 
-            List<string> entryNodeGuids = new List<string>();
+            List<string> rootNodeGuids = new List<string>();
 
             foreach (string nodeGuid in runtimeInstance.RuntimeNodes.Keys)
             {
                 if (!targetNodeGuids.Contains(nodeGuid))
                 {
-                    entryNodeGuids.Add(nodeGuid);
+                    rootNodeGuids.Add(nodeGuid);
                 }
             }
 
-            entryNodeGuids.Sort(StringComparer.Ordinal);
+            rootNodeGuids.Sort(StringComparer.Ordinal);
 
-            if (entryNodeGuids.Count == 0)
+            if (rootNodeGuids.Count == 0)
             {
-                error = $"The tutorial graph '{runtimeInstance.SourceGraph.name}' contains no entry node.";
+                error = $"The tutorial graph '{runtimeInstance.SourceGraph.name}' contains no root node.";
 
                 return false;
             }
 
-            if (entryNodeGuids.Count > 1)
+            if (!runtimeInstance.SetRootNodes(rootNodeGuids))
             {
-                error = $"The tutorial graph '{runtimeInstance.SourceGraph.name}' contains multiple entry nodes: {string.Join(", ", entryNodeGuids)}.";
-
-                return false;
-            }
-
-            if (!runtimeInstance.SetEntryNode(entryNodeGuids[0]))
-            {
-                error = $"The runtime entry node '{entryNodeGuids[0]}' could not be configured.";
+                error = $"The root nodes of tutorial graph '{runtimeInstance.SourceGraph.name}' could not be configured.";
 
                 return false;
             }
@@ -744,7 +737,7 @@ namespace Tutorial.Runtime.Core
         #region Flow Validation
 
         /// <summary>
-        /// Validate that every runtime node can be reached from the graph entry
+        /// Validate that every runtime node can be reached from at least one graph root
         /// </summary>
         /// <param name="runtimeInstance"></param>
         /// <param name="error"></param>
@@ -753,10 +746,20 @@ namespace Tutorial.Runtime.Core
         {
             error = string.Empty;
 
+            if (runtimeInstance.RootNodeGuids == null || runtimeInstance.RootNodeGuids.Count == 0)
+            {
+                error = $"The tutorial graph '{runtimeInstance.SourceGraph.name}' contains no configured runtime root.";
+
+                return false;
+            }
+
             HashSet<string> reachableNodeGuids = new HashSet<string>(StringComparer.Ordinal);
             Stack<string> pendingNodeGuids = new Stack<string>();
 
-            pendingNodeGuids.Push(runtimeInstance.EntryNodeGuid);
+            foreach (string rootNodeGuid in runtimeInstance.RootNodeGuids)
+            {
+                pendingNodeGuids.Push(rootNodeGuid);
+            }
 
             while (pendingNodeGuids.Count > 0)
             {

@@ -15,6 +15,9 @@ namespace Tutorial.Runtime.Core
     {
         #region Constants
 
+        /// <summary>
+        /// Maximum recursive depth allowed when displaying the runtime graph
+        /// </summary>
         private const int MaximumDebugTraversalDepth = 512;
 
         #endregion
@@ -47,9 +50,9 @@ namespace Tutorial.Runtime.Core
         private readonly Dictionary<string, TutorialRuntimeNode> runtimeNodes = new Dictionary<string, TutorialRuntimeNode>();
 
         /// <summary>
-        /// Entry node used to begin the runtime graph traversal
+        /// Root nodes from which independent runtime tutorial flows can begin
         /// </summary>
-        private string entryNodeGuid = string.Empty;
+        private readonly List<string> rootNodeGuids = new List<string>();
 
         /// <summary>
         /// Node currently processed by the tutorial runtime
@@ -70,7 +73,7 @@ namespace Tutorial.Runtime.Core
         public ETutorialReplayPolicy ReplayPolicy => replayPolicy;
         public IReadOnlyDictionary<string, StepSO> RuntimeSteps => runtimeSteps;
         public IReadOnlyDictionary<string, TutorialRuntimeNode> RuntimeNodes => runtimeNodes;
-        public string EntryNodeGuid => entryNodeGuid;
+        public IReadOnlyList<string> RootNodeGuids => rootNodeGuids;
         public string CurrentNodeGuid => currentNodeGuid;
         public ETutorialRuntimeInstanceStatus Status => status;
         public bool IsDisposed => status == ETutorialRuntimeInstanceStatus.Disposed;
@@ -79,6 +82,10 @@ namespace Tutorial.Runtime.Core
 
         #region Constructor
 
+        /// <summary>
+        /// Create a runtime tutorial instance from its persistent graph asset
+        /// </summary>
+        /// <param name="sourceGraph"></param>
         public TutorialRuntimeInstance(TutorialGraphAsset sourceGraph)
         {
             this.sourceGraph = sourceGraph != null ? sourceGraph : throw new ArgumentNullException(nameof(sourceGraph));
@@ -165,8 +172,8 @@ namespace Tutorial.Runtime.Core
 
             runtimeSteps.Clear();
             runtimeNodes.Clear();
+            rootNodeGuids.Clear();
 
-            entryNodeGuid = string.Empty;
             currentNodeGuid = string.Empty;
             status = ETutorialRuntimeInstanceStatus.Disposed;
         }
@@ -211,18 +218,44 @@ namespace Tutorial.Runtime.Core
         }
 
         /// <summary>
-        /// Define the graph entry node
+        /// Define every root node from which an independent tutorial flow can begin
         /// </summary>
-        /// <param name="nodeGuid"></param>
+        /// <param name="nodeGuids"></param>
         /// <returns></returns>
-        internal bool SetEntryNode(string nodeGuid)
+        internal bool SetRootNodes(IEnumerable<string> nodeGuids)
         {
-            if (IsDisposed || string.IsNullOrWhiteSpace(nodeGuid) || !runtimeNodes.ContainsKey(nodeGuid))
+            if (IsDisposed || nodeGuids == null)
             {
                 return false;
             }
 
-            entryNodeGuid = nodeGuid;
+            List<string> validatedRootNodeGuids = new List<string>();
+            HashSet<string> uniqueRootNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (string nodeGuid in nodeGuids)
+            {
+                if (string.IsNullOrWhiteSpace(nodeGuid) || !runtimeNodes.ContainsKey(nodeGuid))
+                {
+                    return false;
+                }
+
+                if (!uniqueRootNodeGuids.Add(nodeGuid))
+                {
+                    return false;
+                }
+
+                validatedRootNodeGuids.Add(nodeGuid);
+            }
+
+            if (validatedRootNodeGuids.Count == 0)
+            {
+                return false;
+            }
+
+            validatedRootNodeGuids.Sort(StringComparer.Ordinal);
+
+            rootNodeGuids.Clear();
+            rootNodeGuids.AddRange(validatedRootNodeGuids);
 
             return true;
         }
@@ -277,7 +310,7 @@ namespace Tutorial.Runtime.Core
             report.AppendLine($"Runtime Status: {status}");
             report.AppendLine($"Runtime Steps: {runtimeSteps.Count}");
             report.AppendLine($"Runtime Nodes: {runtimeNodes.Count}");
-            report.AppendLine($"Entry Node: {GetDisplayGuid(entryNodeGuid)}");
+            report.AppendLine($"Root Nodes: {rootNodeGuids.Count}");
             report.AppendLine($"Current Node: {GetDisplayGuid(currentNodeGuid)}");
             report.AppendLine();
 
@@ -322,7 +355,7 @@ namespace Tutorial.Runtime.Core
         }
 
         /// <summary>
-        /// Append the reconstructed graph flow to the debug report
+        /// Append every reconstructed tutorial flow starting from its root nodes
         /// </summary>
         /// <param name="report"></param>
         private void AppendRuntimeFlow(StringBuilder report)
@@ -337,20 +370,32 @@ namespace Tutorial.Runtime.Core
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(entryNodeGuid))
+            if (rootNodeGuids.Count == 0)
             {
-                report.AppendLine("No entry node has been defined.");
-                AppendUnlinkedNodes(report, new HashSet<string>());
+                report.AppendLine("No root node has been defined.");
+                AppendUnreachableNodes(report, new HashSet<string>(StringComparer.Ordinal));
                 report.AppendLine();
 
                 return;
             }
 
-            HashSet<string> visitedNodes = new HashSet<string>();
-            HashSet<string> currentPath = new HashSet<string>();
+            HashSet<string> visitedNodes = new HashSet<string>(StringComparer.Ordinal);
 
-            AppendNodeFlow(report, entryNodeGuid, 0, visitedNodes, currentPath);
-            AppendUnlinkedNodes(report, visitedNodes);
+            for (int i = 0; i < rootNodeGuids.Count; i++)
+            {
+                string rootNodeGuid = rootNodeGuids[i];
+                HashSet<string> currentPath = new HashSet<string>(StringComparer.Ordinal);
+
+                report.AppendLine($"[ROOT {i:000}]");
+                AppendNodeFlow(report, rootNodeGuid, 1, visitedNodes, currentPath);
+
+                if (i < rootNodeGuids.Count - 1)
+                {
+                    report.AppendLine();
+                }
+            }
+
+            AppendUnreachableNodes(report, visitedNodes);
 
             report.AppendLine();
         }
@@ -423,33 +468,33 @@ namespace Tutorial.Runtime.Core
         }
 
         /// <summary>
-        /// Append nodes that cannot be reached from the graph entry
+        /// Append runtime nodes that cannot be reached from any registered root
         /// </summary>
         /// <param name="report"></param>
         /// <param name="visitedNodes"></param>
-        private void AppendUnlinkedNodes(StringBuilder report, HashSet<string> visitedNodes)
+        private void AppendUnreachableNodes(StringBuilder report, HashSet<string> visitedNodes)
         {
-            List<string> unlinkedNodeGuids = new List<string>();
+            List<string> unreachableNodeGuids = new List<string>();
 
             foreach (string nodeGuid in runtimeNodes.Keys)
             {
                 if (!visitedNodes.Contains(nodeGuid))
                 {
-                    unlinkedNodeGuids.Add(nodeGuid);
+                    unreachableNodeGuids.Add(nodeGuid);
                 }
             }
 
-            if (unlinkedNodeGuids.Count == 0)
+            if (unreachableNodeGuids.Count == 0)
             {
                 return;
             }
 
-            unlinkedNodeGuids.Sort(StringComparer.Ordinal);
+            unreachableNodeGuids.Sort(StringComparer.Ordinal);
 
             report.AppendLine();
             report.AppendLine("--- UNREACHABLE NODES ---");
 
-            foreach (string nodeGuid in unlinkedNodeGuids)
+            foreach (string nodeGuid in unreachableNodeGuids)
             {
                 TutorialRuntimeNode runtimeNode = runtimeNodes[nodeGuid];
 

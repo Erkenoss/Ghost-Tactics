@@ -15,9 +15,10 @@ MonoBehaviour:
   stepType: 0
   isCompleted: 0
   isSkipped: 0
-  scriptName: GhostTactics.Core.CombatManager
-  methodNameToCall: StartFight
-  tutoGUID: c8b144efafc7404bad4d1226b9784ea7
-  stepGUID: 3f443f9f6679474aa13b4e8733f8c0c3
+  scriptName: 
+  methodNameToCall: 
+  tutoGUID: 
+  stepGUID: 
   sequenceType: 0
-  sequenceSOList: []
+  sequenceSOList:
+  - {fileID: 11400000, guid: 6510bb222d414574f8157b42707eda8d, type: 2}

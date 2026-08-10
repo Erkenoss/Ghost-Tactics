@@ -1010,6 +1010,7 @@ GameObject:
   m_Component:
   - component: {fileID: 455799196}
   - component: {fileID: 455799195}
+  - component: {fileID: 455799197}
   m_Layer: 0
   m_Name: SETTING MANAGER
   m_TagString: Untagged
@@ -1045,6 +1046,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &455799197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 455799194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Component.TutoIdentifier
+  objectGUID: 693cae296e0745dbbbb3bf7fec05b685
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &500184820
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,7 +1832,6 @@ GameObject:
   m_Component:
   - component: {fileID: 933196952}
   - component: {fileID: 933196951}
-  - component: {fileID: 933196953}
   m_Layer: 0
   m_Name: COMBAT MANAGER
   m_TagString: Untagged
@@ -1854,21 +1869,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &933196953
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 933196950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.TutoIdentifier
-  objectGUID: c8b144efafc7404bad4d1226b9784ea7
-  step: {fileID: 0}
-  stepSequence: {fileID: 0}
 --- !u!1 &974196023
 GameObject:
   m_ObjectHideFlags: 0
@@ -2066,6 +2066,52 @@ VideoPlayer:
   m_WaitForFirstFrame: 1
   m_FrameReadyEventEnabled: 0
   m_VideoShaders: []
+--- !u!1 &1175975051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1175975053}
+  - component: {fileID: 1175975054}
+  m_Layer: 0
+  m_Name: TUTORIAL
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1175975053
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175975051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1175975054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1175975051}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76305747b984d7c4c93f40b91dc4e17c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Flow.TutorialFlowController
+  isPersistant: 1
+  runtimeCatalogue: {fileID: 11400000, guid: b0cd5d8a1614e14479bff7fd74996c75, type: 2}
 --- !u!1 &1195331334
 GameObject:
   m_ObjectHideFlags: 0
@@ -4223,6 +4269,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 521752835670071704, guid: c03cbb38de85b2b4db4feb8d3500ac72, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1676553979045043569, guid: c03cbb38de85b2b4db4feb8d3500ac72, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -4303,6 +4353,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2009528522163517997, guid: c03cbb38de85b2b4db4feb8d3500ac72, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3431251034877400174, guid: c03cbb38de85b2b4db4feb8d3500ac72, type: 3}
+      propertyPath: m_Alpha
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4321,5 +4379,6 @@ SceneRoots:
   - {fileID: 1357213739}
   - {fileID: 455799196}
   - {fileID: 1391604272}
+  - {fileID: 1175975053}
   - {fileID: 1647419038}
   - {fileID: 900842805}

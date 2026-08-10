@@ -1,6 +1,7 @@
 using System;
-using UnityEngine;
 using Tutorial.Runtime.Data;
+using Tutorial.Runtime.Resolution;
+using UnityEngine;
 
 namespace Tutorial.Runtime.Component
 {
@@ -29,6 +30,16 @@ namespace Tutorial.Runtime.Component
         /// </summary>
         public event Action Trigger = null;
 
+        /// <summary>
+        /// Raised when one TutoIdentifier becomes available at runtime
+        /// </summary>
+        public static event Action<TutoIdentifier> BecameAvailable = null;
+
+        /// <summary>
+        /// Raised when one TutoIdentifier becomes unavailable at runtime
+        /// </summary>
+        public static event Action<TutoIdentifier> BecameUnavailable = null;
+
         #endregion
 
         #region Private Fields
@@ -56,7 +67,37 @@ namespace Tutorial.Runtime.Component
 
         #endregion
 
+        #region Runtime Initialization
+
+        /// <summary>
+        /// Reset static runtime events before scene objects become available
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetRuntimeState()
+        {
+            BecameAvailable = null;
+            BecameUnavailable = null;
+        }
+
+        #endregion
+
         #region MonoBehaviour Callbacks
+
+        private void OnEnable()
+        {
+            if (!TutorialIdentifierRegistry.Instance.TryRegister(this, out string error) && !string.IsNullOrWhiteSpace(error))
+            {
+                Debug.LogWarning(error, this);
+            }
+
+            BecameAvailable?.Invoke(this);
+        }
+
+        private void OnDisable()
+        {
+            TutorialIdentifierRegistry.Instance.TryUnregister(this);
+            BecameUnavailable?.Invoke(this);
+        }
 
         private void OnValidate()
         {
@@ -70,16 +111,25 @@ namespace Tutorial.Runtime.Component
 
         #region Public Methods
 
+        /// <summary>
+        /// Raise the current tutorial step or sequence
+        /// </summary>
         public void Raise()
         {
             OnRaised();
         }
 
+        /// <summary>
+        /// Skip the current tutorial step or sequence
+        /// </summary>
         public void Skip()
         {
             OnSkipped();
         }
 
+        /// <summary>
+        /// Trigger the current tutorial step or sequence
+        /// </summary>
         public void TriggerStep()
         {
             OnTrigger();
@@ -109,7 +159,6 @@ namespace Tutorial.Runtime.Component
             {
                 TutoEventBus.Publish<OnRaised>(new OnRaised(step));
             }
-
         }
 
         /// <summary>

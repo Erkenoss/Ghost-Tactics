@@ -15,7 +15,7 @@ MonoBehaviour:
   stepType: 0
   isCompleted: 0
   isSkipped: 0
-  scriptName: Tutorial.Runtime.Component.TutoIdentifier
-  methodNameToCall: Skip
-  tutoGUID: c8b144efafc7404bad4d1226b9784ea7
-  stepGUID: 9d7850a6e226471bb44af9bacefe68b6
+  scriptName: Crimson.Utilities.OpenOrClosePanel
+  methodNameToCall: PlayTuto
+  tutoGUID: 2f92ebf8e0554c1e9b2759fc38726872
+  stepGUID: c48778c06c434cafa826f60eaadc9b89

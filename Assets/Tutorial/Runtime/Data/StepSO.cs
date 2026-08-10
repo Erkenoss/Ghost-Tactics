@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Tutorial.Runtime.Data
 {
@@ -43,7 +46,10 @@ namespace Tutorial.Runtime.Data
         [SerializeField]
         private bool isSkipped = false;
 
-        [Tooltip("Name of the script hwhere the method is")]
+        /// <summary>
+        /// Name of the script where the method is
+        /// </summary>
+        [Tooltip("Name of the script where the method is")]
         [SerializeField]
         private string scriptName = string.Empty;
         
@@ -76,10 +82,6 @@ namespace Tutorial.Runtime.Data
         /// Script target by the step to raise the method name
         /// </summary>
         private MonoBehaviour scriptTargeted = null;
-
-        // Gameobject, monobehaviour, string method name
-        // Drag and drop, reflexivité => gameobject => component => method target string name
-        // GUID du SO et du coup, le GUID => gameobject
 
         #endregion
 

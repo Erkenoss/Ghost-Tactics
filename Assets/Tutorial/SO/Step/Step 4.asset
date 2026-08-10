@@ -15,7 +15,7 @@ MonoBehaviour:
   stepType: 0
   isCompleted: 0
   isSkipped: 0
-  scriptName: 
-  methodNameToCall: 
-  tutoGUID: 
-  stepGUID: 
+  scriptName: Tutorial.Runtime.Component.TutoIdentifier
+  methodNameToCall: Skip
+  tutoGUID: 693cae296e0745dbbbb3bf7fec05b685
+  stepGUID: 7ac00ee881834daa8084a6bcb83c83e7

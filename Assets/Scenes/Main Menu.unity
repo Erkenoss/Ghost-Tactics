@@ -175,8 +175,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -540}
-  m_SizeDelta: {x: 2276, y: 1016}
+  m_AnchoredPosition: {x: 1140, y: -540}
+  m_SizeDelta: {x: 2216, y: 1016}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &12662879
 MonoBehaviour:
@@ -273,6 +273,7 @@ GameObject:
   - component: {fileID: 21613131}
   - component: {fileID: 21613130}
   - component: {fileID: 21613132}
+  - component: {fileID: 21613133}
   m_Layer: 0
   m_Name: Main Menu Controller
   m_TagString: Untagged
@@ -321,6 +322,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuController
   musicContext: 2
+--- !u!114 &21613133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 21613129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Component.TutoIdentifier
+  objectGUID: bce74fdaa4734cdfb32519f01787d3fd
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &68529816
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,8 +656,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1138, y: -96}
-  m_SizeDelta: {x: 2244, y: 128}
+  m_AnchoredPosition: {x: 1108, y: -96}
+  m_SizeDelta: {x: 2184, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &118610245
 MonoBehaviour:
@@ -1258,7 +1274,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 2100, y: -96}
+  m_AnchoredPosition: {x: 2040, y: -96}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &162862492
@@ -3109,6 +3125,7 @@ GameObject:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3226,6 +3243,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Component.TutoIdentifier
+  objectGUID: 456c72709fe0485cb0500a5a288fbf47
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &524330215
 GameObject:
   m_ObjectHideFlags: 0
@@ -3886,8 +3918,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1322, y: -96}
-  m_SizeDelta: {x: 1428, y: 0}
+  m_AnchoredPosition: {x: 1292, y: -96}
+  m_SizeDelta: {x: 1368, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &648292285
 MonoBehaviour:
@@ -4067,8 +4099,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1562, y: -316}
-  m_SizeDelta: {x: 1348, y: 616}
+  m_AnchoredPosition: {x: 1532, y: -316}
+  m_SizeDelta: {x: 1288, y: 616}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &677766733
 MonoBehaviour:
@@ -4785,8 +4817,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1138, y: -888}
-  m_SizeDelta: {x: 2244, y: 192}
+  m_AnchoredPosition: {x: 1108, y: -888}
+  m_SizeDelta: {x: 2184, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &796624355
 MonoBehaviour:
@@ -9914,6 +9946,7 @@ GameObject:
   - component: {fileID: 1536802674}
   - component: {fileID: 1536802672}
   - component: {fileID: 1536802677}
+  - component: {fileID: 1536802678}
   m_Layer: 5
   m_Name: Setting Button
   m_TagString: Untagged
@@ -10059,6 +10092,21 @@ MonoBehaviour:
   audioType: 4
   panelToCloseOrOpen: {fileID: 2059524094}
   toOpen: 1
+--- !u!114 &1536802678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1536802670}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Component.TutoIdentifier
+  objectGUID: 2f92ebf8e0554c1e9b2759fc38726872
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &1566342517
 GameObject:
   m_ObjectHideFlags: 0
@@ -13485,8 +13533,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1138, y: -476}
-  m_SizeDelta: {x: 2244, y: 632}
+  m_AnchoredPosition: {x: 1108, y: -476}
+  m_SizeDelta: {x: 2184, y: 632}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1958092475
 MonoBehaviour:
