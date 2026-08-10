@@ -7,6 +7,7 @@ using Tutorial.Runtime.Data;
 using UnityEditor;
 using UnityEngine;
 using UnityObject = UnityEngine.Object;
+using UnityEditor.Compilation;
 
 namespace Tutorial.Editor.Services
 {
@@ -214,17 +215,26 @@ namespace Tutorial.Editor.Services
         /// </summary>
         private readonly TutorialGraphSession session = null;
 
+        /// <summary>
+        /// Service responsible for rebuilding tutorial IL instrumentation data
+        /// </summary>
+        private readonly TutorialInjectionManifestService injectionManifestService = null;
+
         #endregion
 
         #region Constructor
 
-        public TutorialGraphPersistenceService(TutorialGraphRepository graphRepository, TutorialGraphReferenceResolver referenceResolver, TutorialGraphRuntimeRegistry runtimeRegistry, TutorialGraphState graphState, TutorialGraphSession session)
+        public TutorialGraphPersistenceService(
+            TutorialGraphRepository graphRepository, TutorialGraphReferenceResolver referenceResolver, TutorialGraphRuntimeRegistry runtimeRegistry, 
+            TutorialGraphState graphState, TutorialGraphSession session, TutorialInjectionManifestService injectionManifestService
+            )
         {
             this.graphRepository = graphRepository ?? throw new ArgumentNullException(nameof(graphRepository));
             this.referenceResolver = referenceResolver ?? throw new ArgumentNullException(nameof(referenceResolver));
             this.runtimeRegistry = runtimeRegistry ?? throw new ArgumentNullException(nameof(runtimeRegistry));
             this.graphState = graphState ?? throw new ArgumentNullException(nameof(graphState));
             this.session = session ?? throw new ArgumentNullException(nameof(session));
+            this.injectionManifestService = injectionManifestService ?? throw new ArgumentNullException(nameof(injectionManifestService));
         }
 
         #endregion
@@ -355,12 +365,26 @@ namespace Tutorial.Editor.Services
 
             Debug.Log("[TUTO SAVE] 12 - Repository save completed");
 
+            if (!injectionManifestService.TryRebuild(out bool manifestChanged, out string manifestFailureReason))
+            {
+                failureReason = $"TutorialGraphAsset '{graph.name}' was saved, but the instrumentation manifest could not be rebuilt. " + manifestFailureReason;
+                return false;
+            }
+
+            Debug.Log($"[TUTO SAVE] 13 - Instrumentation manifest rebuilt - Changed: {manifestChanged}");
+
+            if (manifestChanged)
+            {
+                CompilationPipeline.RequestScriptCompilation();
+            }
+
+
             if (session.ActiveGraph == graph)
             {
                 session.MarkSaved();
             }
 
-            Debug.Log("[TUTO SAVE] 13 - Save completed");
+            Debug.Log("[TUTO SAVE] 14 - Save completed");
 
             return true;
         }

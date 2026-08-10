@@ -21,11 +21,10 @@ namespace Tutorial.CodeGen
 
         private const string TargetAssemblyName = "Assembly-CSharp";
 
-        // POC only
-        private const string TargetTypeName = "Crimson.Utilities.OpenOrClosePanel";
-        private const string TargetMethodName = "PlayTuto";
+        private const string NotifierTypeName = "Tutorial.Runtime.Hooks.TutorialMethodNotifier";
+        private const string NotifierMethodName = "Notify";
 
-        private const string LogPrefix = "[Tutorial Unified IL Hook]";
+        private const string DiagnosticPrefix = "[Tutorial Unified IL Hook]";
 
         #endregion
 
@@ -44,8 +43,7 @@ namespace Tutorial.CodeGen
 
         public override bool WillProcess(ICompiledAssembly compiledAssembly)
         {
-            return compiledAssembly != null &&
-                   string.Equals(compiledAssembly.Name, TargetAssemblyName, StringComparison.Ordinal);
+            return compiledAssembly != null && string.Equals(compiledAssembly.Name, TargetAssemblyName, StringComparison.Ordinal);
         }
 
         public override ILPostProcessResult Process(ICompiledAssembly compiledAssembly)
@@ -59,6 +57,17 @@ namespace Tutorial.CodeGen
 
             try
             {
+                if (!TutorialInstrumentationManifestReader.TryRead(compiledAssembly, out List<TutorialInstrumentationBinding> bindings, out string manifestFailureReason))
+                {
+                    AddDiagnostic(DiagnosticType.Error, $"{DiagnosticPrefix} {manifestFailureReason}");
+                    return ReturnUnmodified(compiledAssembly);
+                }
+
+                if (bindings.Count == 0)
+                {
+                    return ReturnUnmodified(compiledAssembly);
+                }
+
                 using DefaultAssemblyResolver resolver = CreateAssemblyResolver(compiledAssembly);
 
                 byte[] pdbData = compiledAssembly.InMemoryAssembly.PdbData;
@@ -83,39 +92,45 @@ namespace Tutorial.CodeGen
                 using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(peInput, readerParameters);
 
                 ModuleDefinition module = assembly.MainModule;
-                TypeDefinition targetType = FindType(module, TargetTypeName);
+                MethodReference notifyMethod = FindNotifierMethod(module);
+                bool assemblyModified = false;
 
-                if (targetType == null)
+                foreach (TutorialInstrumentationBinding binding in bindings)
                 {
-                    AddDiagnostic(
-                        DiagnosticType.Warning,
-                        $"{LogPrefix} Type '{TargetTypeName}' was not found."
-                    );
+                    if (binding == null)
+                    {
+                        continue;
+                    }
 
-                    return ReturnUnmodified(compiledAssembly);
+                    TypeDefinition targetType = FindType(module, binding.ScriptName);
+
+                    if (targetType == null)
+                    {
+                        AddDiagnostic(DiagnosticType.Warning, $"{DiagnosticPrefix} Type '{binding.ScriptName}' was not found for Step '{binding.StepGuid}'.");
+                        continue;
+                    }
+
+                    MethodDefinition targetMethod = FindTargetMethod(targetType, binding.MethodName);
+
+                    if (targetMethod == null)
+                    {
+                        AddDiagnostic(DiagnosticType.Warning, $"{DiagnosticPrefix} Method '{binding.ScriptName}.{binding.MethodName}' was not found or is not compatible for Step '{binding.StepGuid}'.");
+                        continue;
+                    }
+
+                    if (IsAlreadyInstrumented(targetMethod, notifyMethod, binding.StepGuid))
+                    {
+                        continue;
+                    }
+
+                    InjectNotify(targetMethod, notifyMethod, binding.StepGuid);
+                    assemblyModified = true;
                 }
 
-                MethodDefinition targetMethod = FindTargetMethod(targetType, TargetMethodName);
-
-                if (targetMethod == null)
-                {
-                    AddDiagnostic(
-                        DiagnosticType.Warning,
-                        $"{LogPrefix} Method '{TargetTypeName}.{TargetMethodName}' was not found or is not compatible."
-                    );
-
-                    return ReturnUnmodified(compiledAssembly);
-                }
-
-                MethodReference debugLogMethod = CreateDebugLogMethod(module);
-                string methodId = $"{TargetTypeName}.{TargetMethodName}";
-
-                if (IsAlreadyInstrumented(targetMethod, methodId))
+                if (!assemblyModified)
                 {
                     return ReturnUnmodified(compiledAssembly);
                 }
-
-                InjectDebugLog(targetMethod, debugLogMethod, methodId);
 
                 using MemoryStream peOutput = new MemoryStream();
                 using MemoryStream pdbOutput = new MemoryStream();
@@ -132,23 +147,12 @@ namespace Tutorial.CodeGen
                 }
 
                 assembly.Write(peOutput, writerParameters);
-
-                byte[] outputPdb = hasSymbols
-                    ? pdbOutput.ToArray()
-                    : Array.Empty<byte>();
-
-                return new ILPostProcessResult(
-                    new InMemoryAssembly(peOutput.ToArray(), outputPdb),
-                    diagnostics
-                );
+                byte[] outputPdb = hasSymbols ? pdbOutput.ToArray() : Array.Empty<byte>();
+                return new ILPostProcessResult(new InMemoryAssembly(peOutput.ToArray(), outputPdb), diagnostics);
             }
             catch (Exception exception)
             {
-                AddDiagnostic(
-                    DiagnosticType.Error,
-                    $"{LogPrefix} Injection failed: {exception}"
-                );
-
+                AddDiagnostic(DiagnosticType.Error, $"{DiagnosticPrefix} Injection failed: {exception}");
                 return ReturnUnmodified(compiledAssembly);
             }
         }
@@ -254,11 +258,7 @@ namespace Tutorial.CodeGen
                     continue;
                 }
 
-                if (!method.IsPublic ||
-                    method.IsStatic ||
-                    method.HasParameters ||
-                    method.ReturnType.MetadataType != MetadataType.Void ||
-                    !method.HasBody)
+                if (!method.IsPublic || method.IsStatic || method.HasParameters || method.ReturnType.MetadataType != MetadataType.Void || !method.HasBody)
                 {
                     continue;
                 }
@@ -269,115 +269,80 @@ namespace Tutorial.CodeGen
             return null;
         }
 
+        private static MethodReference FindNotifierMethod(ModuleDefinition module)
+        {
+            TypeDefinition notifierType = FindType(module, NotifierTypeName);
+
+            if (notifierType == null)
+            {
+                throw new InvalidOperationException($"Notifier type '{NotifierTypeName}' was not found inside Assembly-CSharp.");
+            }
+
+            foreach (MethodDefinition method in notifierType.Methods)
+            {
+                if (!string.Equals(method.Name, NotifierMethodName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (!method.IsPublic || !method.IsStatic || method.Parameters.Count != 1 || method.Parameters[0].ParameterType.MetadataType != MetadataType.String || method.ReturnType.MetadataType != MetadataType.Void || !method.HasBody)
+                {
+                    continue;
+                }
+
+                return module.ImportReference(method);
+            }
+
+            throw new InvalidOperationException($"Notifier method '{NotifierTypeName}.{NotifierMethodName}(string)' was not found.");
+        }
+
         #endregion
 
         #region Injection
 
-        private static MethodReference CreateDebugLogMethod(ModuleDefinition module)
+        private static bool IsAlreadyInstrumented(MethodDefinition method, MethodReference notifyMethod, string stepGUID)
         {
-            AssemblyNameReference unityEngineAssembly = null;
-
-            foreach (AssemblyNameReference reference in module.AssemblyReferences)
+            if (method == null || method.HasBody || method.Body.Instructions.Count < 2)
             {
-                if (string.Equals(reference.Name, "UnityEngine.CoreModule", StringComparison.Ordinal))
+                return false;
+            }
+
+            IList<Instruction> instructions = method.Body.Instructions;
+
+            for (int i = 0; i < instructions.Count - 1; i++)
+            {
+                Instruction guidInstruction = instructions[i];
+                Instruction callInstruction = instructions[i + 1];
+
+                if (guidInstruction.OpCode != OpCodes.Ldstr || !string.Equals(guidInstruction.Operand as string, stepGUID, StringComparison.Ordinal))
                 {
-                    unityEngineAssembly = reference;
-                    break;
+                    continue;
+                }
+
+                if (callInstruction.OpCode != OpCodes.Call || callInstruction.Operand is not MethodReference calledMethod)
+                {
+                    continue;
+                }
+
+                bool sameType = string.Equals(calledMethod.DeclaringType.FullName, notifyMethod.DeclaringType.FullName, StringComparison.Ordinal);
+                bool sameMethod = string.Equals(calledMethod.Name, notifyMethod.Name, StringComparison.Ordinal);
+
+                if (sameType && sameMethod)
+                {
+                    return true;
                 }
             }
 
-            if (unityEngineAssembly == null)
-            {
-                throw new InvalidOperationException(
-                    "UnityEngine.CoreModule reference was not found inside Assembly-CSharp."
-                );
-            }
-
-            TypeReference debugType = new TypeReference(
-                "UnityEngine",
-                "Debug",
-                module,
-                unityEngineAssembly
-            );
-
-            MethodReference debugLogMethod = new MethodReference(
-                "Log",
-                module.TypeSystem.Void,
-                debugType
-            )
-            {
-                HasThis = false,
-                ExplicitThis = false,
-                CallingConvention = MethodCallingConvention.Default
-            };
-
-            debugLogMethod.Parameters.Add(
-                new ParameterDefinition(module.TypeSystem.Object)
-            );
-
-            return module.ImportReference(debugLogMethod);
+            return false;
         }
 
-        private static bool IsAlreadyInstrumented(MethodDefinition method, string methodId)
-        {
-            if (method == null || !method.HasBody || method.Body.Instructions.Count < 2)
-            {
-                return false;
-            }
-
-            Instruction firstInstruction = method.Body.Instructions[0];
-            Instruction secondInstruction = method.Body.Instructions[1];
-
-            if (firstInstruction.OpCode != OpCodes.Ldstr ||
-                !string.Equals(
-                    firstInstruction.Operand as string,
-                    $"{LogPrefix} {methodId}",
-                    StringComparison.Ordinal))
-            {
-                return false;
-            }
-
-            if (secondInstruction.OpCode != OpCodes.Call ||
-                secondInstruction.Operand is not MethodReference calledMethod)
-            {
-                return false;
-            }
-
-            return string.Equals(
-                calledMethod.DeclaringType.FullName,
-                "UnityEngine.Debug",
-                StringComparison.Ordinal
-            ) &&
-            string.Equals(
-                calledMethod.Name,
-                "Log",
-                StringComparison.Ordinal
-            );
-        }
-
-        private static void InjectDebugLog(
-            MethodDefinition method,
-            MethodReference debugLogMethod,
-            string methodId)
+        private static void InjectNotify(MethodDefinition method, MethodReference notifyMethod, string stepGUID)
         {
             ILProcessor processor = method.Body.GetILProcessor();
             Instruction firstInstruction = method.Body.Instructions[0];
 
-            processor.InsertBefore(
-                firstInstruction,
-                processor.Create(
-                    OpCodes.Ldstr,
-                    $"{LogPrefix} {methodId}"
-                )
-            );
-
-            processor.InsertBefore(
-                firstInstruction,
-                processor.Create(
-                    OpCodes.Call,
-                    debugLogMethod
-                )
-            );
+            processor.InsertBefore(firstInstruction, processor.Create(OpCodes.Ldstr, stepGUID));
+            processor.InsertBefore(firstInstruction, processor.Create(OpCodes.Call, notifyMethod));
         }
 
         #endregion
@@ -400,10 +365,7 @@ namespace Tutorial.CodeGen
 
         private ILPostProcessResult ReturnUnmodified(ICompiledAssembly compiledAssembly)
         {
-            return new ILPostProcessResult(
-                compiledAssembly.InMemoryAssembly,
-                diagnostics
-            );
+            return new ILPostProcessResult(compiledAssembly.InMemoryAssembly, diagnostics);
         }
 
         #endregion

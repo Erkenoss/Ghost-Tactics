@@ -1,4 +1,5 @@
 using Crimson.Core;
+using Tutorial.Runtime.Hooks;
 using UnityEngine;
 
 namespace Crimson.Utilities

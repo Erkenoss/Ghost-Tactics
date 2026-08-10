@@ -1,17 +1,18 @@
 using Crimson.Core;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Tutorial.Runtime.Catalogue;
 using Tutorial.Runtime.Component;
 using Tutorial.Runtime.Core;
 using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Execution;
+using Tutorial.Runtime.Hooks;
 using Tutorial.Runtime.Persistence;
 using Tutorial.Runtime.Progress;
 using Tutorial.Runtime.Replay;
 using Tutorial.Runtime.Resolution;
 using UnityEngine;
-using System.Text;
 
 namespace Tutorial.Runtime.Flow
 {
@@ -111,6 +112,28 @@ namespace Tutorial.Runtime.Flow
 
             SubscribeIdentifierLifecycle();
             RegisterLoadedIdentifiers();
+        }
+
+        private void OnEnable()
+        {
+            TutorialMethodNotifier.Triggered += OnTutorialMethodTriggered;
+        }
+
+        private void OnDisable()
+        {
+            TutorialMethodNotifier.Triggered -= OnTutorialMethodTriggered;
+        }
+
+        private void OnTutorialMethodTriggered(string stepGUID)
+        {
+            StepSO step = ResolveStep(stepGUID);
+
+            if (step == null)
+            {
+                return;
+            }
+
+            step.OnTrigger();
         }
 
         /// <summary>
@@ -785,6 +808,37 @@ namespace Tutorial.Runtime.Flow
                 }
             }
         }
+
+        /// <summary>
+        /// Resolve the runtime StepSO associated with a Step GUID
+        /// </summary>
+        /// <param name="stepGUID"></param>
+        /// <returns></returns>
+        private StepSO ResolveStep(string stepGUID)
+        {
+            if (string.IsNullOrWhiteSpace(stepGUID) || runtimeInstance == null || runtimeInstance.IsDisposed)
+            {
+                return null;
+            }
+
+            Debug.Log(stepGUID);
+
+            foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
+            {
+                if (runtimeNode == null || runtimeNode.RuntimeStep == null)
+                {
+                    continue;
+                }
+
+                if (string.Equals(runtimeNode.StepGuid, stepGUID, StringComparison.Ordinal))
+                {
+                    return runtimeNode.RuntimeStep;
+                }
+            }
+
+            return null;
+        }
+
 
         /// <summary>
         /// Register one TutoIdentifier when it becomes available

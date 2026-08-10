@@ -1,0 +1,11 @@
+{
+    "version": 1,
+    "bindings": [
+        {
+            "graphGuid": "5096efa81630495c9578c724393ab061",
+            "scriptName": "Crimson.Utilities.OpenOrClosePanel",
+            "methodName": "PlayTuto",
+            "stepGuid": "c48778c06c434cafa826f60eaadc9b89"
+        }
+    ]
+}

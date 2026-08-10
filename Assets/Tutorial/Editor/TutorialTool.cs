@@ -84,6 +84,12 @@ namespace Tutorial.Editor
         /// </summary>
         private TutorialGraphSession graphSession = null;
 
+        /// <summary>
+        /// Tutorial graph to restore after an Editor domain reload
+        /// </summary>
+        [SerializeField]
+        private TutorialGraphAsset graphToRestore = null;
+
         #endregion
 
         #region Services
@@ -127,6 +133,11 @@ namespace Tutorial.Editor
         /// Service responsible for graph serialization and restoration preparation
         /// </summary>
         private TutorialGraphPersistenceService graphPersistenceService = null;
+
+        /// <summary>
+        /// Service responsible for rebuilding tutorial IL instrumentation data
+        /// </summary>
+        private TutorialInjectionManifestService injectionManifestService = null;
 
         #endregion
 
@@ -240,6 +251,11 @@ namespace Tutorial.Editor
         /// </summary>
         private void OnDisable()
         {
+            if (sessionController != null && sessionController.ActiveGraph != null)
+            {
+                graphToRestore = sessionController.ActiveGraph;
+            }
+
             if (graphSession != null && graphSession.IsDirty && sessionController != null)
             {
                 sessionController.TrySaveActiveGraph();
@@ -391,6 +407,7 @@ namespace Tutorial.Editor
             graphLauncherView = new TutorialGraphLauncherView();
             graphBrowserView = new TutorialGraphBrowserView();
             graphCreationView = new TutorialGraphCreationView();
+            injectionManifestService = new TutorialInjectionManifestService();
 
             toolbarHost.Add(graphToolbarView.Root);
             statusBarHost.Add(graphStatusBarView.Root);
@@ -411,7 +428,7 @@ namespace Tutorial.Editor
 
             graphRepository = new TutorialGraphRepository();
             graphReferenceResolver = new TutorialGraphReferenceResolver();
-            graphPersistenceService = new TutorialGraphPersistenceService(graphRepository, graphReferenceResolver, runtimeRegistry, graphState, graphSession);
+            graphPersistenceService = new TutorialGraphPersistenceService(graphRepository, graphReferenceResolver, runtimeRegistry, graphState, graphSession, injectionManifestService);
 
             connectionRenderer = new TutorialConnectionRenderer(canvas, connectionLayer, graphState);
             inspectorView = new TutorialInspectorView(inspectorPanel, guidService, methodBindingService);
@@ -432,6 +449,11 @@ namespace Tutorial.Editor
             canvasController.Enable();
             inspectorView.DisplayPlaceholder();
             sessionController.Enable();
+
+            if (graphToRestore != null)
+            {
+                sessionController.TryOpenGraph(graphToRestore);
+            }
         }
 
         /// <summary>
@@ -457,6 +479,7 @@ namespace Tutorial.Editor
             sequenceFolderView = null;
 
             graphPersistenceService = null;
+            injectionManifestService = null;
             graphReferenceResolver = null;
             graphRepository = null;
 

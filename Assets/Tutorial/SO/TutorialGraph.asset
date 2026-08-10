@@ -22,17 +22,17 @@ MonoBehaviour:
       ObjectGuid: 
       SceneAssetGuid: 
       ScenePath: 
-      Position: {x: 43.2, y: 99.2}
-    - NodeGuid: fcd88697fbf44b27a0613904b2bac76f
+      Position: {x: 67.2, y: 105.600006}
+    - NodeGuid: 3dc594bddd8d4b4ea5af13f28cd99ca8
       NodeType: 2
       AssetGuid: 
       ObjectGuid: 2f92ebf8e0554c1e9b2759fc38726872
       SceneAssetGuid: a305d0501f5934247bf182e0bbd73111
       ScenePath: Assets/Scenes/Main Menu.unity
-      Position: {x: 356.8, y: 122.40001}
+      Position: {x: 326.4, y: 100.8}
     Bindings:
     - SourceNodeGuid: da51173744c74a8c917290c0369d2e12
-      TargetNodeGuid: fcd88697fbf44b27a0613904b2bac76f
+      TargetNodeGuid: 3dc594bddd8d4b4ea5af13f28cd99ca8
     Sequences: []
     View:
       PanPosition: {x: 0, y: 0}

@@ -70,6 +70,7 @@ namespace Tutorial.Runtime.Data
         /// <summary>
         /// GUID identifier for the SO so link with the tutoGUID
         /// </summary>
+        [Tooltip("Guid of the StepSO")]
         [SerializeField]
         private string stepGUID = string.Empty;
 
