@@ -27,13 +27,19 @@ namespace Tutorial.Editor.Services
         /// </summary>
         private readonly TutorialToolProjectSettings settings = null;
 
+        /// <summary>
+        /// Use to manage the folder creation recursively
+        /// </summary>
+        private readonly TutorialAssetPathService assetPathService = null;
+
         #endregion
 
         #region Constructor
 
-        public TutorialSequenceAssetService(TutorialToolProjectSettings settings)
+        public TutorialSequenceAssetService(TutorialToolProjectSettings settings, TutorialAssetPathService assetPathService)
         {
             this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.assetPathService = assetPathService ?? throw new ArgumentNullException(nameof(assetPathService));
         }
 
         #endregion
@@ -149,16 +155,82 @@ namespace Tutorial.Editor.Services
             string fileName = BuildSequenceFileName(sourceStep, targetStep);
             string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{folderPath}/{fileName}");
 
+            if (!TryCreateSequenceAssetAtPath(assetPath, out sequence, out string failureReason))
+            {
+                Debug.LogError(failureReason);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool TryEnsureSequenceFolder(out string folderPath)
+        {
+            if (assetPathService.TryEnsureFolderExists(settings.SequenceFolderPath, out folderPath, out string failureReason))
+            {
+                return true;
+            }
+
+            Debug.LogError(failureReason);
+
+            return false;
+        }
+
+        /// <summary>
+        /// Create an empty StepSequenceSO inside the configured sequence folder
+        /// </summary>
+        /// <param name="requestedName"></param>
+        /// <param name="sequence"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        public bool TryCreateSequenceAsset(string requestedName, out StepSequenceSO sequence, out string failureReason)
+        {
+            sequence = null;
+            failureReason = string.Empty;
+
+            if (!TryEnsureSequenceFolder(out string folderPath))
+            {
+                failureReason = $"Unable to resolve or create the configured StepSequenceSO folder '{settings.SequenceFolderPath}'.";
+
+                return false;
+            }
+
+            string sequenceName = SanitizeFileName(requestedName);
+
+            if (string.IsNullOrWhiteSpace(sequenceName))
+            {
+                sequenceName = DefaultSequenceName;
+            }
+
+            string assetPath = AssetDatabase.GenerateUniqueAssetPath($"{folderPath}/{sequenceName}.asset");
+
+            return TryCreateSequenceAssetAtPath(assetPath, out sequence, out failureReason);
+        }
+
+        #endregion
+
+        #region File Name
+
+        /// <summary>
+        /// Create a StepSequenceSO at the supplied Unity asset path
+        /// </summary>
+        private static bool TryCreateSequenceAssetAtPath(string assetPath, out StepSequenceSO sequence, out string failureReason)
+        {
+            sequence = null;
+            failureReason = string.Empty;
+
             StepSequenceSO createdSequence = ScriptableObject.CreateInstance<StepSequenceSO>();
 
             if (createdSequence == null)
             {
-                Debug.LogError("Unable to instantiate a StepSequenceSO.");
+                failureReason = "Unable to instantiate a StepSequenceSO.";
 
                 return false;
             }
 
             createdSequence.name = Path.GetFileNameWithoutExtension(assetPath);
+            createdSequence.GenerateStepGUID();
 
             try
             {
@@ -174,6 +246,7 @@ namespace Tutorial.Editor.Services
             }
             catch (Exception exception)
             {
+                failureReason = $"Unable to create StepSequenceSO '{assetPath}'. {exception.Message}";
                 Debug.LogException(exception);
 
                 if (AssetDatabase.LoadAssetAtPath<StepSequenceSO>(assetPath) != null)
@@ -188,32 +261,6 @@ namespace Tutorial.Editor.Services
                 return false;
             }
         }
-
-        /// <summary>
-        /// Ensure that a valid sequence folder exists before creating an asset
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
-        private bool TryEnsureSequenceFolder(out string folderPath)
-        {
-            folderPath = string.Empty;
-
-            if (settings.TryGetSequenceFolderPath(out folderPath))
-            {
-                return true;
-            }
-
-            if (!TrySelectSequenceFolder())
-            {
-                return false;
-            }
-
-            return settings.TryGetSequenceFolderPath(out folderPath);
-        }
-
-        #endregion
-
-        #region File Name
 
         /// <summary>
         /// Build a readable asset name from the connected StepSO assets

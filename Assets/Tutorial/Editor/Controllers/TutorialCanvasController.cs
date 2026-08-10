@@ -302,6 +302,61 @@ namespace Tutorial.Editor.Controllers
         #region Node Registration
 
         /// <summary>
+        /// Add a newly created StepSO to the current tutorial graph
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        public bool TryAddStep(StepSO step, out string failureReason)
+        {
+            failureReason = string.Empty;
+
+            if (step == null)
+            {
+                failureReason = "A null StepSO cannot be added to the tutorial graph.";
+
+                return false;
+            }
+
+            if (graphState.IsCreatingConnection)
+            {
+                failureReason = "A Tutorial Step cannot be created while a graph connection is being edited.";
+
+                return false;
+            }
+
+            float canvasWidth = canvas.resolvedStyle.width;
+            float canvasHeight = canvas.resolvedStyle.height;
+
+            if (float.IsNaN(canvasWidth) || canvasWidth <= 0f)
+            {
+                canvasWidth = 400f;
+            }
+
+            if (float.IsNaN(canvasHeight) || canvasHeight <= 0f)
+            {
+                canvasHeight = 300f;
+            }
+
+            Vector2 basePosition = new Vector2(canvasWidth * 0.5f, canvasHeight * 0.5f);
+            Vector2 offset = Vector2.one * MultipleDropOffset * (runtimeRegistry.Count % 8);
+            Vector2 dropPosition = basePosition + offset;
+
+            if (!TryCreateRegisteredNode(Guid.NewGuid().ToString("N"), step, dropPosition, false, out VisualElement node, out failureReason))
+            {
+                return false;
+            }
+
+            UpdateDropHintVisibility();
+
+            OnNodeClicked(node, step);
+
+            GraphChanged?.Invoke();
+
+            return true;
+        }
+
+        /// <summary>
         /// Clear every visual graph element without modifying persistent assets
         /// </summary>
         public void ClearVisualGraph()

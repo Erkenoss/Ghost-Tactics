@@ -117,7 +117,7 @@ namespace Tutorial.Editor
         /// <summary>
         /// View displaying the current StepSequenceSO folder
         /// </summary>
-        private TutorialSequenceFolderView sequenceFolderView = null;
+        private TutorialAssetCreationView assetCreationView = null;
 
         /// <summary>
         /// Repository responsible for TutorialGraphAsset operations
@@ -138,6 +138,12 @@ namespace Tutorial.Editor
         /// Service responsible for rebuilding tutorial IL instrumentation data
         /// </summary>
         private TutorialInjectionManifestService injectionManifestService = null;
+        
+
+        private TutorialAssetPathService assetPathService = null;
+
+
+        private TutorialStepAssetService stepAssetService = null;
 
         #endregion
 
@@ -206,6 +212,8 @@ namespace Tutorial.Editor
         /// Controller responsible for the tutorial graph editing session
         /// </summary>
         private TutorialSessionController sessionController = null;
+
+        private TutorialAssetCreationController assetCreationController = null;
 
         #endregion
 
@@ -424,7 +432,9 @@ namespace Tutorial.Editor
 
             guidService = new TutorialGuidService();
             methodBindingService = new TutorialMethodBindingService();
-            sequenceAssetService = new TutorialSequenceAssetService(projectSettings);
+            assetPathService = new TutorialAssetPathService();
+            stepAssetService = new TutorialStepAssetService(projectSettings, assetPathService);
+            sequenceAssetService = new TutorialSequenceAssetService(projectSettings, assetPathService);
 
             graphRepository = new TutorialGraphRepository();
             graphReferenceResolver = new TutorialGraphReferenceResolver();
@@ -437,16 +447,19 @@ namespace Tutorial.Editor
             sequenceController = new TutorialSequenceController(graphState, canvas, sequenceAssetService, connectionRenderer);
             nodeFactory = new TutorialNodeFactory(canvas, bindingController, sequenceController, connectionRenderer);
 
-            sequenceFolderView = new TutorialSequenceFolderView(sequenceAssetService);
-            toolbarHost.Insert(0, sequenceFolderView.Root);
+            assetCreationView = new TutorialAssetCreationView(projectSettings);
+            toolbarHost.Insert(0, assetCreationView.Root);
 
             canvasController = new TutorialCanvasController(editorHost, canvas, connectionLayer, dropHint, graphState, runtimeRegistry, nodeFactory, inspectorView, bindingController, sequenceController, connectionRenderer);
 
             sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, editorHost, graphLauncherView, 
                                                               graphBrowserView, graphCreationView, graphToolbarView, graphStatusBarView, canvasController, bindingController, sequenceController);
 
+            assetCreationController = new TutorialAssetCreationController(assetCreationView, stepAssetService, sequenceAssetService, canvasController, sessionController);
+
             connectionRenderer.Enable();
             canvasController.Enable();
+            assetCreationController.Enable();
             inspectorView.DisplayPlaceholder();
             sessionController.Enable();
 
@@ -461,6 +474,9 @@ namespace Tutorial.Editor
         /// </summary>
         private void DisposeTool()
         {
+            assetCreationController?.Dispose();
+            assetCreationController = null;
+
             sessionController?.Dispose();
             sessionController = null;
 
@@ -476,12 +492,15 @@ namespace Tutorial.Editor
             nodeFactory = null;
             inspectorView = null;
             connectionRenderer = null;
-            sequenceFolderView = null;
+            assetCreationView = null;
 
             graphPersistenceService = null;
             injectionManifestService = null;
             graphReferenceResolver = null;
             graphRepository = null;
+
+            stepAssetService = null;
+            assetPathService = null;
 
             sequenceAssetService = null;
             methodBindingService = null;

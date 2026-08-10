@@ -16,28 +16,28 @@ MonoBehaviour:
   saveData:
     Version: 1
     Nodes:
-    - NodeGuid: da51173744c74a8c917290c0369d2e12
-      NodeType: 1
-      AssetGuid: 6510bb222d414574f8157b42707eda8d
-      ObjectGuid: 
-      SceneAssetGuid: 
-      ScenePath: 
-      Position: {x: 67.2, y: 105.600006}
-    - NodeGuid: 3dc594bddd8d4b4ea5af13f28cd99ca8
+    - NodeGuid: a6719dad11f046f7bf7213f9d0c2f270
       NodeType: 2
       AssetGuid: 
       ObjectGuid: 2f92ebf8e0554c1e9b2759fc38726872
       SceneAssetGuid: a305d0501f5934247bf182e0bbd73111
       ScenePath: Assets/Scenes/Main Menu.unity
-      Position: {x: 326.4, y: 100.8}
+      Position: {x: 363.2, y: 28}
+    - NodeGuid: 4a87f174f24e4589a287cee1907bd53e
+      NodeType: 1
+      AssetGuid: e30c95c3dae047b4a85aec16bf1efed4
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 28.8, y: 28}
     Bindings:
-    - SourceNodeGuid: da51173744c74a8c917290c0369d2e12
-      TargetNodeGuid: 3dc594bddd8d4b4ea5af13f28cd99ca8
+    - SourceNodeGuid: 4a87f174f24e4589a287cee1907bd53e
+      TargetNodeGuid: a6719dad11f046f7bf7213f9d0c2f270
     Sequences: []
     View:
       PanPosition: {x: 0, y: 0}
       Zoom: 1
   replayPolicy: 0
   runtimeNodeReferences:
-  - nodeGuid: da51173744c74a8c917290c0369d2e12
-    step: {fileID: 11400000, guid: 6510bb222d414574f8157b42707eda8d, type: 2}
+  - nodeGuid: 4a87f174f24e4589a287cee1907bd53e
+    step: {fileID: 11400000, guid: e30c95c3dae047b4a85aec16bf1efed4, type: 2}

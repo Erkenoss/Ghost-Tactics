@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d448f9bb5be74ef44875bd071b4a15f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-Editor::Tutorial.Editor.Settings.TutorialToolProjectSettings
-  sequenceFolderGuid: 620abe56a3d380141bada7269b6a4bc0
+  stepFolderPath: Assets/Tutorial/Steps/Boss
+  sequenceFolderPath: Assets/Tutorial/Sequences
   graphFolderGuid: 
-  autosaveEnabled: 1
-  autosaveDelay: 1.25

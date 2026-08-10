@@ -12,29 +12,17 @@ namespace Tutorial.Editor.Settings
     {
         #region Constants
 
-        /// <summary>
-        /// Project-relative path of the persistent settings file
-        /// </summary>
         private const string SettingsFilePath = "ProjectSettings/TutorialToolSettings.asset";
+        private const string DefaultStepFolderPath = "Assets/Tutorial/Steps";
+        private const string DefaultSequenceFolderPath = "Assets/Tutorial/Sequences";
 
         #endregion
 
         #region Public Properties
 
-        /// <summary>
-        /// Current StepSequenceSO folder path
-        /// </summary>
-        public string SequenceFolderPath
-        {
-            get
-            {
-                return TryGetSequenceFolderPath(out string folderPath) ? folderPath : string.Empty;
-            }
-        }
+        public string StepFolderPath => stepFolderPath;
+        public string SequenceFolderPath => sequenceFolderPath;
 
-        /// <summary>
-        /// Current TutorialGraphAsset folder path
-        /// </summary>
         public string GraphFolderPath
         {
             get
@@ -47,77 +35,120 @@ namespace Tutorial.Editor.Settings
 
         #region Serialized Fields
 
-        /// <summary>
-        /// GUID of the folder containing StepSequenceSO assets
-        /// </summary>
         [SerializeField]
-        private string sequenceFolderGuid = string.Empty;
+        private string stepFolderPath = DefaultStepFolderPath;
 
-        /// <summary>
-        /// GUID of the folder containing TutorialGraphAsset assets
-        /// </summary>
+        [SerializeField]
+        private string sequenceFolderPath = DefaultSequenceFolderPath;
+
         [SerializeField]
         private string graphFolderGuid = string.Empty;
+
+        #endregion
+
+        #region Step Folder
+
+        /// <summary>
+        /// Check whether the configured StepSO folder currently exists
+        /// </summary>
+        public bool HasValidStepFolder()
+        {
+            return TryGetStepFolderPath(out _);
+        }
+
+        /// <summary>
+        /// Try to resolve the configured StepSO folder when it already exists
+        /// </summary>
+        public bool TryGetStepFolderPath(out string folderPath)
+        {
+            folderPath = stepFolderPath;
+
+            return !string.IsNullOrWhiteSpace(folderPath) && AssetDatabase.IsValidFolder(folderPath);
+        }
+
+        /// <summary>
+        /// Store the desired StepSO folder path. The folder does not need to exist yet.
+        /// </summary>
+        public bool TrySetStepFolder(string folderPath)
+        {
+            if (!TryNormalizeAssetFolderPath(folderPath, out string normalizedPath))
+            {
+                return false;
+            }
+
+            if (string.Equals(stepFolderPath, normalizedPath, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            stepFolderPath = normalizedPath;
+            SaveSettings();
+
+            return true;
+        }
+
+        public void ClearStepFolder()
+        {
+            if (string.IsNullOrWhiteSpace(stepFolderPath))
+            {
+                return;
+            }
+
+            stepFolderPath = string.Empty;
+            SaveSettings();
+        }
 
         #endregion
 
         #region Sequence Folder
 
         /// <summary>
-        /// Check whether a valid StepSequenceSO folder is configured
+        /// Check whether the configured StepSequenceSO folder currently exists
         /// </summary>
-        /// <returns></returns>
         public bool HasValidSequenceFolder()
         {
             return TryGetSequenceFolderPath(out _);
         }
 
         /// <summary>
-        /// Try to resolve the configured StepSequenceSO folder
+        /// Try to resolve the configured StepSequenceSO folder when it already exists
         /// </summary>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
         public bool TryGetSequenceFolderPath(out string folderPath)
         {
-            return TryResolveFolderGuid(sequenceFolderGuid, out folderPath);
+            folderPath = sequenceFolderPath;
+
+            return !string.IsNullOrWhiteSpace(folderPath) && AssetDatabase.IsValidFolder(folderPath);
         }
 
         /// <summary>
-        /// Store the folder used for StepSequenceSO assets
+        /// Store the desired StepSequenceSO folder path. The folder does not need to exist yet.
         /// </summary>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
         public bool TrySetSequenceFolder(string folderPath)
         {
-            if (!TryGetFolderGuid(folderPath, out string folderGuid))
+            if (!TryNormalizeAssetFolderPath(folderPath, out string normalizedPath))
             {
                 return false;
             }
 
-            if (string.Equals(sequenceFolderGuid, folderGuid, StringComparison.Ordinal))
+            if (string.Equals(sequenceFolderPath, normalizedPath, StringComparison.Ordinal))
             {
                 return true;
             }
 
-            sequenceFolderGuid = folderGuid;
-
+            sequenceFolderPath = normalizedPath;
             SaveSettings();
 
             return true;
         }
 
-        /// <summary>
-        /// Clear the configured StepSequenceSO folder
-        /// </summary>
         public void ClearSequenceFolder()
         {
-            if (string.IsNullOrWhiteSpace(sequenceFolderGuid))
+            if (string.IsNullOrWhiteSpace(sequenceFolderPath))
             {
                 return;
             }
 
-            sequenceFolderGuid = string.Empty;
-
+            sequenceFolderPath = string.Empty;
             SaveSettings();
         }
 
@@ -125,30 +156,16 @@ namespace Tutorial.Editor.Settings
 
         #region Graph Folder
 
-        /// <summary>
-        /// Check whether a valid TutorialGraphAsset folder is configured
-        /// </summary>
-        /// <returns></returns>
         public bool HasValidGraphFolder()
         {
             return TryGetGraphFolderPath(out _);
         }
 
-        /// <summary>
-        /// Try to resolve the configured TutorialGraphAsset folder
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
         public bool TryGetGraphFolderPath(out string folderPath)
         {
             return TryResolveFolderGuid(graphFolderGuid, out folderPath);
         }
 
-        /// <summary>
-        /// Store the folder used for TutorialGraphAsset assets
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
         public bool TrySetGraphFolder(string folderPath)
         {
             if (!TryGetFolderGuid(folderPath, out string folderGuid))
@@ -162,15 +179,11 @@ namespace Tutorial.Editor.Settings
             }
 
             graphFolderGuid = folderGuid;
-
             SaveSettings();
 
             return true;
         }
 
-        /// <summary>
-        /// Clear the configured TutorialGraphAsset folder
-        /// </summary>
         public void ClearGraphFolder()
         {
             if (string.IsNullOrWhiteSpace(graphFolderGuid))
@@ -179,7 +192,6 @@ namespace Tutorial.Editor.Settings
             }
 
             graphFolderGuid = string.Empty;
-
             SaveSettings();
         }
 
@@ -187,12 +199,10 @@ namespace Tutorial.Editor.Settings
 
         #region Reset
 
-        /// <summary>
-        /// Restore the tutorial tool settings to their default values
-        /// </summary>
         public void ResetToDefaults()
         {
-            sequenceFolderGuid = string.Empty;
+            stepFolderPath = DefaultStepFolderPath;
+            sequenceFolderPath = DefaultSequenceFolderPath;
             graphFolderGuid = string.Empty;
 
             SaveSettings();
@@ -202,12 +212,6 @@ namespace Tutorial.Editor.Settings
 
         #region Folder Validation
 
-        /// <summary>
-        /// Resolve a stored Unity folder GUID
-        /// </summary>
-        /// <param name="folderGuid"></param>
-        /// <param name="folderPath"></param>
-        /// <returns></returns>
         private static bool TryResolveFolderGuid(string folderGuid, out string folderPath)
         {
             folderPath = string.Empty;
@@ -219,14 +223,7 @@ namespace Tutorial.Editor.Settings
 
             folderPath = AssetDatabase.GUIDToAssetPath(folderGuid);
 
-            if (string.IsNullOrWhiteSpace(folderPath))
-            {
-                folderPath = string.Empty;
-
-                return false;
-            }
-
-            if (!AssetDatabase.IsValidFolder(folderPath))
+            if (string.IsNullOrWhiteSpace(folderPath) || !AssetDatabase.IsValidFolder(folderPath))
             {
                 folderPath = string.Empty;
 
@@ -236,22 +233,12 @@ namespace Tutorial.Editor.Settings
             return true;
         }
 
-        /// <summary>
-        /// Validate an Assets folder and retrieve its GUID
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <param name="folderGuid"></param>
-        /// <returns></returns>
         private static bool TryGetFolderGuid(string folderPath, out string folderGuid)
         {
             folderGuid = string.Empty;
 
-            if (!TryNormalizeAssetFolderPath(folderPath, out string normalizedPath))
-            {
-                return false;
-            }
-
-            if (!AssetDatabase.IsValidFolder(normalizedPath))
+            if (!TryNormalizeAssetFolderPath(folderPath, out string normalizedPath) ||
+                !AssetDatabase.IsValidFolder(normalizedPath))
             {
                 return false;
             }
@@ -261,12 +248,6 @@ namespace Tutorial.Editor.Settings
             return !string.IsNullOrWhiteSpace(folderGuid);
         }
 
-        /// <summary>
-        /// Normalize a Unity Assets folder path
-        /// </summary>
-        /// <param name="folderPath"></param>
-        /// <param name="normalizedPath"></param>
-        /// <returns></returns>
         private static bool TryNormalizeAssetFolderPath(string folderPath, out string normalizedPath)
         {
             normalizedPath = string.Empty;
@@ -297,9 +278,6 @@ namespace Tutorial.Editor.Settings
 
         #region Persistence
 
-        /// <summary>
-        /// Save the settings inside the ProjectSettings folder
-        /// </summary>
         private void SaveSettings()
         {
             Save(true);
