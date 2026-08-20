@@ -4,7 +4,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 using Tutorial.Runtime.Data;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 
 namespace Tutorial.Editor.Services
 {

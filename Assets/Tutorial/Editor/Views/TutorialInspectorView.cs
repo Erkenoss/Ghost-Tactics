@@ -4,13 +4,17 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.SceneManagement;
 using UnityObject = UnityEngine.Object;
 
 using Tutorial.Runtime.Data;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 
 using Tutorial.Editor.Core;
 using Tutorial.Editor.Services;
+
+using Tutorial.Runtime.Data.Completion;
+using Tutorial.Runtime.Data.Completion.UI;
 
 namespace Tutorial.Editor.Views
 {
@@ -32,6 +36,11 @@ namespace Tutorial.Editor.Views
         private static readonly Color ContainerBackgroundColor = new Color(0.22f, 0.22f, 0.22f);
         private static readonly Color WarningTextColor = new Color(1f, 0.55f, 0.3f);
         private static readonly Color ErrorTextColor = new Color(1f, 0.4f, 0.4f);
+        
+        /// <summary>
+        /// Color used for valid tutorial configuration messages
+        /// </summary>
+        private static readonly Color ValidTextColor = new Color(0.4f, 0.8f, 0.45f);
 
         #endregion
 
@@ -104,7 +113,6 @@ namespace Tutorial.Editor.Views
             if (step == null)
             {
                 DisplayInvalidTarget("The selected StepSO is missing.");
-
                 return;
             }
 
@@ -123,6 +131,9 @@ namespace Tutorial.Editor.Views
             inspectorPanel.Add(generateGuidButton);
 
             selectedSerializedObject = new SerializedObject(step);
+            selectedSerializedObject.Update();
+
+            SerializedProperty stepTypeProperty = selectedSerializedObject.FindProperty("stepType");
 
             InspectorElement inspectorElement = new InspectorElement
             {
@@ -130,7 +141,18 @@ namespace Tutorial.Editor.Views
             };
 
             inspectorElement.Bind(selectedSerializedObject);
+
+            if (stepTypeProperty != null)
+            {
+                inspectorElement.TrackPropertyValue(stepTypeProperty, property => DisplayStep(step));
+            }
+
             inspectorPanel.Add(inspectorElement);
+
+            if (step.StepType == EStepType.UI)
+            {
+                DisplayUICompletion(step);
+            }
         }
 
         /// <summary>
@@ -175,7 +197,7 @@ namespace Tutorial.Editor.Views
             inspectorPanel.Add(CreateObjectButton(gameObject));
             inspectorPanel.Add(CreateSubtitle("Connected Steps"));
 
-            DisplayIdentifierInformation(gameObject);
+            DisplayIdentifierInformation(gameObject, linkedSteps);
 
             if (linkedSteps == null || linkedSteps.Count == 0)
             {
@@ -201,7 +223,8 @@ namespace Tutorial.Editor.Views
         /// Display the TutoIdentifier information of a GameObject
         /// </summary>
         /// <param name="gameObject"></param>
-        private void DisplayIdentifierInformation(GameObject gameObject)
+        /// <param name="linkedSteps"></param>
+        private void DisplayIdentifierInformation(GameObject gameObject, IReadOnlyList<StepSO> linkedSteps)
         {
             if (!gameObject.TryGetComponent(out TutoIdentifier identifier))
             {
@@ -216,6 +239,12 @@ namespace Tutorial.Editor.Views
             VisualElement identifierContainer = CreateSectionContainer();
             Label identifierTitle = new Label("Tutorial Identifier");
             Label identifierGuid = new Label(string.IsNullOrWhiteSpace(identifier.ObjectGUID) ? "GUID: Not generated" : $"GUID: {identifier.ObjectGUID}");
+            ObjectField targetComponentField = new ObjectField("Target Component")
+            {
+                objectType = typeof(Component),
+                allowSceneObjects = true,
+                value = identifier.TargetComponent
+            };
 
             identifierTitle.style.unityFontStyleAndWeight = FontStyle.Bold;
             identifierTitle.style.marginBottom = 4f;
@@ -223,10 +252,137 @@ namespace Tutorial.Editor.Views
             identifierGuid.style.whiteSpace = WhiteSpace.Normal;
             identifierGuid.style.color = SecondaryTextColor;
 
+            targetComponentField.style.marginTop = 6f;
+            targetComponentField.RegisterValueChangedCallback(changeEvent => OnTargetComponentChanged(gameObject, identifier, linkedSteps, changeEvent.newValue as Component));
+
             identifierContainer.Add(identifierTitle);
             identifierContainer.Add(identifierGuid);
+            identifierContainer.Add(targetComponentField);
+
+            DisplayUIComponentValidation(identifier, linkedSteps, identifierContainer);
 
             inspectorPanel.Add(identifierContainer);
+        }
+
+        /// <summary>
+        /// Handle a modification of the Component targeted by a TutoIdentifier
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="identifier"></param>
+        /// <param name="linkedSteps"></param>
+        /// <param name="targetComponent"></param>
+        private void OnTargetComponentChanged(GameObject gameObject, TutoIdentifier identifier, IReadOnlyList<StepSO> linkedSteps, Component targetComponent)
+        {
+            if (!SetTargetComponent(identifier, targetComponent))
+            {
+                return;
+            }
+
+            DisplayGameObject(gameObject, linkedSteps);
+        }
+
+        /// <summary>
+        /// Set the Component targeted by a TutoIdentifier
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="targetComponent"></param>
+        /// <returns></returns>
+        private static bool SetTargetComponent(TutoIdentifier identifier, Component targetComponent)
+        {
+            if (identifier == null || identifier.TargetComponent == targetComponent)
+            {
+                return false;
+            }
+
+            Undo.RecordObject(identifier, "Set tutorial target component");
+
+            identifier.TargetComponent = targetComponent;
+
+            EditorUtility.SetDirty(identifier);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(identifier);
+
+            if (identifier.gameObject.scene.IsValid())
+            {
+                EditorSceneManager.MarkSceneDirty(identifier.gameObject.scene);
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Display the validation state of the target Component for every connected UI Step
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <param name="linkedSteps"></param>
+        /// <param name="container"></param>
+        private void DisplayUIComponentValidation(TutoIdentifier identifier, IReadOnlyList<StepSO> linkedSteps, VisualElement container)
+        {
+            if (identifier == null || linkedSteps == null || container == null)
+            {
+                return;
+            }
+
+            foreach (StepSO step in linkedSteps)
+            {
+                if (step == null || step.StepType != EStepType.UI)
+                {
+                    continue;
+                }
+
+                if (!(step.CompletionData is TutorialUICompletionData uiData))
+                {
+                    Label missingConfiguration = CreateInformationLabel($"{step.name}: UI completion data is missing.");
+
+                    missingConfiguration.style.color = ErrorTextColor;
+                    container.Add(missingConfiguration);
+
+                    continue;
+                }
+
+                DisplayUIComponentValidation(step, uiData, identifier.TargetComponent, container);
+            }
+        }
+
+        /// <summary>
+        /// Display the validation state of a target Component for a UI Step
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="uiData"></param>
+        /// <param name="targetComponent"></param>
+        /// <param name="container"></param>
+        private void DisplayUIComponentValidation(StepSO step, TutorialUICompletionData uiData, Component targetComponent, VisualElement container)
+        {
+            if (step == null || uiData == null || container == null)
+            {
+                return;
+            }
+
+            string expectedComponentName = TutorialUIComponentService.GetExpectedComponentName(uiData.ElementType);
+
+            if (targetComponent == null)
+            {
+                Label missingTarget = CreateInformationLabel($"{step.name}: Missing target. Expected: {expectedComponentName}.");
+
+                missingTarget.style.color = WarningTextColor;
+                container.Add(missingTarget);
+
+                return;
+            }
+
+            if (!TutorialUIComponentService.IsCompatible(uiData.ElementType, targetComponent))
+            {
+                Label invalidTarget = CreateInformationLabel($"{step.name}: Invalid target. Expected: {expectedComponentName}. Found: {targetComponent.GetType().Name}.");
+
+                invalidTarget.style.color = ErrorTextColor;
+                container.Add(invalidTarget);
+
+                return;
+            }
+
+            Label validTarget = CreateInformationLabel($"{step.name}: Valid UI target ({targetComponent.GetType().Name}).");
+
+            validTarget.style.color = ValidTextColor;
+            container.Add(validTarget);
         }
 
         /// <summary>
@@ -347,6 +503,275 @@ namespace Tutorial.Editor.Views
             }
 
             return choices;
+        }
+
+        #endregion
+
+
+        #region UI COmpletion Inspector
+
+        /// <summary>
+        /// Display the UI completion configuration of a StepSO
+        /// </summary>
+        /// <param name="step"></param>
+        private void DisplayUICompletion(StepSO step)
+        {
+            if (step == null || selectedSerializedObject == null)
+            {
+                return;
+            }
+
+            VisualElement container = CreateSectionContainer();
+            Label title = new Label("UI Completion");
+
+            title.style.unityFontStyleAndWeight = FontStyle.Bold;
+            title.style.marginBottom = 4f;
+
+            EUIElementType currentElementType = GetUIElementType(step);
+            EnumField elementTypeField = new EnumField("UI Element", currentElementType);
+
+            elementTypeField.RegisterValueChangedCallback(changeEvent => OnUIElementTypeChanged(step, (EUIElementType)changeEvent.newValue));
+
+            container.Add(title);
+            container.Add(elementTypeField);
+
+            DisplayUICompletionParameters(step, container);
+
+            inspectorPanel.Add(container);
+        }
+
+        /// <summary>
+        /// Handle a modification of the UI element type of a StepSO
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="elementType"></param>
+        private void OnUIElementTypeChanged(StepSO step, EUIElementType elementType)
+        {
+            if (step == null)
+            {
+                return;
+            }
+
+            SerializedObject serializedStep = new SerializedObject(step);
+            SerializedProperty completionDataProperty = serializedStep.FindProperty("completionData");
+
+            if (completionDataProperty == null)
+            {
+                Debug.LogError($"The completion data property was not found on '{step.name}'.");
+                return;
+            }
+
+            serializedStep.Update();
+            completionDataProperty.managedReferenceValue = CreateUICompletionData(elementType);
+            serializedStep.ApplyModifiedProperties();
+            AssetDatabase.SaveAssetIfDirty(step);
+
+            DisplayStep(step);
+        }
+
+        /// <summary>
+        /// Create the completion data associated with a UI element type
+        /// </summary>
+        /// <param name="elementType"></param>
+        /// <returns></returns>
+        private static TutorialCompletionData CreateUICompletionData(EUIElementType elementType)
+        {
+            switch (elementType)
+            {
+                case EUIElementType.Button:
+                    return new TutorialUIButtonCompletionData();
+
+                case EUIElementType.Toggle:
+                    return new TutorialUIToggleCompletionData();
+
+                case EUIElementType.Slider:
+                    return new TutorialUISliderCompletionData();
+
+                case EUIElementType.Scrollbar:
+                    return new TutorialUIScrollbarCompletionData();
+
+                case EUIElementType.Dropdown:
+                    return new TutorialUIDropdownCompletionData();
+
+                case EUIElementType.InputField:
+                    return new TutorialUIInputFieldCompletionData();
+
+                case EUIElementType.ScrollRect:
+                    return new TutorialUIScrollRectCompletionData();
+
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// Display the parameters associated with the current UI completion data
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="container"></param>
+        private void DisplayUICompletionParameters(StepSO step, VisualElement container)
+        {
+            if (step == null || container == null || selectedSerializedObject == null)
+            {
+                return;
+            }
+
+            TutorialUICompletionData uiData = step.CompletionData as TutorialUICompletionData;
+
+            if (uiData == null)
+            {
+                container.Add(CreateInformationLabel("Select a UI element type."));
+                return;
+            }
+
+            SerializedProperty completionDataProperty = selectedSerializedObject.FindProperty("completionData");
+
+            if (completionDataProperty == null)
+            {
+                return;
+            }
+
+            switch (uiData.ElementType)
+            {
+                case EUIElementType.Button:
+                    container.Add(CreateInformationLabel("Button click requires no additional parameter."));
+                    break;
+
+                case EUIElementType.Toggle:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUIToggleCompletionData toggleData && toggleData.CompletionMode == EUIValueCompletionMode.ExpectedValue)
+                    {
+                        AddUIProperty(container, completionDataProperty, "expectedValue", "Expected Value");
+                    }
+
+                    break;
+
+                case EUIElementType.Slider:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUISliderCompletionData sliderData && sliderData.CompletionMode == EUIValueCompletionMode.ExpectedValue)
+                    {
+                        AddUIProperty(container, completionDataProperty, "comparisonType", "Comparison");
+                        AddUIProperty(container, completionDataProperty, "expectedValue", "Expected Value");
+                    }
+
+                    break;
+
+                case EUIElementType.Scrollbar:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUIScrollbarCompletionData scrollbarData && scrollbarData.CompletionMode == EUIValueCompletionMode.ExpectedValue)
+                    {
+                        AddUIProperty(container, completionDataProperty, "comparisonType", "Comparison");
+                        AddUIProperty(container, completionDataProperty, "expectedValue", "Expected Value");
+                    }
+
+                    break;
+
+                case EUIElementType.Dropdown:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUIDropdownCompletionData dropdownData && dropdownData.CompletionMode == EUIValueCompletionMode.ExpectedValue)
+                    {
+                        AddUIProperty(container, completionDataProperty, "expectedIndex", "Expected Index");
+                    }
+
+                    break;
+
+                case EUIElementType.InputField:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUIInputFieldCompletionData inputFieldData && inputFieldData.CompletionMode == EUITextCompletionMode.ExpectedText)
+                    {
+                        AddUIProperty(container, completionDataProperty, "expectedText", "Expected Text");
+                    }
+
+                    break;
+
+                case EUIElementType.ScrollRect:
+                    AddTrackedUIProperty(container, completionDataProperty, "completionMode", "Completion Mode", step);
+
+                    if (uiData is TutorialUIScrollRectCompletionData scrollRectData && scrollRectData.CompletionMode == EUIScrollCompletionMode.ExpectedPosition)
+                    {
+                        AddUIProperty(container, completionDataProperty, "axis", "Axis");
+                        AddUIProperty(container, completionDataProperty, "comparisonType", "Comparison");
+                        AddUIProperty(container, completionDataProperty, "expectedPosition", "Expected Position");
+                    }
+
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Add a serialized UI completion property to a container
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="parentProperty"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="label"></param>
+        private static void AddUIProperty(VisualElement container, SerializedProperty parentProperty, string propertyName, string label)
+        {
+            if (container == null || parentProperty == null || string.IsNullOrWhiteSpace(propertyName))
+            {
+                return;
+            }
+
+            SerializedProperty property = parentProperty.FindPropertyRelative(propertyName);
+
+            if (property == null)
+            {
+                return;
+            }
+
+            PropertyField propertyField = new PropertyField(property, label);
+            propertyField.BindProperty(property);
+
+            container.Add(propertyField);
+        }
+
+        /// <summary>
+        /// Add a serialized UI completion property and refresh the Step inspector when its value changes
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="parentProperty"></param>
+        /// <param name="propertyName"></param>
+        /// <param name="label"></param>
+        /// <param name="step"></param>
+        private void AddTrackedUIProperty(VisualElement container, SerializedProperty parentProperty, string propertyName, string label, StepSO step)
+        {
+            if (container == null || parentProperty == null || step == null || string.IsNullOrWhiteSpace(propertyName))
+            {
+                return;
+            }
+
+            SerializedProperty property = parentProperty.FindPropertyRelative(propertyName);
+
+            if (property == null)
+            {
+                return;
+            }
+
+            PropertyField propertyField = new PropertyField(property, label);
+            propertyField.BindProperty(property);
+            propertyField.TrackPropertyValue(property, changedProperty => DisplayStep(step));
+
+            container.Add(propertyField);
+        }
+
+        /// <summary>
+        /// Get the UI element type currently configured on a StepSO
+        /// </summary>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        private static EUIElementType GetUIElementType(StepSO step)
+        {
+            if (step == null || !(step.CompletionData is TutorialUICompletionData uiData))
+            {
+                return EUIElementType.None;
+            }
+
+            return uiData.ElementType;
         }
 
         #endregion

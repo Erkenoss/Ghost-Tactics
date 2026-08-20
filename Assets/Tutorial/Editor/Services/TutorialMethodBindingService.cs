@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 
 using Tutorial.Runtime.Data;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Editor.Core;
 
 namespace Tutorial.Editor.Services

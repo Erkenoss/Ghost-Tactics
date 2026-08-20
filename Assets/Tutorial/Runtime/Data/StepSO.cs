@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Events;
+using Tutorial.Runtime.Data.Completion;
 
 namespace Tutorial.Runtime.Data
 {
@@ -12,6 +10,7 @@ namespace Tutorial.Runtime.Data
         #region Public Fields
 
         public EStepType StepType { get { return stepType; } set { stepType = value; } }
+        public TutorialCompletionData CompletionData { get { return completionData; } }
         public bool IsCompleted { get { return isCompleted; } set { isCompleted = value; } }
         public bool IsSkipped { get { return isSkipped; } set { isSkipped = value; } }
         public string ScriptName { get { return scriptName; } set { scriptName = value; } }
@@ -31,6 +30,13 @@ namespace Tutorial.Runtime.Data
         [Tooltip("Type and category of this step")]
         [SerializeField]
         private EStepType stepType = EStepType.None;
+
+        /// <summary>
+        /// Serialized data describing how this Step is completed
+        /// </summary>
+        [HideInInspector]
+        [SerializeReference]
+        private TutorialCompletionData completionData = null;
 
         /// <summary>
         /// Use to  know if this step is completed
@@ -94,6 +100,7 @@ namespace Tutorial.Runtime.Data
         public override void OnRaised()
         {
             TutoEventBus.Publish<OnRaised>(new OnRaised(this));
+            Debug.Log($"RAISED => {stepGUID} === {tutoGUID}.");
         }
 
         public override void OnSkipped()
@@ -104,7 +111,26 @@ namespace Tutorial.Runtime.Data
         public override void OnTrigger()
         {
             TutoEventBus.Publish<OnTrigger>(new OnTrigger(this));
+            Debug.Log($"TRIGGER => {stepGUID} === {tutoGUID}.");
         }
+
+        /// <summary>
+        /// Replace the completion data associated with this Step
+        /// </summary>
+        /// <param name="data"></param>
+        public void SetCompletionData(TutorialCompletionData data)
+        {
+            completionData = data;
+        }
+
+        /// <summary>
+        /// Remove the current completion data associated with this Step
+        /// </summary>
+        public void ClearCompletionData()
+        {
+            completionData = null;
+        }
+
 
         /// <summary>
         /// Generate the unique GUID of this step

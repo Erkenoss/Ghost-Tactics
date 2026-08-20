@@ -37,6 +37,11 @@ namespace GhostTactics.UI
 
         #region Public Methods
 
+        public void PlayTuto()
+        {
+            Debug.Log("PLAY TUTO => ButtonActionSelected");
+        }
+
         /// <summary>
         /// Update the value of the slot
         /// </summary>
@@ -88,6 +93,7 @@ namespace GhostTactics.UI
 
         protected override void OnClick()
         {
+            PlayTuto();
             ResetButton();
         }
 

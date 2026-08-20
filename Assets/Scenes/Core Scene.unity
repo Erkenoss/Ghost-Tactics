@@ -309,6 +309,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.TutoIdentifier
+  targetComponent: {fileID: 0}
   objectGUID: df764924d3c5490090d68da2663dfcd8
   step: {fileID: 0}
   stepSequence: {fileID: 0}
@@ -1058,6 +1059,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Component.TutoIdentifier
+  targetComponent: {fileID: 0}
   objectGUID: 693cae296e0745dbbbb3bf7fec05b685
   step: {fileID: 0}
   stepSequence: {fileID: 0}

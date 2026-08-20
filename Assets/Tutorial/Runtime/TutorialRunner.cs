@@ -43,9 +43,9 @@ namespace Tutorial.Runtime.Execution
         private readonly Dictionary<TutorialSequenceRunner, string> sequenceRunnerNodeGuids = new Dictionary<TutorialSequenceRunner, string>();
 
         /// <summary>
-        /// Runtime nodes waiting for dependencies required to create their runner
+        /// Runtime nodes waiting for dependencies and whether they must activate immediately once available
         /// </summary>
-        private readonly HashSet<string> pendingNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+        private readonly Dictionary<string, bool> pendingNodeActivationModes = new Dictionary<string, bool>(StringComparer.Ordinal);
 
         /// <summary>
         /// Runtime nodes whose execution has already terminated successfully or by skip
@@ -71,7 +71,7 @@ namespace Tutorial.Runtime.Execution
         public string LastError => lastError;
         public int ActiveStepRunnerCount => activeStepRunners.Count;
         public int ActiveSequenceRunnerCount => activeSequenceRunners.Count;
-        public int PendingNodeCount => pendingNodeGuids.Count;
+        public int PendingNodeCount => pendingNodeActivationModes.Count;
         public int FinishedNodeCount => finishedNodeGuids.Count;
         public bool IsRunning => status == ETutorialRunnerStatus.Running;
         public bool IsWaiting => status == ETutorialRunnerStatus.WaitingForDependencies;
@@ -146,7 +146,7 @@ namespace Tutorial.Runtime.Execution
 
             foreach (string rootNodeGuid in runtimeInstance.RootNodeGuids)
             {
-                if (!TryActivateNode(rootNodeGuid))
+                if (!TryActivateNode(rootNodeGuid, false))
                 {
                     return false;
                 }
@@ -157,6 +157,61 @@ namespace Tutorial.Runtime.Execution
             EvaluateStatus();
 
             return !IsFailed;
+        }
+
+        /// <summary>
+        /// Process an external trigger for one currently active tutorial Step
+        /// </summary>
+        /// <param name="stepGuid"></param>
+        /// <returns></returns>
+        public bool TryTriggerStep(string stepGuid)
+        {
+            if (IsTerminal || status == ETutorialRunnerStatus.Created || string.IsNullOrWhiteSpace(stepGuid))
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<string, TutorialStepRunner> pair in activeStepRunners)
+            {
+                TutorialStepRunner stepRunner = pair.Value;
+
+                if (stepRunner == null)
+                {
+                    continue;
+                }
+
+                if (!runtimeInstance.TryGetRuntimeNode(pair.Key, out TutorialRuntimeNode runtimeNode))
+                {
+                    continue;
+                }
+
+                if (!string.Equals(runtimeNode.StepGuid, stepGuid, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (stepRunner.IsRunning)
+                {
+                    return true;
+                }
+
+                if (!stepRunner.IsWaiting)
+                {
+                    return false;
+                }
+
+                if (!stepRunner.Activate())
+                {
+                    string error = string.IsNullOrWhiteSpace(stepRunner.LastError) ? $"Tutorial Step '{stepGuid}' could not be activated." : stepRunner.LastError;
+                    return FailRunner(error);
+                }
+
+                EvaluateStatus();
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -187,11 +242,16 @@ namespace Tutorial.Runtime.Execution
                 }
             }
 
-            List<string> pendingNodes = new List<string>(pendingNodeGuids);
+            List<string> pendingNodes = new List<string>(pendingNodeActivationModes.Keys);
 
             foreach (string nodeGuid in pendingNodes)
             {
-                if (!TryActivateNode(nodeGuid))
+                if (!pendingNodeActivationModes.TryGetValue(nodeGuid, out bool activateImmediately))
+                {
+                    continue;
+                }
+
+                if (!TryActivateNode(nodeGuid, activateImmediately))
                 {
                     if (IsFailed)
                     {
@@ -201,7 +261,7 @@ namespace Tutorial.Runtime.Execution
                     continue;
                 }
 
-                if (!pendingNodeGuids.Contains(nodeGuid))
+                if (!pendingNodeActivationModes.ContainsKey(nodeGuid))
                 {
                     resumed = true;
                 }
@@ -224,7 +284,7 @@ namespace Tutorial.Runtime.Execution
 
             ReleaseAllRunners();
 
-            pendingNodeGuids.Clear();
+            pendingNodeActivationModes.Clear();
             finishedNodeGuids.Clear();
 
             Started = null;
@@ -243,11 +303,12 @@ namespace Tutorial.Runtime.Execution
         #region Node Activation
 
         /// <summary>
-        /// Activate one runtime node or keep it pending while its dependencies are unavailable
+        /// Prepare one runtime node and optionally activate it immediately
         /// </summary>
         /// <param name="nodeGuid"></param>
+        /// <param name="activateImmediately"></param>
         /// <returns></returns>
-        private bool TryActivateNode(string nodeGuid)
+        private bool TryActivateNode(string nodeGuid, bool activateImmediately)
         {
             if (string.IsNullOrWhiteSpace(nodeGuid))
             {
@@ -269,50 +330,60 @@ namespace Tutorial.Runtime.Execution
                 return FailRunner($"Runtime node '{nodeGuid}' could not be found.");
             }
 
-            pendingNodeGuids.Remove(nodeGuid);
+            pendingNodeActivationModes.Remove(nodeGuid);
 
             if (runtimeNode.RuntimeStep is StepSequenceSO runtimeSequence)
             {
                 return TryActivateSequenceNode(runtimeNode, runtimeSequence);
             }
 
-            return TryActivateStepNode(runtimeNode);
+            return TryActivateStepNode(runtimeNode, activateImmediately);
         }
 
         /// <summary>
-        /// Create and start the TutorialStepRunner associated with one standalone runtime Step node
+        /// Create and prepare the TutorialStepRunner associated with one standalone runtime Step node
         /// </summary>
         /// <param name="runtimeNode"></param>
+        /// <param name="activateImmediately"></param>
         /// <returns></returns>
-        private bool TryActivateStepNode(TutorialRuntimeNode runtimeNode)
+        private bool TryActivateStepNode(TutorialRuntimeNode runtimeNode, bool activateImmediately)
         {
             TutorialStepRunner stepRunner = stepRunnerFactory.Invoke(runtimeNode.RuntimeStep);
 
             if (stepRunner == null)
             {
-                pendingNodeGuids.Add(runtimeNode.NodeGuid);
-
+                pendingNodeActivationModes[runtimeNode.NodeGuid] = activateImmediately;
                 return true;
             }
 
             activeStepRunners.Add(runtimeNode.NodeGuid, stepRunner);
             stepRunnerNodeGuids.Add(stepRunner, runtimeNode.NodeGuid);
 
+            stepRunner.Triggered += OnStepRunnerTriggered;
             stepRunner.Completed += OnStepRunnerCompleted;
             stepRunner.Skipped += OnStepRunnerSkipped;
 
             if (!stepRunner.Start())
             {
                 ReleaseStepRunner(runtimeNode.NodeGuid);
-
-                return FailRunner(
-                    $"TutorialStepRunner associated with node '{runtimeNode.NodeGuid}' could not be started."
-                );
+                return FailRunner($"TutorialStepRunner associated with node '{runtimeNode.NodeGuid}' could not be started.");
             }
 
-            NodeStarted?.Invoke(this, runtimeNode);
+            if (!activateImmediately)
+            {
+                return true;
+            }
 
-            return true;
+            if (stepRunner.Activate())
+            {
+                return true;
+            }
+
+            string error = string.IsNullOrWhiteSpace(stepRunner.LastError) ? $"TutorialStepRunner associated with node '{runtimeNode.NodeGuid}' could not be activated." : stepRunner.LastError;
+
+            ReleaseStepRunner(runtimeNode.NodeGuid);
+
+            return FailRunner(error);
         }
 
         /// <summary>
@@ -398,6 +469,23 @@ namespace Tutorial.Runtime.Execution
         #region Sequence Runner Events
 
         /// <summary>
+        /// Process the activation of one standalone Step runner
+        /// </summary>
+        /// <param name="stepRunner"></param>
+        private void OnStepRunnerTriggered(TutorialStepRunner stepRunner)
+        {
+            if (!TryGetStepRunnerNode(stepRunner, out TutorialRuntimeNode runtimeNode))
+            {
+                FailRunner("A triggered TutorialStepRunner could not be associated with its runtime node.");
+                return;
+            }
+
+            runtimeNode.RuntimeStep.OnTrigger();
+
+            NodeStarted?.Invoke(this, runtimeNode);
+        }
+
+        /// <summary>
         /// Process the successful completion of one runtime sequence
         /// </summary>
         /// <param name="sequenceRunner"></param>
@@ -481,7 +569,7 @@ namespace Tutorial.Runtime.Execution
 
             foreach (string targetNodeGuid in runtimeNode.NextNodeGuids)
             {
-                if (!TryActivateNode(targetNodeGuid))
+                if (!TryActivateNode(targetNodeGuid, true))
                 {
                     return;
                 }
@@ -518,7 +606,7 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            if (pendingNodeGuids.Count > 0 || HasWaitingSequenceRunner())
+            if (pendingNodeActivationModes.Count > 0 || HasWaitingSequenceRunner())
             {
                 bool wasWaiting = status == ETutorialRunnerStatus.WaitingForDependencies;
 
@@ -532,9 +620,7 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            FailRunner(
-                $"Tutorial runtime '{runtimeInstance.TutorialGuid}' has unfinished nodes but no active or pending runner."
-            );
+            FailRunner($"Tutorial runtime '{runtimeInstance.TutorialGuid}' has unfinished nodes but no active or pending runner.");
         }
 
         /// <summary>
@@ -671,6 +757,7 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
+            stepRunner.Triggered -= OnStepRunnerTriggered;
             stepRunner.Completed -= OnStepRunnerCompleted;
             stepRunner.Skipped -= OnStepRunnerSkipped;
 

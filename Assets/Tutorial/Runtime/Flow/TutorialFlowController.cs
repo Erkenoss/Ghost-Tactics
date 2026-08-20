@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Tutorial.Runtime.Catalogue;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Runtime.Core;
 using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Execution;
@@ -12,6 +12,8 @@ using Tutorial.Runtime.Persistence;
 using Tutorial.Runtime.Progress;
 using Tutorial.Runtime.Replay;
 using Tutorial.Runtime.Resolution;
+using Tutorial.Runtime.Completion.UI;
+using Tutorial.Runtime.Data.Completion.UI;
 using UnityEngine;
 
 namespace Tutorial.Runtime.Flow
@@ -124,16 +126,22 @@ namespace Tutorial.Runtime.Flow
             TutorialMethodNotifier.Triggered -= OnTutorialMethodTriggered;
         }
 
+        /// <summary>
+        /// Forward an injected tutorial Step trigger to the currently executing tutorial runner
+        /// </summary>
+        /// <param name="stepGUID"></param>
         private void OnTutorialMethodTriggered(string stepGUID)
         {
-            StepSO step = ResolveStep(stepGUID);
+            Debug.Log($"NOTIFIER => {stepGUID}");
 
-            if (step == null)
+            if (tutorialRunner == null || tutorialRunner.IsTerminal)
             {
                 return;
             }
 
-            step.OnTrigger();
+            Debug.Log($"NOTIFIER => {stepGUID}");
+
+            tutorialRunner.TryTriggerStep(stepGUID);
         }
 
         /// <summary>
@@ -582,7 +590,7 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
-        /// Create one TutorialStepRunner when all runtime method dependencies are currently available
+        /// Create one TutorialStepRunner when all runtime dependencies are currently available
         /// </summary>
         /// <param name="runtimeStep"></param>
         /// <returns></returns>
@@ -593,12 +601,39 @@ namespace Tutorial.Runtime.Flow
                 return null;
             }
 
+            if (runtimeStep.StepType == EStepType.UI)
+            {
+                return CreateUIStepRunner(runtimeStep);
+            }
+
             if (!methodResolver.TryResolve(runtimeStep, out TutorialResolvedMethod resolvedMethod, out _))
             {
                 return null;
             }
 
             return new TutorialStepRunner(resolvedMethod);
+        }
+
+        /// <summary>
+        /// Create one TutorialStepRunner using a UI completion condition
+        /// </summary>
+        /// <param name="runtimeStep"></param>
+        /// <returns></returns>
+        private TutorialStepRunner CreateUIStepRunner(StepSO runtimeStep)
+        {
+            if (runtimeStep == null || !(runtimeStep.CompletionData is TutorialUICompletionData completionData))
+            {
+                return null;
+            }
+
+            if (!identifierRegistry.TryGet(runtimeStep.TutoGUID, out TutoIdentifier identifier))
+            {
+                return null;
+            }
+
+            TutorialUICompletionCondition condition = new TutorialUICompletionCondition(completionData, identifier.TargetComponent);
+
+            return new TutorialStepRunner(runtimeStep, identifier, condition);
         }
 
         #endregion
@@ -820,8 +855,6 @@ namespace Tutorial.Runtime.Flow
             {
                 return null;
             }
-
-            Debug.Log(stepGUID);
 
             foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
             {

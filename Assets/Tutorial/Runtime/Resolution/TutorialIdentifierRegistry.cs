@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using UnityEngine;
 
 namespace Tutorial.Runtime.Resolution

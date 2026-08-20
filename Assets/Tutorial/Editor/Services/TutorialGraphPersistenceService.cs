@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Tutorial.Editor.Core;
 using Tutorial.Runtime.Persistence;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Runtime.Data;
 using UnityEditor;
 using UnityEngine;
@@ -375,7 +375,7 @@ namespace Tutorial.Editor.Services
 
             if (manifestChanged)
             {
-                CompilationPipeline.RequestScriptCompilation();
+                CompilationPipeline.RequestScriptCompilation(RequestScriptCompilationOptions.CleanBuildCache);
             }
 
 

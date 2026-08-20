@@ -1,7 +1,7 @@
 using Tutorial.Runtime.Core;
 using UnityEngine;
 
-namespace Tutorial.Runtime.Component
+namespace Tutorial.Runtime.Components
 {
     /// <summary>
     /// Exposes the active tutorial runtime instance to its custom Inspector

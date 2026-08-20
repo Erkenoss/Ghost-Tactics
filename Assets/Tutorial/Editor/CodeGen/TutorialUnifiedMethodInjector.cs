@@ -302,7 +302,7 @@ namespace Tutorial.CodeGen
 
         private static bool IsAlreadyInstrumented(MethodDefinition method, MethodReference notifyMethod, string stepGUID)
         {
-            if (method == null || method.HasBody || method.Body.Instructions.Count < 2)
+            if (method == null || !method.HasBody || method.Body.Instructions.Count < 2)
             {
                 return false;
             }

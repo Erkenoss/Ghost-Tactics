@@ -2,10 +2,22 @@
     "version": 1,
     "bindings": [
         {
-            "graphGuid": "5096efa81630495c9578c724393ab061",
-            "scriptName": "Crimson.Utilities.OpenOrClosePanel",
+            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "scriptName": "GhostTactics.UI.ButtonActionSelected",
             "methodName": "PlayTuto",
-            "stepGuid": "b12d916349294933817f5c39b12568c8"
+            "stepGuid": "aca113f74cd44e46929a05f434572108"
+        },
+        {
+            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "9d19ff1119fc4211aa695cc0973d249a"
+        },
+        {
+            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "a3377c51f130488da4ec19f729646117"
         }
     ]
 }

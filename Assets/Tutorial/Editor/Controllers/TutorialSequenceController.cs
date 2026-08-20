@@ -206,6 +206,86 @@ namespace Tutorial.Editor.Controllers
         #region Connection Restoration
 
         /// <summary>
+        /// Register one visual connection belonging to an existing StepSequenceSO without modifying the sequence asset
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="sourceNode"></param>
+        /// <param name="targetNode"></param>
+        /// <param name="connection"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        public bool TryRegisterExistingSequenceConnection(StepSequenceSO sequence, VisualElement sourceNode, VisualElement targetNode, out SequenceConnection connection, out string failureReason)
+        {
+            connection = null;
+            failureReason = string.Empty;
+
+            if (sequence == null || sourceNode == null || targetNode == null)
+            {
+                failureReason = "The existing sequence connection contains missing data.";
+                return false;
+            }
+
+            if (sourceNode.userData is not StepSO sourceStep || targetNode.userData is not StepSO targetStep)
+            {
+                failureReason = "The existing sequence connection does not contain valid StepSO nodes.";
+                return false;
+            }
+
+            if (!AreConsecutiveSequenceSteps(sequence, sourceStep, targetStep))
+            {
+                failureReason = $"The Steps '{sourceStep.name}' and '{targetStep.name}' are not consecutive inside sequence '{sequence.name}'.";
+                return false;
+            }
+
+            connection = FindExistingSequenceConnection(sequence, sourceNode, targetNode);
+
+            if (connection != null)
+            {
+                return true;
+            }
+
+            if (!TryValidateRestoredSequence(sourceNode, targetNode, sequence, out failureReason))
+            {
+                return false;
+            }
+
+            VisualElement sourcePort = sourceNode.Q<VisualElement>(className: TutorialNodeFactory.SequenceOutputPortClass);
+            VisualElement targetPort = targetNode.Q<VisualElement>(className: TutorialNodeFactory.SequenceInputPortClass);
+
+            if (sourcePort == null)
+            {
+                failureReason = $"The sequence output port of StepSO '{sourceStep.name}' could not be found.";
+                return false;
+            }
+
+            if (targetPort == null)
+            {
+                failureReason = $"The sequence input port of StepSO '{targetStep.name}' could not be found.";
+                return false;
+            }
+
+            connection = new SequenceConnection(sequence, sourceNode, sourcePort, targetNode, targetPort);
+
+            if (!connection.IsValid)
+            {
+                connection = null;
+                failureReason = $"The sequence connection '{sourceStep.name} → {targetStep.name}' is invalid.";
+                return false;
+            }
+
+            if (!graphState.AddSequenceConnection(connection))
+            {
+                connection = null;
+                failureReason = $"Unable to register sequence connection '{sourceStep.name} → {targetStep.name}'.";
+                return false;
+            }
+
+            connectionRenderer.MarkDirty();
+
+            return true;
+        }
+
+        /// <summary>
         /// Restore a visual sequence connection without creating or modifying a StepSequenceSO asset
         /// </summary>
         /// <param name="sequenceData"></param>
@@ -1056,6 +1136,55 @@ namespace Tutorial.Editor.Controllers
             }
 
             return IsSingleLinearChain(remainingConnections);
+        }
+
+        /// <summary>
+        /// Find an already registered visual connection between two nodes of the same sequence
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="sourceNode"></param>
+        /// <param name="targetNode"></param>
+        /// <returns></returns>
+        private SequenceConnection FindExistingSequenceConnection(StepSequenceSO sequence, VisualElement sourceNode, VisualElement targetNode)
+        {
+            if (sequence == null || sourceNode == null || targetNode == null)
+            {
+                return null;
+            }
+
+            foreach (SequenceConnection connection in graphState.SequenceConnections)
+            {
+                if (connection == null || !connection.IsValid)
+                {
+                    continue;
+                }
+
+                if (connection.Sequence == sequence && connection.SourceNode == sourceNode && connection.TargetNode == targetNode)
+                {
+                    return connection;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Check whether two Steps are consecutive inside an existing StepSequenceSO
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="sourceStep"></param>
+        /// <param name="targetStep"></param>
+        /// <returns></returns>
+        private static bool AreConsecutiveSequenceSteps(StepSequenceSO sequence, StepSO sourceStep, StepSO targetStep)
+        {
+            if (sequence == null || sourceStep == null || targetStep == null || sequence.SequenceSOList == null)
+            {
+                return false;
+            }
+
+            int sourceIndex = sequence.SequenceSOList.IndexOf(sourceStep);
+
+            return sourceIndex >= 0 && sourceIndex + 1 < sequence.SequenceSOList.Count && sequence.SequenceSOList[sourceIndex + 1] == targetStep;
         }
 
         #endregion

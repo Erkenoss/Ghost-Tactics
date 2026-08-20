@@ -22,12 +22,19 @@ namespace GhostTactics.UI
         #endregion
 
         #region Public Methods
+
+        public void PlayTuto()
+        {
+            Debug.Log("PLAY TUTO => PlayerActionButton");
+        }
+
         #endregion
 
         #region Private Methods
 
         protected override void OnClick()
         {
+            PlayTuto();
             EventBus.Publish(new AbilityChoice(data));
         }
 

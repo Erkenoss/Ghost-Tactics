@@ -1,6 +1,6 @@
 using System;
 using Tutorial.Runtime.Persistence;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Runtime.Data;
 using UnityEditor;
 using UnityEngine;

@@ -12,32 +12,74 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbf3e7be544d3284e9f7b97bc72ed6c1, type: 3}
   m_Name: TutorialGraph
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Persistence.TutorialGraphAsset
-  graphGuid: 5096efa81630495c9578c724393ab061
+  graphGuid: e22a35b524fc4b5ba869ac8faa162e6a
   saveData:
     Version: 1
     Nodes:
-    - NodeGuid: a6719dad11f046f7bf7213f9d0c2f270
-      NodeType: 2
-      AssetGuid: 
-      ObjectGuid: 2f92ebf8e0554c1e9b2759fc38726872
-      SceneAssetGuid: a305d0501f5934247bf182e0bbd73111
-      ScenePath: Assets/Scenes/Main Menu.unity
-      Position: {x: 363.2, y: 28}
-    - NodeGuid: 4a87f174f24e4589a287cee1907bd53e
+    - NodeGuid: 1e588383dbb64052b0b2e1ce963098d3
       NodeType: 1
-      AssetGuid: e30c95c3dae047b4a85aec16bf1efed4
+      AssetGuid: 442836c5dc70300469ae5e28c4a620d1
       ObjectGuid: 
       SceneAssetGuid: 
       ScenePath: 
-      Position: {x: 28.8, y: 28}
+      Position: {x: 301, y: 106}
+    - NodeGuid: 2e8e88df10554af49a32cba1fb2970b0
+      NodeType: 1
+      AssetGuid: e91ebe1f1da776842bada45420c0c5e1
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 284, y: 207}
+    - NodeGuid: a025e48e8f454e16a03b5d0e26e45c7c
+      NodeType: 1
+      AssetGuid: bbee8800b33bee243b44a11cc603cdde
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 269, y: 322}
+    - NodeGuid: 4abc8ee4fa0342e1af0944e8469d1247
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 71bebb2940a844e8b7ebbb990ef89922
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 604, y: 217}
+    - NodeGuid: 884ffaf98a22408c9589d01663a83c49
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 49fd7754253649cf8f179769c1e47902
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 620, y: 114}
+    - NodeGuid: 6f7de544dbc440b5be6ff6a1131d721d
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 0cfeb7dd63974d8ea2e35a048660dc6f
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 569, y: 329}
     Bindings:
-    - SourceNodeGuid: 4a87f174f24e4589a287cee1907bd53e
-      TargetNodeGuid: a6719dad11f046f7bf7213f9d0c2f270
-    Sequences: []
+    - SourceNodeGuid: a025e48e8f454e16a03b5d0e26e45c7c
+      TargetNodeGuid: 6f7de544dbc440b5be6ff6a1131d721d
+    - SourceNodeGuid: 2e8e88df10554af49a32cba1fb2970b0
+      TargetNodeGuid: 4abc8ee4fa0342e1af0944e8469d1247
+    - SourceNodeGuid: 1e588383dbb64052b0b2e1ce963098d3
+      TargetNodeGuid: 884ffaf98a22408c9589d01663a83c49
+    Sequences:
+    - SourceNodeGuid: 1e588383dbb64052b0b2e1ce963098d3
+      TargetNodeGuid: 2e8e88df10554af49a32cba1fb2970b0
+      SequenceAssetGuid: 39eb981d3d38d4448bebb1100bd42d2d
+    - SourceNodeGuid: 2e8e88df10554af49a32cba1fb2970b0
+      TargetNodeGuid: a025e48e8f454e16a03b5d0e26e45c7c
+      SequenceAssetGuid: 39eb981d3d38d4448bebb1100bd42d2d
     View:
       PanPosition: {x: 0, y: 0}
       Zoom: 1
   replayPolicy: 0
   runtimeNodeReferences:
-  - nodeGuid: 4a87f174f24e4589a287cee1907bd53e
-    step: {fileID: 11400000, guid: e30c95c3dae047b4a85aec16bf1efed4, type: 2}
+  - nodeGuid: 1e588383dbb64052b0b2e1ce963098d3
+    step: {fileID: 11400000, guid: 442836c5dc70300469ae5e28c4a620d1, type: 2}
+  - nodeGuid: 2e8e88df10554af49a32cba1fb2970b0
+    step: {fileID: 11400000, guid: e91ebe1f1da776842bada45420c0c5e1, type: 2}
+  - nodeGuid: a025e48e8f454e16a03b5d0e26e45c7c
+    step: {fileID: 11400000, guid: bbee8800b33bee243b44a11cc603cdde, type: 2}

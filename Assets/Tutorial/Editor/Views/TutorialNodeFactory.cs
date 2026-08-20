@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using UnityObject = UnityEngine.Object;
 
 using Tutorial.Runtime.Data;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 
 using Tutorial.Editor.Controllers;
 using Tutorial.Editor.Manipulator;

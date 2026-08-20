@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d448f9bb5be74ef44875bd071b4a15f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp-Editor::Tutorial.Editor.Settings.TutorialToolProjectSettings
-  stepFolderPath: Assets/Tutorial/Steps/Boss
+  stepFolderPath: Assets/Tutorial/Steps
   sequenceFolderPath: Assets/Tutorial/Sequences
   graphFolderGuid: 

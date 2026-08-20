@@ -1,4 +1,4 @@
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using UnityEditor;
 using UnityEngine;
 

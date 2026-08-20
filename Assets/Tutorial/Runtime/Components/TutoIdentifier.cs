@@ -3,17 +3,25 @@ using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Resolution;
 using UnityEngine;
 
-namespace Tutorial.Runtime.Component
+namespace Tutorial.Runtime.Components
 {
     public class TutoIdentifier : MonoBehaviour
     {
         #region Public Fields
 
+        public UnityEngine.Component TargetComponent { get { return targetComponent; } set { targetComponent = value; } }
         public string ObjectGUID => objectGUID;
 
         #endregion
 
         #region Events
+
+        /// <summary>
+        /// Component targeted by the tutorial Step
+        /// </summary>
+        [Tooltip("Component targeted by the tutorial Step")]
+        [SerializeField]
+        private UnityEngine.Component targetComponent = null;
 
         /// <summary>
         /// Action raised when the step or the sequence is finished

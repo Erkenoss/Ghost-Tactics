@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 using UnityObject = UnityEngine.Object;
 
 using Tutorial.Runtime.Data;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Editor.Core;
 using Tutorial.Editor.Views;
 using Tutorial.Editor.Services;
@@ -24,6 +24,11 @@ namespace Tutorial.Editor.Controllers
         /// Offset applied when several objects are dropped simultaneously
         /// </summary>
         private const float MultipleDropOffset = 24f;
+
+        /// <summary>
+        /// Horizontal spacing between Steps extracted from one StepSequenceSO
+        /// </summary>
+        private const float SequenceStepSpacing = 220f;
 
         #endregion
 
@@ -212,10 +217,33 @@ namespace Tutorial.Editor.Controllers
                 Vector2 offset = Vector2.one * MultipleDropOffset * i;
                 Vector2 dropPosition = basePosition + offset;
 
+                if (target is StepSequenceSO sequence)
+                {
+                    if (!TryExposeSequence(sequence, dropPosition, out string sequenceFailureReason))
+                    {
+                        Debug.LogError(sequenceFailureReason, sequence);
+                        continue;
+                    }
+
+                    graphChanged = true;
+                    continue;
+                }
+
+                if (target is StepSO step)
+                {
+                    if (!TryGetOrCreateStepNode(step, dropPosition, out _, out bool wasCreated, out string stepFailureReason))
+                    {
+                        Debug.LogError(stepFailureReason, step);
+                        continue;
+                    }
+
+                    graphChanged |= wasCreated;
+                    continue;
+                }
+
                 if (!TryCreateRegisteredNode(Guid.NewGuid().ToString("N"), target, dropPosition, false, out _, out string failureReason))
                 {
                     Debug.LogError(failureReason, target);
-
                     continue;
                 }
 
@@ -224,6 +252,8 @@ namespace Tutorial.Editor.Controllers
 
             if (graphChanged)
             {
+                UpdateDropHintVisibility();
+                connectionRenderer.MarkDirty();
                 GraphChanged?.Invoke();
             }
         }
@@ -300,6 +330,222 @@ namespace Tutorial.Editor.Controllers
         #endregion
 
         #region Node Registration
+
+        /// <summary>
+        /// Expose every ordered StepSO contained by an existing StepSequenceSO
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="basePosition"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        private bool TryExposeSequence(StepSequenceSO sequence, Vector2 basePosition, out string failureReason)
+        {
+            failureReason = string.Empty;
+
+            if (sequence == null)
+            {
+                failureReason = "A null StepSequenceSO cannot be exposed.";
+                return false;
+            }
+
+            if (sequence.SequenceSOList == null || sequence.SequenceSOList.Count < 2)
+            {
+                failureReason = $"The sequence '{sequence.name}' must contain at least two Steps to be exposed as a graph sequence.";
+                return false;
+            }
+
+            HashSet<StepSO> uniqueSteps = new HashSet<StepSO>();
+
+            foreach (StepSO step in sequence.SequenceSOList)
+            {
+                if (step == null)
+                {
+                    failureReason = $"The sequence '{sequence.name}' contains a null StepSO.";
+                    return false;
+                }
+
+                if (!uniqueSteps.Add(step))
+                {
+                    failureReason = $"The StepSO '{step.name}' appears several times inside sequence '{sequence.name}'.";
+                    return false;
+                }
+            }
+
+            List<VisualElement> orderedNodes = new List<VisualElement>();
+            List<VisualElement> createdNodes = new List<VisualElement>();
+            List<SequenceConnection> createdConnections = new List<SequenceConnection>();
+            HashSet<SequenceConnection> existingConnections = new HashSet<SequenceConnection>(graphState.SequenceConnections);
+
+            for (int i = 0; i < sequence.SequenceSOList.Count; i++)
+            {
+                StepSO step = sequence.SequenceSOList[i];
+                Vector2 position = basePosition + Vector2.right * SequenceStepSpacing * i;
+
+                if (!TryGetOrCreateStepNode(step, position, out VisualElement node, out bool wasCreated, out failureReason))
+                {
+                    RollbackSequenceExposure(createdNodes, createdConnections);
+                    return false;
+                }
+
+                orderedNodes.Add(node);
+
+                if (wasCreated)
+                {
+                    createdNodes.Add(node);
+                }
+            }
+
+            for (int i = 0; i < orderedNodes.Count - 1; i++)
+            {
+                if (!sequenceController.TryRegisterExistingSequenceConnection(sequence, orderedNodes[i], orderedNodes[i + 1], out SequenceConnection connection, out failureReason))
+                {
+                    RollbackSequenceExposure(createdNodes, createdConnections);
+                    return false;
+                }
+
+                if (!existingConnections.Contains(connection))
+                {
+                    createdConnections.Add(connection);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Resolve the unique visual node of a StepSO or create it when absent
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="position"></param>
+        /// <param name="node"></param>
+        /// <param name="wasCreated"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        private bool TryGetOrCreateStepNode(StepSO step, Vector2 position, out VisualElement node, out bool wasCreated, out string failureReason)
+        {
+            node = null;
+            wasCreated = false;
+            failureReason = string.Empty;
+
+            if (step == null)
+            {
+                failureReason = "A null StepSO cannot be represented by the tutorial graph.";
+                return false;
+            }
+
+            if (!TryEnsureStepGuid(step, out failureReason))
+            {
+                return false;
+            }
+
+            IReadOnlyList<TutorialRuntimeNode> existingNodes = runtimeRegistry.GetNodesByTarget(step);
+
+            if (existingNodes.Count > 1)
+            {
+                failureReason = $"The StepSO '{step.name}' is already represented several times inside the current tutorial graph.";
+                return false;
+            }
+
+            if (existingNodes.Count == 1)
+            {
+                node = existingNodes[0].Element;
+
+                if (node == null)
+                {
+                    failureReason = $"The existing graph node of StepSO '{step.name}' has no visual element.";
+                    return false;
+                }
+
+                return true;
+            }
+
+            if (!TryCreateRegisteredNode(Guid.NewGuid().ToString("N"), step, position, false, out node, out failureReason))
+            {
+                return false;
+            }
+
+            wasCreated = true;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Remove every node and connection created during a failed sequence exposure
+        /// </summary>
+        /// <param name="createdNodes"></param>
+        /// <param name="createdConnections"></param>
+        private void RollbackSequenceExposure(IReadOnlyList<VisualElement> createdNodes, IReadOnlyList<SequenceConnection> createdConnections)
+        {
+            if (createdConnections != null)
+            {
+                for (int i = createdConnections.Count - 1; i >= 0; i--)
+                {
+                    SequenceConnection connection = createdConnections[i];
+
+                    if (connection == null)
+                    {
+                        continue;
+                    }
+
+                    graphState.RemoveSequenceConnection(connection);
+                }
+            }
+
+            if (createdNodes != null)
+            {
+                for (int i = createdNodes.Count - 1; i >= 0; i--)
+                {
+                    VisualElement node = createdNodes[i];
+
+                    if (node == null)
+                    {
+                        continue;
+                    }
+
+                    runtimeRegistry.TryUnregister(node);
+                    node.RemoveFromHierarchy();
+                }
+            }
+
+            UpdateDropHintVisibility();
+            connectionRenderer.MarkDirty();
+        }
+
+        /// <summary>
+        /// Ensure that one StepSO owns a persistent Step GUID
+        /// </summary>
+        /// <param name="step"></param>
+        /// <param name="failureReason"></param>
+        /// <returns></returns>
+        private static bool TryEnsureStepGuid(StepSO step, out string failureReason)
+        {
+            failureReason = string.Empty;
+
+            if (step == null)
+            {
+                failureReason = "A null StepSO cannot receive a Step GUID.";
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(step.StepGUID))
+            {
+                return true;
+            }
+
+            Undo.RecordObject(step, "Generate Tutorial Step GUID");
+            step.GenerateStepGUID();
+
+            if (string.IsNullOrWhiteSpace(step.StepGUID))
+            {
+                failureReason = $"Unable to generate a Step GUID for '{step.name}'.";
+                return false;
+            }
+
+            EditorUtility.SetDirty(step);
+            AssetDatabase.SaveAssetIfDirty(step);
+
+            return true;
+        }
 
         /// <summary>
         /// Add a newly created StepSO to the current tutorial graph

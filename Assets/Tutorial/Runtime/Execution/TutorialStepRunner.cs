@@ -1,20 +1,38 @@
 using System;
+using Tutorial.Runtime.Completion;
+using Tutorial.Runtime.Components;
+using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Resolution;
 using UnityEngine;
 
 namespace Tutorial.Runtime.Execution
 {
     /// <summary>
-    /// Manage the runtime execution lifecycle of one resolved tutorial StepSO
+    /// Manage the runtime execution lifecycle of one tutorial StepSO
     /// </summary>
     public sealed class TutorialStepRunner : IDisposable
     {
         #region Private Fields
 
         /// <summary>
+        /// Runtime StepSO handled by a completion condition
+        /// </summary>
+        private readonly StepSO runtimeStep = null;
+
+        /// <summary>
         /// Runtime method binding associated with the StepSO handled by this runner
         /// </summary>
         private readonly TutorialResolvedMethod resolvedMethod = null;
+
+        /// <summary>
+        /// Tutorial scene identifier associated with this runner
+        /// </summary>
+        private readonly TutoIdentifier identifier = null;
+
+        /// <summary>
+        /// Runtime completion condition associated with this runner
+        /// </summary>
+        private readonly TutorialCompletionCondition completionCondition = null;
 
         /// <summary>
         /// Current execution status of this Step runner
@@ -26,12 +44,21 @@ namespace Tutorial.Runtime.Execution
         /// </summary>
         private bool isSubscribed = false;
 
+        /// <summary>
+        /// Last error produced by this Step runner
+        /// </summary>
+        private string lastError = string.Empty;
+
         #endregion
 
         #region Properties
 
+        public StepSO RuntimeStep => runtimeStep;
         public TutorialResolvedMethod ResolvedMethod => resolvedMethod;
+        public TutoIdentifier Identifier => identifier;
+        public TutorialCompletionCondition CompletionCondition => completionCondition;
         public ETutorialStepRunnerStatus Status => status;
+        public string LastError => lastError;
         public bool IsWaiting => status == ETutorialStepRunnerStatus.WaitingForTrigger;
         public bool IsRunning => status == ETutorialStepRunnerStatus.Running;
         public bool IsCompleted => status == ETutorialStepRunnerStatus.Completed;
@@ -58,6 +85,20 @@ namespace Tutorial.Runtime.Execution
         public TutorialStepRunner(TutorialResolvedMethod resolvedMethod)
         {
             this.resolvedMethod = resolvedMethod ?? throw new ArgumentNullException(nameof(resolvedMethod));
+            identifier = resolvedMethod.Identifier ?? throw new ArgumentNullException(nameof(resolvedMethod.Identifier));
+        }
+
+        /// <summary>
+        /// Create a Step runner from a runtime completion condition
+        /// </summary>
+        /// <param name="runtimeStep"></param>
+        /// <param name="identifier"></param>
+        /// <param name="completionCondition"></param>
+        public TutorialStepRunner(StepSO runtimeStep, TutoIdentifier identifier, TutorialCompletionCondition completionCondition)
+        {
+            this.runtimeStep = runtimeStep ?? throw new ArgumentNullException(nameof(runtimeStep));
+            this.identifier = identifier ?? throw new ArgumentNullException(nameof(identifier));
+            this.completionCondition = completionCondition ?? throw new ArgumentNullException(nameof(completionCondition));
         }
 
         #endregion
@@ -65,7 +106,7 @@ namespace Tutorial.Runtime.Execution
         #region Public Methods
 
         /// <summary>
-        /// Activate this Step runner and begin waiting for its gameplay method trigger
+        /// Prepare this Step runner and wait for its activation
         /// </summary>
         /// <returns></returns>
         public bool Start()
@@ -75,9 +116,37 @@ namespace Tutorial.Runtime.Execution
                 return false;
             }
 
+            lastError = string.Empty;
+
             Subscribe();
 
             status = ETutorialStepRunnerStatus.WaitingForTrigger;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Activate this Step runner and begin observing its completion mechanism
+        /// </summary>
+        /// <returns></returns>
+        public bool Activate()
+        {
+            if (status != ETutorialStepRunnerStatus.WaitingForTrigger)
+            {
+                return false;
+            }
+
+            lastError = string.Empty;
+
+            status = ETutorialStepRunnerStatus.Running;
+
+            if (completionCondition != null && !completionCondition.Arm(out lastError))
+            {
+                status = ETutorialStepRunnerStatus.WaitingForTrigger;
+                return false;
+            }
+
+            Triggered?.Invoke(this);
 
             return true;
         }
@@ -94,6 +163,8 @@ namespace Tutorial.Runtime.Execution
 
             Unsubscribe();
 
+            completionCondition?.Dispose();
+
             Triggered = null;
             Completed = null;
             Skipped = null;
@@ -106,13 +177,13 @@ namespace Tutorial.Runtime.Execution
         #region Signal Handling
 
         /// <summary>
-        /// Process one gameplay method execution signal and trigger this Step when the binding matches
+        /// Process one gameplay method execution signal and activate this Step when the binding matches
         /// </summary>
         /// <param name="source"></param>
         /// <param name="methodName"></param>
         private void OnMethodTriggered(MonoBehaviour source, string methodName)
         {
-            if (status != ETutorialStepRunnerStatus.WaitingForTrigger)
+            if (status != ETutorialStepRunnerStatus.WaitingForTrigger || resolvedMethod == null)
             {
                 return;
             }
@@ -127,9 +198,7 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            status = ETutorialStepRunnerStatus.Running;
-
-            Triggered?.Invoke(this);
+            Activate();
         }
 
         /// <summary>
@@ -137,7 +206,7 @@ namespace Tutorial.Runtime.Execution
         /// </summary>
         private void OnRaised()
         {
-            if (status != ETutorialStepRunnerStatus.Running)
+            if (status != ETutorialStepRunnerStatus.Running || resolvedMethod == null)
             {
                 return;
             }
@@ -145,6 +214,26 @@ namespace Tutorial.Runtime.Execution
             status = ETutorialStepRunnerStatus.Completed;
 
             Unsubscribe();
+
+            Completed?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Complete this Step when its runtime completion condition has been satisfied
+        /// </summary>
+        /// <param name="condition"></param>
+        private void OnCompletionConditionCompleted(TutorialCompletionCondition condition)
+        {
+            if (status != ETutorialStepRunnerStatus.Running || condition != completionCondition)
+            {
+                return;
+            }
+
+            status = ETutorialStepRunnerStatus.Completed;
+
+            Unsubscribe();
+
+            runtimeStep.OnRaised();
 
             Completed?.Invoke(this);
         }
@@ -171,7 +260,7 @@ namespace Tutorial.Runtime.Execution
         #region Subscriptions
 
         /// <summary>
-        /// Subscribe this Step runner to the gameplay and tutorial object signals it requires
+        /// Subscribe this Step runner to the runtime signals required by its execution mode
         /// </summary>
         private void Subscribe()
         {
@@ -180,16 +269,24 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            TutorialMethodSignal.Triggered += OnMethodTriggered;
+            if (resolvedMethod != null)
+            {
+                TutorialMethodSignal.Triggered += OnMethodTriggered;
+                identifier.Raised += OnRaised;
+            }
 
-            resolvedMethod.Identifier.Raised += OnRaised;
-            resolvedMethod.Identifier.Skipped += OnSkipped;
+            if (completionCondition != null)
+            {
+                completionCondition.Completed += OnCompletionConditionCompleted;
+            }
+
+            identifier.Skipped += OnSkipped;
 
             isSubscribed = true;
         }
 
         /// <summary>
-        /// Remove every gameplay and tutorial object signal subscription owned by this runner
+        /// Remove every runtime signal subscription owned by this runner
         /// </summary>
         private void Unsubscribe()
         {
@@ -198,13 +295,19 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            TutorialMethodSignal.Triggered -= OnMethodTriggered;
-
-            if (resolvedMethod.Identifier != null)
+            if (resolvedMethod != null)
             {
-                resolvedMethod.Identifier.Raised -= OnRaised;
-                resolvedMethod.Identifier.Skipped -= OnSkipped;
+                TutorialMethodSignal.Triggered -= OnMethodTriggered;
+                identifier.Raised -= OnRaised;
             }
+
+            if (completionCondition != null)
+            {
+                completionCondition.Completed -= OnCompletionConditionCompleted;
+                completionCondition.Disarm();
+            }
+
+            identifier.Skipped -= OnSkipped;
 
             isSubscribed = false;
         }

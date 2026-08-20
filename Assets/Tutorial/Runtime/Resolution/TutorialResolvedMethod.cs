@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Tutorial.Runtime.Component;
+using Tutorial.Runtime.Components;
 using Tutorial.Runtime.Data;
 using UnityEngine;
 
