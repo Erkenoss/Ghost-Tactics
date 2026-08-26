@@ -2,6 +2,9 @@ using Crimson.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
 using Tutorial.Runtime.Catalogue;
 using Tutorial.Runtime.Components;
 using Tutorial.Runtime.Core;
@@ -14,10 +17,43 @@ using Tutorial.Runtime.Replay;
 using Tutorial.Runtime.Resolution;
 using Tutorial.Runtime.Completion.UI;
 using Tutorial.Runtime.Data.Completion.UI;
-using UnityEngine;
 
 namespace Tutorial.Runtime.Flow
 {
+    /// <summary>
+    /// Event used to globally enable or disable tutorial execution
+    /// </summary>
+    public sealed class OnTutorialsEnabledChanged
+    {
+        #region Private Fields
+
+        /// <summary>
+        /// Determine whether tutorials are globally allowed to execute
+        /// </summary>
+        private readonly bool enabled = true;
+
+        #endregion
+
+        #region Properties
+
+        public bool Enabled => enabled;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Create one tutorial enabled-state event
+        /// </summary>
+        /// <param name="enabled"></param>
+        public OnTutorialsEnabledChanged(bool enabled)
+        {
+            this.enabled = enabled;
+        }
+
+        #endregion
+    }
+
     /// <summary>
     /// Coordinate the complete runtime lifecycle of one tutorial graph
     /// </summary>
@@ -36,6 +72,11 @@ namespace Tutorial.Runtime.Flow
         #endregion
 
         #region Private Fields
+
+        /// <summary>
+        /// Repository responsible for physical tutorial progress persistence
+        /// </summary>
+        private TutorialProgressRepository progressRepository = null;
 
         /// <summary>
         /// Service responsible for reconstructing tutorial runtime graphs
@@ -77,6 +118,12 @@ namespace Tutorial.Runtime.Flow
         /// </summary>
         private TutorialProgressService progressService = null;
 
+        /// <summary>
+        /// Determine whether normal tutorial execution is globally allowed
+        /// </summary>
+        private bool tutorialsEnabled = true;
+
+
         #endregion
 
         #region Properties
@@ -86,6 +133,7 @@ namespace Tutorial.Runtime.Flow
         public TutorialRunner Runner => tutorialRunner;
         public TutorialProgressService Progress => progressService;
         public TutorialIdentifierRegistry IdentifierRegistry => identifierRegistry;
+        public bool TutorialsEnabled => tutorialsEnabled;
         public bool IsRunning => tutorialRunner != null && !tutorialRunner.IsTerminal;
         public bool IsReplaying => replayService != null && replayService.IsReplaying;
 
@@ -102,15 +150,13 @@ namespace Tutorial.Runtime.Flow
 
         #region MonoBehaviour Callbacks
 
-        /// <summary>
-        /// Initialize runtime tutorial services and optionally preserve this controller between scenes
-        /// </summary>
         protected override void Awake()
         {
             base.Awake();
 
             methodResolver = new TutorialMethodResolver(identifierRegistry);
             replayService = new TutorialReplayService();
+            progressRepository = new TutorialProgressRepository(Application.persistentDataPath);
 
             SubscribeIdentifierLifecycle();
             RegisterLoadedIdentifiers();
@@ -119,11 +165,52 @@ namespace Tutorial.Runtime.Flow
         private void OnEnable()
         {
             TutorialMethodNotifier.Triggered += OnTutorialMethodTriggered;
+            TutorialMethodNotifier.SkipRequested += OnTutorialSkipRequested;
+
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+
+            TutoEventBus.Subscribe<OnTutorialsEnabledChanged>(OnTutorialsEnabledStateChanged);
+        }
+
+        /// <summary>
+        /// Start the tutorial graph associated with the initial active scene
+        /// </summary>
+        private void Start()
+        {
+            TryStartSceneTutorial(SceneManager.GetActiveScene());
         }
 
         private void OnDisable()
         {
             TutorialMethodNotifier.Triggered -= OnTutorialMethodTriggered;
+            TutorialMethodNotifier.SkipRequested -= OnTutorialSkipRequested;
+
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
+
+            TutoEventBus.Unsubscribe<OnTutorialsEnabledChanged>(OnTutorialsEnabledStateChanged);
+        }
+
+        /// <summary>
+        /// Apply the global tutorial execution state received through the TutoEventBus
+        /// </summary>
+        /// <param name="tutorialState"></param>
+        private void OnTutorialsEnabledStateChanged(OnTutorialsEnabledChanged tutorialState)
+        {
+            if (tutorialState == null || tutorialsEnabled == tutorialState.Enabled)
+            {
+                return;
+            }
+
+            tutorialsEnabled = tutorialState.Enabled;
+
+            if (tutorialsEnabled)
+            {
+                return;
+            }
+
+            ReleaseCurrentExecution();
         }
 
         /// <summary>
@@ -132,14 +219,10 @@ namespace Tutorial.Runtime.Flow
         /// <param name="stepGUID"></param>
         private void OnTutorialMethodTriggered(string stepGUID)
         {
-            Debug.Log($"NOTIFIER => {stepGUID}");
-
-            if (tutorialRunner == null || tutorialRunner.IsTerminal)
+            if (!tutorialsEnabled || tutorialRunner == null || tutorialRunner.IsTerminal)
             {
                 return;
             }
-
-            Debug.Log($"NOTIFIER => {stepGUID}");
 
             tutorialRunner.TryTriggerStep(stepGUID);
         }
@@ -155,6 +238,7 @@ namespace Tutorial.Runtime.Flow
 
             replayService?.Dispose();
             replayService = null;
+            progressRepository = null;
 
             runtimeRegistry.Dispose();
             identifierRegistry.Clear();
@@ -180,6 +264,80 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
+        /// Delete the persistent progress of one tutorial graph
+        /// </summary>
+        /// <param name="sourceGraph"></param>
+        /// <returns></returns>
+        public bool ResetTutorialProgress(TutorialGraphAsset sourceGraph)
+        {
+            return ResetTutorialProgress(sourceGraph, out _);
+        }
+
+        /// <summary>
+        /// Delete the persistent progress of one tutorial graph without starting a new execution
+        /// </summary>
+        /// <param name="sourceGraph"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ResetTutorialProgress(TutorialGraphAsset sourceGraph, out string error)
+        {
+            error = string.Empty;
+
+            if (sourceGraph == null)
+            {
+                error = "Cannot reset persistent progress for a null TutorialGraphAsset.";
+
+                return false;
+            }
+
+            if (progressRepository == null)
+            {
+                error = "Tutorial progress repository is not initialized.";
+
+                return false;
+            }
+
+            bool isCurrentGraph = runtimeInstance != null && runtimeInstance.SourceGraph == sourceGraph;
+
+            if (isCurrentGraph)
+            {
+                ReleaseCurrentExecution();
+            }
+
+            return progressRepository.TryDelete(sourceGraph.GraphGuid, out error);
+        }
+
+        /// <summary>
+        /// Delete every persistent tutorial progress file
+        /// </summary>
+        /// <returns></returns>
+        public bool ResetAllTutorialProgress()
+        {
+            return ResetAllTutorialProgress(out _);
+        }
+
+        /// <summary>
+        /// Delete every persistent tutorial progress file without starting a new execution
+        /// </summary>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        public bool ResetAllTutorialProgress(out string error)
+        {
+            error = string.Empty;
+
+            if (progressRepository == null)
+            {
+                error = "Tutorial progress repository is not initialized.";
+
+                return false;
+            }
+
+            ReleaseCurrentExecution();
+
+            return progressRepository.TryDeleteAll(out error);
+        }
+
+        /// <summary>
         /// Build and start one tutorial from its TutorialGraphAsset
         /// </summary>
         /// <param name="sourceGraph"></param>
@@ -190,6 +348,13 @@ namespace Tutorial.Runtime.Flow
         {
             error = string.Empty;
 
+            if (!tutorialsEnabled)
+            {
+                error = "Tutorial execution is disabled.";
+
+                return false;
+            }
+
             ReleaseCurrentExecution();
 
             if (!TryBuildRuntime(sourceGraph, out error))
@@ -199,7 +364,7 @@ namespace Tutorial.Runtime.Flow
 
             progressService = new TutorialProgressService(runtimeInstance);
 
-            if (savedProgress == null || savedProgress.Status == ETutorialProgressStatus.NotStarted)
+            if (savedProgress == null)
             {
                 if (!progressService.Start())
                 {
@@ -221,7 +386,14 @@ namespace Tutorial.Runtime.Flow
 
                 if (progressService.IsCompleted)
                 {
-                    error = $"Tutorial '{runtimeInstance.TutorialGuid}' has already been completed.";
+                    ReleaseCurrentExecution();
+
+                    return true;
+                }
+
+                if (!progressService.IsStarted && !progressService.Start())
+                {
+                    error = $"Tutorial '{runtimeInstance.TutorialGuid}' restored progress could not be started.";
 
                     ReleaseCurrentExecution();
 
@@ -480,6 +652,7 @@ namespace Tutorial.Runtime.Flow
             return $"The binding is incomplete. Missing: {string.Join(", ", missingFields)}.";
         }
 
+
         #endregion
 
         #region Runtime Creation
@@ -549,6 +722,129 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
+        /// Try to start the tutorial graph associated with a newly loaded scene
+        /// </summary>
+        /// <param name="scene"></param>
+        /// <param name="loadSceneMode"></param>
+        private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+        {
+            TryStartSceneTutorial(scene);
+        }
+
+        /// <summary>
+        /// Release the current tutorial execution when its owning scene is unloaded
+        /// </summary>
+        /// <param name="scene"></param>
+        private void OnSceneUnloaded(Scene scene)
+        {
+            if (runtimeInstance == null || runtimeInstance.SourceGraph == null || runtimeCatalogue == null)
+            {
+                return;
+            }
+
+            if (!scene.IsValid() || string.IsNullOrWhiteSpace(scene.path))
+            {
+                return;
+            }
+
+            if (!runtimeCatalogue.TryGetGraphEntryByScenePath(scene.path, out TutorialRuntimeGraphEntry graphEntry))
+            {
+                return;
+            }
+
+            if (graphEntry.Graph != runtimeInstance.SourceGraph)
+            {
+                return;
+            }
+
+            ReleaseCurrentExecution();
+        }
+
+        /// <summary>
+        /// Resolve persisted progress and start the tutorial graph associated with one scene
+        /// </summary>
+        /// <param name="scene"></param>
+        private void TryStartSceneTutorial(Scene scene)
+        {
+            if (!tutorialsEnabled)
+            {
+                return;
+            }
+
+            if (!scene.IsValid() || !scene.isLoaded)
+            {
+                return;
+            }
+
+            if (runtimeCatalogue == null)
+            {
+                Debug.LogWarning($"TutorialFlowController '{name}' has no TutorialRuntimeCatalogue assigned.", this);
+
+                return;
+            }
+
+            if (!runtimeCatalogue.TryGetGraphEntryByScenePath(scene.path, out TutorialRuntimeGraphEntry graphEntry))
+            {
+                return;
+            }
+
+            TutorialProgressSaveData savedProgress = null;
+
+            if (progressRepository != null)
+            {
+                ETutorialProgressLoadResult loadResult = progressRepository.TryLoad(graphEntry.Graph.GraphGuid, out savedProgress, out string loadError);
+
+                if (loadResult == ETutorialProgressLoadResult.InvalidData)
+                {
+                    Debug.LogWarning($"Invalid tutorial progress found for graph '{graphEntry.Graph.name}'. Progress will be reset. {loadError}", this);
+
+                    if (!progressRepository.TryDelete(graphEntry.Graph.GraphGuid, out string deleteError))
+                    {
+                        Debug.LogWarning($"Invalid tutorial progress could not be deleted. {deleteError}", this);
+                    }
+
+                    savedProgress = null;
+                }
+                else if (loadResult == ETutorialProgressLoadResult.Failed)
+                {
+                    Debug.LogWarning($"Tutorial progress could not be loaded for graph '{graphEntry.Graph.name}'. Tutorial will start without restored progress. {loadError}", this);
+
+                    savedProgress = null;
+                }
+            }
+
+            if (TryStartTutorial(graphEntry.Graph, savedProgress, out string error))
+            {
+                return;
+            }
+
+            if (savedProgress == null)
+            {
+                Debug.LogWarning($"Unable to start tutorial graph '{graphEntry.Graph.name}' for scene '{scene.path}'. {error}", this);
+
+                return;
+            }
+
+            string restoreError = error;
+
+            if (!TryStartTutorial(graphEntry.Graph, null, out string freshStartError))
+            {
+                Debug.LogWarning($"Unable to restore tutorial graph '{graphEntry.Graph.name}'. Restore error: {restoreError} Fresh start error: {freshStartError}", this);
+
+                return;
+            }
+
+            if (progressRepository != null && !progressRepository.TryDelete(graphEntry.Graph.GraphGuid, out string resetError))
+            {
+                Debug.LogWarning($"Invalid tutorial progress for graph '{graphEntry.Graph.name}' could not be deleted. {resetError}", this);
+
+                return;
+            }
+
+            Debug.LogWarning($"Saved tutorial progress for graph '{graphEntry.Graph.name}' was incompatible and has been reset. {restoreError}", this);
+        }
+
+        /// <summary>
         /// Create and start the TutorialRunner associated with the current runtime instance
         /// </summary>
         /// <param name="error"></param>
@@ -566,7 +862,8 @@ namespace Tutorial.Runtime.Flow
 
             SubscribeProgress();
 
-            tutorialRunner = new TutorialRunner(runtimeInstance, CreateStepRunner);
+            IReadOnlyCollection<string> finishedNodeGuids = progressService.CreateFinishedNodeGuidSnapshot();
+            tutorialRunner = new TutorialRunner(runtimeInstance, CreateStepRunner, finishedNodeGuids);
 
             tutorialRunner.NodeCompleted += OnNodeCompleted;
             tutorialRunner.NodeSkipped += OnNodeSkipped;
@@ -575,9 +872,7 @@ namespace Tutorial.Runtime.Flow
 
             if (!tutorialRunner.Start())
             {
-                error = string.IsNullOrWhiteSpace(tutorialRunner.LastError)
-                    ? $"Tutorial '{runtimeInstance.TutorialGuid}' could not be started."
-                    : tutorialRunner.LastError;
+                error = string.IsNullOrWhiteSpace(tutorialRunner.LastError) ? $"Tutorial '{runtimeInstance.TutorialGuid}' could not be started." : tutorialRunner.LastError;
 
                 ReleaseCurrentExecution();
 
@@ -611,7 +906,7 @@ namespace Tutorial.Runtime.Flow
                 return null;
             }
 
-            return new TutorialStepRunner(resolvedMethod);
+            return new TutorialStepRunner(runtimeStep, resolvedMethod);
         }
 
         /// <summary>
@@ -671,6 +966,19 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
+        /// Forward an injected Skip Current Step request to the currently executing tutorial
+        /// </summary>
+        private void OnTutorialSkipRequested()
+        {
+            if (tutorialRunner == null || tutorialRunner.IsTerminal)
+            {
+                return;
+            }
+
+            tutorialRunner.SkipCurrentStep();
+        }
+
+        /// <summary>
         /// Complete the current normal execution or temporary replay session
         /// </summary>
         /// <param name="runner"></param>
@@ -725,7 +1033,7 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
-        /// Forward persistent progress snapshots while ignoring temporary replay progress
+        /// Persist and forward tutorial progress snapshots while ignoring temporary replay progress
         /// </summary>
         /// <param name="service"></param>
         private void OnProgressChanged(TutorialProgressService service)
@@ -740,7 +1048,14 @@ namespace Tutorial.Runtime.Flow
                 return;
             }
 
-            PersistentProgressChanged?.Invoke(this, service.CreateSaveData());
+            TutorialProgressSaveData saveData = service.CreateSaveData();
+
+            if (saveData.Status != ETutorialProgressStatus.NotStarted && progressRepository != null && !progressRepository.TrySave(saveData, out string saveError))
+            {
+                Debug.LogWarning($"Tutorial progress could not be persisted. {saveError}", this);
+            }
+
+            PersistentProgressChanged?.Invoke(this, saveData);
         }
 
         #endregion

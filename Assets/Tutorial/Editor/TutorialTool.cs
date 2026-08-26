@@ -1,10 +1,13 @@
+using System;
+using System.Collections.Generic;
 using Tutorial.Editor.Controllers;
 using Tutorial.Editor.Core;
-using Tutorial.Runtime.Persistence;
 using Tutorial.Editor.Services;
 using Tutorial.Editor.Settings;
 using Tutorial.Editor.Views;
+using Tutorial.Runtime.Persistence;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -29,6 +32,31 @@ namespace Tutorial.Editor
         #endregion
 
         #region UI Fields
+
+        /// <summary>
+        /// Root containing project-wide tutorial controls
+        /// </summary>
+        private VisualElement globalControlsRoot = null;
+
+        /// <summary>
+        /// Object field used to select the GameObject containing the Skip method
+        /// </summary>
+        private ObjectField skipTargetField = null;
+
+        /// <summary>
+        /// Dropdown used to select one MonoBehaviour from the Skip target
+        /// </summary>
+        private DropdownField skipScriptDropdown = null;
+
+        /// <summary>
+        /// Dropdown used to select one compatible public method
+        /// </summary>
+        private DropdownField skipMethodDropdown = null;
+
+        /// <summary>
+        /// Display the currently persisted Skip binding
+        /// </summary>
+        private Label skipBindingStatus = null;
 
         /// <summary>
         /// Main area containing the tutorial graph nodes
@@ -90,6 +118,22 @@ namespace Tutorial.Editor
         [SerializeField]
         private TutorialGraphAsset graphToRestore = null;
 
+        /// <summary>
+        /// Temporary GameObject used to configure the global Skip Current Step binding
+        /// </summary>
+        [SerializeField]
+        private GameObject skipBindingTarget = null;
+
+        /// <summary>
+        /// MonoBehaviours currently available on the Skip target
+        /// </summary>
+        private readonly List<MonoBehaviour> skipBindingScripts = new List<MonoBehaviour>();
+
+        /// <summary>
+        /// Compatible methods currently available on the selected Skip script
+        /// </summary>
+        private readonly List<MethodBindingOption> skipBindingMethods = new List<MethodBindingOption>();
+
         #endregion
 
         #region Services
@@ -138,7 +182,7 @@ namespace Tutorial.Editor
         /// Service responsible for rebuilding tutorial IL instrumentation data
         /// </summary>
         private TutorialInjectionManifestService injectionManifestService = null;
-        
+
 
         private TutorialAssetPathService assetPathService = null;
 
@@ -450,9 +494,12 @@ namespace Tutorial.Editor
             assetCreationView = new TutorialAssetCreationView(projectSettings);
             toolbarHost.Insert(0, assetCreationView.Root);
 
+            CreateGlobalControls(projectSettings);
+            toolbarHost.Insert(1, globalControlsRoot);
+
             canvasController = new TutorialCanvasController(editorHost, canvas, connectionLayer, dropHint, graphState, runtimeRegistry, nodeFactory, inspectorView, bindingController, sequenceController, connectionRenderer);
 
-            sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, editorHost, graphLauncherView, 
+            sessionController = new TutorialSessionController(graphSession, runtimeRegistry, graphRepository, graphPersistenceService, editorHost, graphLauncherView,
                                                               graphBrowserView, graphCreationView, graphToolbarView, graphStatusBarView, canvasController, bindingController, sequenceController);
 
             assetCreationController = new TutorialAssetCreationController(assetCreationView, stepAssetService, sequenceAssetService, canvasController, sessionController);
@@ -468,6 +515,329 @@ namespace Tutorial.Editor
                 sessionController.TryOpenGraph(graphToRestore);
             }
         }
+
+        #endregion
+
+        #region Global Controls
+
+        /// <summary>
+        /// Create project-wide tutorial control configuration
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        private void CreateGlobalControls(TutorialToolProjectSettings projectSettings)
+        {
+            globalControlsRoot = new VisualElement
+            {
+                name = "tutorial-global-controls"
+            };
+
+            globalControlsRoot.style.flexDirection = FlexDirection.Column;
+            globalControlsRoot.style.paddingLeft = 6f;
+            globalControlsRoot.style.paddingRight = 6f;
+            globalControlsRoot.style.paddingTop = 4f;
+            globalControlsRoot.style.paddingBottom = 4f;
+
+            Foldout controlsFoldout = new Foldout
+            {
+                text = "Global Controls",
+                value = true
+            };
+
+            VisualElement skipContainer = new VisualElement();
+            skipContainer.style.flexDirection = FlexDirection.Row;
+            skipContainer.style.alignItems = Align.Center;
+
+            skipTargetField = new ObjectField("Skip Target")
+            {
+                objectType = typeof(GameObject),
+                allowSceneObjects = true,
+                value = skipBindingTarget
+            };
+
+            skipTargetField.style.flexGrow = 1f;
+            skipTargetField.style.marginRight = 6f;
+
+            skipScriptDropdown = new DropdownField("Script", new List<string> { "Select a script..." }, 0);
+            skipScriptDropdown.style.width = 260f;
+            skipScriptDropdown.style.marginRight = 6f;
+
+            skipMethodDropdown = new DropdownField("Method", new List<string> { "Select a method..." }, 0);
+            skipMethodDropdown.style.width = 260f;
+
+            skipBindingStatus = new Label();
+            skipBindingStatus.style.marginTop = 3f;
+            skipBindingStatus.style.marginLeft = 3f;
+
+            skipTargetField.RegisterValueChangedCallback(changeEvent => OnSkipTargetChanged(changeEvent.newValue as GameObject, projectSettings));
+            skipScriptDropdown.RegisterValueChangedCallback(changeEvent => OnSkipScriptSelected(projectSettings));
+            skipMethodDropdown.RegisterValueChangedCallback(changeEvent => OnSkipMethodSelected(projectSettings));
+
+            skipContainer.Add(skipTargetField);
+            skipContainer.Add(skipScriptDropdown);
+            skipContainer.Add(skipMethodDropdown);
+
+            controlsFoldout.Add(skipContainer);
+            controlsFoldout.Add(skipBindingStatus);
+
+            globalControlsRoot.Add(controlsFoldout);
+
+            RefreshSkipBindingUI(projectSettings);
+        }
+
+        /// <summary>
+        /// Refresh Skip configuration after selecting another GameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="projectSettings"></param>
+        private void OnSkipTargetChanged(GameObject gameObject, TutorialToolProjectSettings projectSettings)
+        {
+            skipBindingTarget = gameObject;
+
+            RefreshSkipBindingUI(projectSettings);
+        }
+
+        /// <summary>
+        /// Rebuild every Skip configuration dropdown
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        private void RefreshSkipBindingUI(TutorialToolProjectSettings projectSettings)
+        {
+            skipBindingScripts.Clear();
+            skipBindingMethods.Clear();
+
+            List<string> scriptChoices = new List<string>
+            {
+                "Select a script..."
+            };
+
+            if (skipBindingTarget != null)
+            {
+                IReadOnlyList<MonoBehaviour> scripts = methodBindingService.GetScripts(skipBindingTarget);
+
+                foreach (MonoBehaviour script in scripts)
+                {
+                    if (script == null)
+                    {
+                        continue;
+                    }
+
+                    skipBindingScripts.Add(script);
+                    scriptChoices.Add(script.GetType().Name);
+                }
+            }
+
+            skipScriptDropdown.choices = scriptChoices;
+
+            int selectedScriptIndex = GetStoredSkipScriptIndex(projectSettings);
+
+            skipScriptDropdown.SetValueWithoutNotify(scriptChoices[selectedScriptIndex]);
+            skipScriptDropdown.SetEnabled(skipBindingScripts.Count > 0);
+
+            if (selectedScriptIndex > 0)
+            {
+                RefreshSkipMethodDropdown(skipBindingScripts[selectedScriptIndex - 1], projectSettings);
+            }
+            else
+            {
+                ClearSkipMethodDropdown();
+            }
+
+            RefreshSkipBindingStatus(projectSettings);
+        }
+
+        /// <summary>
+        /// Find the script dropdown index corresponding to the persisted Skip binding
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        /// <returns></returns>
+        private int GetStoredSkipScriptIndex(TutorialToolProjectSettings projectSettings)
+        {
+            if (projectSettings == null || !projectSettings.HasSkipBinding)
+            {
+                return 0;
+            }
+
+            for (int i = 0; i < skipBindingScripts.Count; i++)
+            {
+                MonoBehaviour script = skipBindingScripts[i];
+
+                if (script == null)
+                {
+                    continue;
+                }
+
+                if (string.Equals(script.GetType().FullName, projectSettings.SkipScriptName, StringComparison.Ordinal))
+                {
+                    return i + 1;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Refresh the method dropdown after selecting another MonoBehaviour
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        private void OnSkipScriptSelected(TutorialToolProjectSettings projectSettings)
+        {
+            int scriptIndex = skipScriptDropdown.index - 1;
+
+            if (scriptIndex < 0 || scriptIndex >= skipBindingScripts.Count)
+            {
+                ClearSkipMethodDropdown();
+                return;
+            }
+
+            RefreshSkipMethodDropdown(skipBindingScripts[scriptIndex], projectSettings);
+        }
+
+        /// <summary>
+        /// Rebuild the compatible public method dropdown for one MonoBehaviour
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="projectSettings"></param>
+        private void RefreshSkipMethodDropdown(MonoBehaviour script, TutorialToolProjectSettings projectSettings)
+        {
+            skipBindingMethods.Clear();
+
+            IReadOnlyList<MethodBindingOption> options = methodBindingService.GetScriptBindingOptions(script);
+
+            List<string> methodChoices = new List<string>
+            {
+                "Select a method..."
+            };
+
+            foreach (MethodBindingOption option in options)
+            {
+                if (option == null || !option.IsValid)
+                {
+                    continue;
+                }
+
+                skipBindingMethods.Add(option);
+                methodChoices.Add($"{option.StoredMethodName}()");
+            }
+
+            if (skipBindingMethods.Count == 0)
+            {
+                skipMethodDropdown.choices = new List<string>
+                {
+                    "No compatible public method"
+                };
+
+                skipMethodDropdown.SetValueWithoutNotify(skipMethodDropdown.choices[0]);
+                skipMethodDropdown.SetEnabled(false);
+
+                return;
+            }
+
+            skipMethodDropdown.choices = methodChoices;
+
+            int selectedMethodIndex = GetStoredSkipMethodIndex(script, projectSettings);
+
+            skipMethodDropdown.SetValueWithoutNotify(methodChoices[selectedMethodIndex]);
+            skipMethodDropdown.SetEnabled(true);
+        }
+
+        /// <summary>
+        /// Find the method dropdown index corresponding to the persisted Skip binding
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="projectSettings"></param>
+        /// <returns></returns>
+        private int GetStoredSkipMethodIndex(MonoBehaviour script, TutorialToolProjectSettings projectSettings)
+        {
+            if (script == null || projectSettings == null || !projectSettings.HasSkipBinding)
+            {
+                return 0;
+            }
+
+            if (!string.Equals(script.GetType().FullName, projectSettings.SkipScriptName, StringComparison.Ordinal))
+            {
+                return 0;
+            }
+
+            for (int i = 0; i < skipBindingMethods.Count; i++)
+            {
+                MethodBindingOption option = skipBindingMethods[i];
+
+                if (option == null || !option.IsValid)
+                {
+                    continue;
+                }
+
+                if (string.Equals(option.StoredMethodName, projectSettings.SkipMethodName, StringComparison.Ordinal))
+                {
+                    return i + 1;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Clear and disable the Skip method dropdown
+        /// </summary>
+        private void ClearSkipMethodDropdown()
+        {
+            skipBindingMethods.Clear();
+
+            skipMethodDropdown.choices = new List<string>
+            {
+                "Select a method..."
+            };
+
+            skipMethodDropdown.SetValueWithoutNotify(skipMethodDropdown.choices[0]);
+            skipMethodDropdown.SetEnabled(false);
+        }
+
+        /// <summary>
+        /// Persist the selected global Skip Current Step binding
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        private void OnSkipMethodSelected(TutorialToolProjectSettings projectSettings)
+        {
+            int methodIndex = skipMethodDropdown.index - 1;
+
+            if (methodIndex < 0 || methodIndex >= skipBindingMethods.Count)
+            {
+                return;
+            }
+
+            MethodBindingOption option = skipBindingMethods[methodIndex];
+
+            if (option == null || !option.IsValid)
+            {
+                return;
+            }
+
+            if (!projectSettings.TrySetSkipBinding(option.StoredScriptName, option.StoredMethodName))
+            {
+                return;
+            }
+
+            RefreshSkipBindingStatus(projectSettings);
+        }
+
+        /// <summary>
+        /// Refresh the displayed persistent Skip binding
+        /// </summary>
+        /// <param name="projectSettings"></param>
+        private void RefreshSkipBindingStatus(TutorialToolProjectSettings projectSettings)
+        {
+            if (projectSettings == null || !projectSettings.HasSkipBinding)
+            {
+                skipBindingStatus.text = "Skip Current Step: Not configured";
+                return;
+            }
+
+            skipBindingStatus.text = $"Skip Current Step: {projectSettings.SkipScriptName}.{projectSettings.SkipMethodName}()";
+        }
+
+        #endregion
+
+        #region Tool Disposal
 
         /// <summary>
         /// Release every component created by the window
@@ -520,6 +890,15 @@ namespace Tutorial.Editor
             connectionLayer = null;
             dropHint = null;
             inspectorPanel = null;
+
+            skipBindingScripts.Clear();
+            skipBindingMethods.Clear();
+
+            globalControlsRoot = null;
+            skipTargetField = null;
+            skipScriptDropdown = null;
+            skipMethodDropdown = null;
+            skipBindingStatus = null;
 
             contentHost = null;
             editorHost = null;

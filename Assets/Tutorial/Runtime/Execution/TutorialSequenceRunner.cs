@@ -141,6 +141,20 @@ namespace Tutorial.Runtime.Execution
         }
 
         /// <summary>
+        /// Skip only the currently executed Step and continue this sequence
+        /// </summary>
+        /// <returns></returns>
+        public bool SkipCurrentStep()
+        {
+            if (status != ETutorialSequenceRunnerStatus.Running || currentStepRunner == null)
+            {
+                return false;
+            }
+
+            return currentStepRunner.Skip();
+        }
+
+        /// <summary>
         /// Skip every remaining Step and terminate this sequence
         /// </summary>
         /// <returns></returns>

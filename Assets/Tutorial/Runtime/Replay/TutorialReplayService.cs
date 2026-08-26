@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Tutorial.Runtime.Core;
 using Tutorial.Runtime.Persistence;
 using Tutorial.Runtime.Progress;
@@ -247,6 +246,13 @@ namespace Tutorial.Runtime.Replay
         {
             error = string.Empty;
 
+            if (runtimeInstance == null)
+            {
+                error = "The replay runtime instance is null.";
+
+                return false;
+            }
+
             if (progressData == null)
             {
                 error = "Persistent tutorial progress is null.";
@@ -254,101 +260,23 @@ namespace Tutorial.Runtime.Replay
                 return false;
             }
 
-            progressData.EnsureInitialized();
-
-            if (progressData.Version != TutorialProgressSaveData.CurrentVersion)
-            {
-                error = $"Unsupported tutorial progress version '{progressData.Version}'.";
-
-                return false;
-            }
-
-            if (!string.Equals(progressData.TutorialGuid, runtimeInstance.TutorialGuid, StringComparison.Ordinal))
-            {
-                error =
-                    $"Tutorial progress GUID '{progressData.TutorialGuid}' does not match replay tutorial " +
-                    $"'{runtimeInstance.TutorialGuid}'.";
-
-                return false;
-            }
-
-            if (progressData.GraphVersion != runtimeInstance.SourceGraph.Version)
-            {
-                error =
-                    $"Tutorial progress graph version '{progressData.GraphVersion}' does not match replay graph version " +
-                    $"'{runtimeInstance.SourceGraph.Version}'.";
-
-                return false;
-            }
-
             if (progressData.Status != ETutorialProgressStatus.Completed)
             {
-                error =
-                    $"Tutorial '{runtimeInstance.TutorialGuid}' cannot be replayed because its persistent progress " +
-                    $"status is '{progressData.Status}' instead of Completed.";
+                error = $"Tutorial '{runtimeInstance.TutorialGuid}' cannot be replayed because its persistent progress status is '{progressData.Status}' instead of Completed.";
 
                 return false;
             }
 
-            HashSet<string> finishedNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+            TutorialProgressService validationProgress = new TutorialProgressService(runtimeInstance);
 
-            foreach (string nodeGuid in progressData.CompletedNodeGuids)
+            if (!validationProgress.TryRestore(progressData, out error))
             {
-                if (!TryRegisterFinishedNode(runtimeInstance, nodeGuid, finishedNodeGuids, out error))
-                {
-                    return false;
-                }
-            }
-
-            foreach (string nodeGuid in progressData.SkippedNodeGuids)
-            {
-                if (!TryRegisterFinishedNode(runtimeInstance, nodeGuid, finishedNodeGuids, out error))
-                {
-                    return false;
-                }
-            }
-
-            if (finishedNodeGuids.Count != runtimeInstance.RuntimeNodes.Count)
-            {
-                error =
-                    $"Completed tutorial progress contains {finishedNodeGuids.Count} finished runtime node(s), " +
-                    $"but tutorial '{runtimeInstance.TutorialGuid}' contains {runtimeInstance.RuntimeNodes.Count} node(s).";
-
                 return false;
             }
 
-            return true;
-        }
-
-        /// <summary>
-        /// Validate and register one finished node contained by completed persistent progress
-        /// </summary>
-        /// <param name="runtimeInstance"></param>
-        /// <param name="nodeGuid"></param>
-        /// <param name="finishedNodeGuids"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        private static bool TryRegisterFinishedNode(TutorialRuntimeInstance runtimeInstance, string nodeGuid, HashSet<string> finishedNodeGuids, out string error)
-        {
-            error = string.Empty;
-
-            if (string.IsNullOrWhiteSpace(nodeGuid))
+            if (!validationProgress.IsCompleted)
             {
-                error = "Completed tutorial progress contains an empty runtime node GUID.";
-
-                return false;
-            }
-
-            if (!runtimeInstance.RuntimeNodes.ContainsKey(nodeGuid))
-            {
-                error = $"Completed tutorial progress references unknown runtime node '{nodeGuid}'.";
-
-                return false;
-            }
-
-            if (!finishedNodeGuids.Add(nodeGuid))
-            {
-                error = $"Completed tutorial progress contains duplicated runtime node '{nodeGuid}'.";
+                error = $"Tutorial '{runtimeInstance.TutorialGuid}' persistent progress could be restored but is not completed.";
 
                 return false;
             }
@@ -382,23 +310,18 @@ namespace Tutorial.Runtime.Replay
                 Status = source.Status
             };
 
-            clone.CompletedNodeGuids.AddRange(source.CompletedNodeGuids);
-            clone.SkippedNodeGuids.AddRange(source.SkippedNodeGuids);
-
-            foreach (TutorialSequenceProgressSaveData sequenceProgress in source.Sequences)
+            foreach (TutorialProgressUnitSaveData completedUnit in source.CompletedUnits)
             {
-                if (sequenceProgress == null)
+                if (completedUnit == null)
                 {
                     continue;
                 }
 
-                clone.Sequences.Add(
-                    new TutorialSequenceProgressSaveData
-                    {
-                        NodeGuid = sequenceProgress.NodeGuid,
-                        NextStepIndex = sequenceProgress.NextStepIndex
-                    }
-                );
+                clone.CompletedUnits.Add(new TutorialProgressUnitSaveData
+                {
+                    UnitGuid = completedUnit.UnitGuid,
+                    UnitType = completedUnit.UnitType
+                });
             }
 
             return clone;

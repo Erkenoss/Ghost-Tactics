@@ -18,6 +18,45 @@ namespace Tutorial.Editor.Services
         #region Public Methods
 
         /// <summary>
+        /// Get every unique MonoBehaviour type attached to a GameObject
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <returns></returns>
+        public IReadOnlyList<MonoBehaviour> GetScripts(GameObject gameObject)
+        {
+            List<MonoBehaviour> scripts = new List<MonoBehaviour>();
+
+            if (gameObject == null)
+            {
+                return scripts;
+            }
+
+            MonoBehaviour[] attachedScripts = gameObject.GetComponents<MonoBehaviour>();
+            HashSet<string> registeredScriptTypes = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (MonoBehaviour script in attachedScripts)
+            {
+                if (script == null)
+                {
+                    continue;
+                }
+
+                string scriptTypeName = script.GetType().FullName;
+
+                if (string.IsNullOrWhiteSpace(scriptTypeName) || !registeredScriptTypes.Add(scriptTypeName))
+                {
+                    continue;
+                }
+
+                scripts.Add(script);
+            }
+
+            scripts.Sort((first, second) => string.Compare(first.GetType().Name, second.GetType().Name, StringComparison.Ordinal));
+
+            return scripts;
+        }
+
+        /// <summary>
         /// Get every compatible method available on a GameObject
         /// </summary>
         /// <param name="gameObject"></param>
@@ -25,29 +64,17 @@ namespace Tutorial.Editor.Services
         public IReadOnlyList<MethodBindingOption> GetBindingOptions(GameObject gameObject)
         {
             List<MethodBindingOption> options = new List<MethodBindingOption>();
-
-            if (gameObject == null)
-            {
-                return options;
-            }
-
-            MonoBehaviour[] scripts = gameObject.GetComponents<MonoBehaviour>();
             HashSet<string> registeredBindings = new HashSet<string>(StringComparer.Ordinal);
+
+            IReadOnlyList<MonoBehaviour> scripts = GetScripts(gameObject);
 
             foreach (MonoBehaviour script in scripts)
             {
-                if (script == null)
+                IReadOnlyList<MethodBindingOption> scriptOptions = GetScriptBindingOptions(script);
+
+                foreach (MethodBindingOption option in scriptOptions)
                 {
-                    continue;
-                }
-
-                MethodInfo[] methods = GetCompatibleMethods(script);
-
-                foreach (MethodInfo method in methods)
-                {
-                    MethodBindingOption option = new MethodBindingOption(script, method);
-
-                    if (!option.IsValid)
+                    if (option == null || !option.IsValid)
                     {
                         continue;
                     }
@@ -64,6 +91,37 @@ namespace Tutorial.Editor.Services
             }
 
             options.Sort((first, second) => string.Compare(first.DisplayName, second.DisplayName, StringComparison.Ordinal));
+
+            return options;
+        }
+
+        /// <summary>
+        /// Get every compatible public method declared by one MonoBehaviour
+        /// </summary>
+        /// <param name="script"></param>
+        /// <returns></returns>
+        public IReadOnlyList<MethodBindingOption> GetScriptBindingOptions(MonoBehaviour script)
+        {
+            List<MethodBindingOption> options = new List<MethodBindingOption>();
+
+            if (script == null)
+            {
+                return options;
+            }
+
+            MethodInfo[] methods = GetCompatibleMethods(script);
+
+            foreach (MethodInfo method in methods)
+            {
+                MethodBindingOption option = new MethodBindingOption(script, method);
+
+                if (!option.IsValid)
+                {
+                    continue;
+                }
+
+                options.Add(option);
+            }
 
             return options;
         }

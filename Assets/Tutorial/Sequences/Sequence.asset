@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94fe7f71ae43f6345b7628b0feec415f, type: 3}
-  m_Name: TutorialStep_To_TutorialStep 1_Sequence
+  m_Name: Sequence
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSequenceSO
   stepType: 0
   completionData:
@@ -20,12 +20,12 @@ MonoBehaviour:
   scriptName: 
   methodNameToCall: 
   tutoGUID: 
-  stepGUID: 417933deb6b441eaac518e1d4be42cfc
+  stepGUID: 
   sequenceType: 0
   sequenceSOList:
-  - {fileID: 11400000, guid: 442836c5dc70300469ae5e28c4a620d1, type: 2}
-  - {fileID: 11400000, guid: e91ebe1f1da776842bada45420c0c5e1, type: 2}
-  - {fileID: 11400000, guid: bbee8800b33bee243b44a11cc603cdde, type: 2}
+  - {fileID: 11400000, guid: 99dc7f6e21104004ba84d080ec84935f, type: 2}
+  - {fileID: 11400000, guid: 4b264c223bea2d5478a3285afd48913b, type: 2}
+  - {fileID: 11400000, guid: 8b1ab2e206cd1ad45bfbad264d2aa2b8, type: 2}
   references:
     version: 2
     RefIds:

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Crimson.Core.Audio;
 using GhostTactics.Core;
-using UnityEngine;
 
 namespace Crimson.Core.Settings
 {
@@ -22,6 +21,7 @@ namespace Crimson.Core.Settings
         Vibration,
         CameraShake,
         ReduceFlashing,
+        Tutorial
     }
 
     public class OnReceiveLoadSetting

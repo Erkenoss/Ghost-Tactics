@@ -31,6 +31,10 @@ namespace Tutorial.Editor.Settings
             }
         }
 
+        public string SkipScriptName => skipScriptName;
+        public string SkipMethodName => skipMethodName;
+        public bool HasSkipBinding => !string.IsNullOrWhiteSpace(skipScriptName) && !string.IsNullOrWhiteSpace(skipMethodName);
+
         #endregion
 
         #region Serialized Fields
@@ -43,6 +47,18 @@ namespace Tutorial.Editor.Settings
 
         [SerializeField]
         private string graphFolderGuid = string.Empty;
+
+        /// <summary>
+        /// Full type name of the MonoBehaviour containing the global Skip Current Step method
+        /// </summary>
+        [SerializeField]
+        private string skipScriptName = string.Empty;
+
+        /// <summary>
+        /// Name of the public method used as the global Skip Current Step entry point
+        /// </summary>
+        [SerializeField]
+        private string skipMethodName = string.Empty;
 
         #endregion
 
@@ -204,6 +220,8 @@ namespace Tutorial.Editor.Settings
             stepFolderPath = DefaultStepFolderPath;
             sequenceFolderPath = DefaultSequenceFolderPath;
             graphFolderGuid = string.Empty;
+            skipScriptName = string.Empty;
+            skipMethodName = string.Empty;
 
             SaveSettings();
         }
@@ -272,6 +290,55 @@ namespace Tutorial.Editor.Settings
             }
 
             return normalizedPath.StartsWith("Assets/", StringComparison.Ordinal);
+        }
+
+        #endregion
+
+        #region Skip Binding
+
+        /// <summary>
+        /// Store the method used as the global Skip Current Step entry point
+        /// </summary>
+        /// <param name="scriptName"></param>
+        /// <param name="methodName"></param>
+        /// <returns></returns>
+        public bool TrySetSkipBinding(string scriptName, string methodName)
+        {
+            if (string.IsNullOrWhiteSpace(scriptName) || string.IsNullOrWhiteSpace(methodName))
+            {
+                return false;
+            }
+
+            scriptName = scriptName.Trim();
+            methodName = methodName.Trim();
+
+            if (string.Equals(skipScriptName, scriptName, StringComparison.Ordinal) && string.Equals(skipMethodName, methodName, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            skipScriptName = scriptName;
+            skipMethodName = methodName;
+
+            SaveSettings();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Remove the global Skip Current Step method binding
+        /// </summary>
+        public void ClearSkipBinding()
+        {
+            if (string.IsNullOrWhiteSpace(skipScriptName) && string.IsNullOrWhiteSpace(skipMethodName))
+            {
+                return;
+            }
+
+            skipScriptName = string.Empty;
+            skipMethodName = string.Empty;
+
+            SaveSettings();
         }
 
         #endregion

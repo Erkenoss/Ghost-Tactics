@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Tutorial.Runtime.Core;
-using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Persistence;
 
 namespace Tutorial.Runtime.Progress
@@ -29,9 +28,19 @@ namespace Tutorial.Runtime.Progress
         private readonly HashSet<string> skippedNodeGuids = new HashSet<string>(StringComparer.Ordinal);
 
         /// <summary>
-        /// Next Step index to execute for every partially progressed sequence node
+        /// Persistent standalone Step units already completed
         /// </summary>
-        private readonly Dictionary<string, int> sequenceNextStepIndices = new Dictionary<string, int>(StringComparer.Ordinal);
+        private readonly HashSet<string> completedStepUnitGuids = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Persistent Sequence units already completed
+        /// </summary>
+        private readonly HashSet<string> completedSequenceUnitGuids = new HashSet<string>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Total number of persistent units required to complete this tutorial
+        /// </summary>
+        private readonly int expectedPersistentUnitCount = 0;
 
         /// <summary>
         /// Current persistent progress status of this tutorial
@@ -49,6 +58,11 @@ namespace Tutorial.Runtime.Progress
         public bool IsStarted => status != ETutorialProgressStatus.NotStarted;
         public bool IsInProgress => status == ETutorialProgressStatus.InProgress;
         public bool IsCompleted => status == ETutorialProgressStatus.Completed;
+        public int CompletedUnitCount => completedStepUnitGuids.Count + completedSequenceUnitGuids.Count;
+        public int CompletedStepUnitCount => completedStepUnitGuids.Count;
+        public int CompletedSequenceUnitCount => completedSequenceUnitGuids.Count;
+        public int ExpectedPersistentUnitCount => expectedPersistentUnitCount;
+        public int FinishedNodeCount => completedNodeGuids.Count + skippedNodeGuids.Count;
 
         #endregion
 
@@ -72,6 +86,56 @@ namespace Tutorial.Runtime.Progress
             {
                 throw new ArgumentException("A disposed tutorial runtime instance cannot own a progress service.", nameof(runtimeInstance));
             }
+
+            expectedPersistentUnitCount = CountPersistentUnits(runtimeInstance);
+        }
+
+        /// <summary>
+        /// Count every logical persistent unit represented by one runtime tutorial graph
+        /// </summary>
+        /// <param name="runtimeInstance"></param>
+        /// <returns></returns>
+        private static int CountPersistentUnits(TutorialRuntimeInstance runtimeInstance)
+        {
+            if (runtimeInstance == null)
+            {
+                return 0;
+            }
+
+            int standaloneStepCount = 0;
+            HashSet<string> sequenceGuids = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
+            {
+                if (runtimeNode == null)
+                {
+                    continue;
+                }
+
+                if (runtimeNode.IsSequenceMember)
+                {
+                    if (!string.IsNullOrWhiteSpace(runtimeNode.SequenceGuid))
+                    {
+                        sequenceGuids.Add(runtimeNode.SequenceGuid);
+                    }
+
+                    continue;
+                }
+
+                if (runtimeNode.IsSequence)
+                {
+                    if (!string.IsNullOrWhiteSpace(runtimeNode.StepGuid))
+                    {
+                        sequenceGuids.Add(runtimeNode.StepGuid);
+                    }
+
+                    continue;
+                }
+
+                standaloneStepCount++;
+            }
+
+            return standaloneStepCount + sequenceGuids.Count;
         }
 
         #endregion
@@ -103,7 +167,8 @@ namespace Tutorial.Runtime.Progress
         {
             completedNodeGuids.Clear();
             skippedNodeGuids.Clear();
-            sequenceNextStepIndices.Clear();
+            completedStepUnitGuids.Clear();
+            completedSequenceUnitGuids.Clear();
 
             status = ETutorialProgressStatus.NotStarted;
 
@@ -161,6 +226,11 @@ namespace Tutorial.Runtime.Progress
                 return false;
             }
 
+            if (!runtimeInstance.TryGetRuntimeNode(nodeGuid, out TutorialRuntimeNode runtimeNode))
+            {
+                return false;
+            }
+
             if (skippedNodeGuids.Contains(nodeGuid))
             {
                 return false;
@@ -171,12 +241,7 @@ namespace Tutorial.Runtime.Progress
                 return true;
             }
 
-            sequenceNextStepIndices.Remove(nodeGuid);
-
-            EvaluateCompletion();
-            NotifyChanged();
-
-            return true;
+            return FinalizePersistentNodeProgress(runtimeNode);
         }
 
         /// <summary>
@@ -191,6 +256,11 @@ namespace Tutorial.Runtime.Progress
                 return false;
             }
 
+            if (!runtimeInstance.TryGetRuntimeNode(nodeGuid, out TutorialRuntimeNode runtimeNode))
+            {
+                return false;
+            }
+
             if (completedNodeGuids.Contains(nodeGuid))
             {
                 return false;
@@ -201,69 +271,7 @@ namespace Tutorial.Runtime.Progress
                 return true;
             }
 
-            sequenceNextStepIndices.Remove(nodeGuid);
-
-            EvaluateCompletion();
-            NotifyChanged();
-
-            return true;
-        }
-
-        #endregion
-
-        #region Sequence Progress
-
-        /// <summary>
-        /// Store the next Step index to execute inside one partially progressed runtime sequence
-        /// </summary>
-        /// <param name="nodeGuid"></param>
-        /// <param name="nextStepIndex"></param>
-        /// <returns></returns>
-        public bool SetSequenceNextStepIndex(string nodeGuid, int nextStepIndex)
-        {
-            if (!IsInProgress || IsNodeFinished(nodeGuid))
-            {
-                return false;
-            }
-
-            if (!TryGetRuntimeSequence(nodeGuid, out StepSequenceSO runtimeSequence))
-            {
-                return false;
-            }
-
-            if (runtimeSequence.SequenceSOList == null || nextStepIndex < 0 || nextStepIndex > runtimeSequence.SequenceSOList.Count)
-            {
-                return false;
-            }
-
-            if (sequenceNextStepIndices.TryGetValue(nodeGuid, out int registeredIndex) && registeredIndex == nextStepIndex)
-            {
-                return true;
-            }
-
-            sequenceNextStepIndices[nodeGuid] = nextStepIndex;
-
-            NotifyChanged();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Retrieve the next Step index saved for one partially progressed runtime sequence
-        /// </summary>
-        /// <param name="nodeGuid"></param>
-        /// <param name="nextStepIndex"></param>
-        /// <returns></returns>
-        public bool TryGetSequenceNextStepIndex(string nodeGuid, out int nextStepIndex)
-        {
-            nextStepIndex = 0;
-
-            if (string.IsNullOrWhiteSpace(nodeGuid))
-            {
-                return false;
-            }
-
-            return sequenceNextStepIndices.TryGetValue(nodeGuid, out nextStepIndex);
+            return FinalizePersistentNodeProgress(runtimeNode);
         }
 
         #endregion
@@ -271,7 +279,7 @@ namespace Tutorial.Runtime.Progress
         #region Persistence
 
         /// <summary>
-        /// Create a serializable snapshot of the current tutorial progress
+        /// Create a serializable snapshot containing every completed persistent tutorial unit
         /// </summary>
         /// <returns></returns>
         public TutorialProgressSaveData CreateSaveData()
@@ -284,33 +292,64 @@ namespace Tutorial.Runtime.Progress
                 Status = status
             };
 
-            List<string> completedNodes = new List<string>(completedNodeGuids);
-            completedNodes.Sort(StringComparer.Ordinal);
-            saveData.CompletedNodeGuids.AddRange(completedNodes);
-
-            List<string> skippedNodes = new List<string>(skippedNodeGuids);
-            skippedNodes.Sort(StringComparer.Ordinal);
-            saveData.SkippedNodeGuids.AddRange(skippedNodes);
-
-            List<string> sequenceNodeGuids = new List<string>(sequenceNextStepIndices.Keys);
-            sequenceNodeGuids.Sort(StringComparer.Ordinal);
-
-            foreach (string nodeGuid in sequenceNodeGuids)
+            foreach (string stepUnitGuid in completedStepUnitGuids)
             {
-                saveData.Sequences.Add(
-                    new TutorialSequenceProgressSaveData
-                    {
-                        NodeGuid = nodeGuid,
-                        NextStepIndex = sequenceNextStepIndices[nodeGuid]
-                    }
-                );
+                saveData.CompletedUnits.Add(new TutorialProgressUnitSaveData
+                {
+                    UnitGuid = stepUnitGuid,
+                    UnitType = ETutorialProgressUnitType.Step
+                });
             }
+
+            foreach (string sequenceUnitGuid in completedSequenceUnitGuids)
+            {
+                saveData.CompletedUnits.Add(new TutorialProgressUnitSaveData
+                {
+                    UnitGuid = sequenceUnitGuid,
+                    UnitType = ETutorialProgressUnitType.Sequence
+                });
+            }
+
+            saveData.CompletedUnits.Sort(CompareProgressUnits);
 
             return saveData;
         }
 
         /// <summary>
-        /// Restore persistent tutorial progress from previously serialized data
+        /// Compare two persistent tutorial units to produce deterministic save ordering
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
+        private static int CompareProgressUnits(TutorialProgressUnitSaveData left, TutorialProgressUnitSaveData right)
+        {
+            if (left == null && right == null)
+            {
+                return 0;
+            }
+
+            if (left == null)
+            {
+                return -1;
+            }
+
+            if (right == null)
+            {
+                return 1;
+            }
+
+            int typeComparison = left.UnitType.CompareTo(right.UnitType);
+
+            if (typeComparison != 0)
+            {
+                return typeComparison;
+            }
+
+            return string.Compare(left.UnitGuid, right.UnitGuid, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Restore persistent tutorial progress from previously serialized completed units
         /// </summary>
         /// <param name="saveData"></param>
         /// <param name="error"></param>
@@ -319,27 +358,30 @@ namespace Tutorial.Runtime.Progress
         {
             error = string.Empty;
 
-            if (!TryValidateSaveData(
-                saveData,
-                out HashSet<string> restoredCompletedNodes,
-                out HashSet<string> restoredSkippedNodes,
-                out Dictionary<string, int> restoredSequenceIndices,
-                out error
-            ))
+            if (!TryValidateSaveData(saveData, out HashSet<string> restoredFinishedNodes, out error))
             {
                 return false;
             }
 
             completedNodeGuids.Clear();
             skippedNodeGuids.Clear();
-            sequenceNextStepIndices.Clear();
+            completedStepUnitGuids.Clear();
+            completedSequenceUnitGuids.Clear();
 
-            completedNodeGuids.UnionWith(restoredCompletedNodes);
-            skippedNodeGuids.UnionWith(restoredSkippedNodes);
+            completedNodeGuids.UnionWith(restoredFinishedNodes);
 
-            foreach (KeyValuePair<string, int> sequenceProgress in restoredSequenceIndices)
+            foreach (TutorialProgressUnitSaveData completedUnit in saveData.CompletedUnits)
             {
-                sequenceNextStepIndices.Add(sequenceProgress.Key, sequenceProgress.Value);
+                if (completedUnit.UnitType == ETutorialProgressUnitType.Step)
+                {
+                    completedStepUnitGuids.Add(completedUnit.UnitGuid);
+                    continue;
+                }
+
+                if (completedUnit.UnitType == ETutorialProgressUnitType.Sequence)
+                {
+                    completedSequenceUnitGuids.Add(completedUnit.UnitGuid);
+                }
             }
 
             status = saveData.Status;
@@ -369,45 +411,15 @@ namespace Tutorial.Runtime.Progress
         }
 
         /// <summary>
-        /// Resolve one runtime StepSequenceSO from its persistent runtime node GUID
-        /// </summary>
-        /// <param name="nodeGuid"></param>
-        /// <param name="runtimeSequence"></param>
-        /// <returns></returns>
-        private bool TryGetRuntimeSequence(string nodeGuid, out StepSequenceSO runtimeSequence)
-        {
-            runtimeSequence = null;
-
-            if (!runtimeInstance.TryGetRuntimeNode(nodeGuid, out TutorialRuntimeNode runtimeNode))
-            {
-                return false;
-            }
-
-            runtimeSequence = runtimeNode.RuntimeStep as StepSequenceSO;
-
-            return runtimeSequence != null;
-        }
-
-        /// <summary>
-        /// Validate and reconstruct every collection contained by persistent tutorial progress data
+        /// Validate and reconstruct every completed runtime node represented by persistent tutorial units
         /// </summary>
         /// <param name="saveData"></param>
-        /// <param name="restoredCompletedNodes"></param>
-        /// <param name="restoredSkippedNodes"></param>
-        /// <param name="restoredSequenceIndices"></param>
+        /// <param name="restoredFinishedNodes"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool TryValidateSaveData(
-            TutorialProgressSaveData saveData,
-            out HashSet<string> restoredCompletedNodes,
-            out HashSet<string> restoredSkippedNodes,
-            out Dictionary<string, int> restoredSequenceIndices,
-            out string error
-        )
+        private bool TryValidateSaveData(TutorialProgressSaveData saveData, out HashSet<string> restoredFinishedNodes, out string error)
         {
-            restoredCompletedNodes = new HashSet<string>(StringComparer.Ordinal);
-            restoredSkippedNodes = new HashSet<string>(StringComparer.Ordinal);
-            restoredSequenceIndices = new Dictionary<string, int>(StringComparer.Ordinal);
+            restoredFinishedNodes = new HashSet<string>(StringComparer.Ordinal);
             error = string.Empty;
 
             if (saveData == null)
@@ -428,72 +440,45 @@ namespace Tutorial.Runtime.Progress
 
             if (!string.Equals(saveData.TutorialGuid, runtimeInstance.TutorialGuid, StringComparison.Ordinal))
             {
-                error =
-                    $"Tutorial progress GUID '{saveData.TutorialGuid}' does not match runtime tutorial " +
-                    $"'{runtimeInstance.TutorialGuid}'.";
+                error = $"Tutorial progress GUID '{saveData.TutorialGuid}' does not match runtime tutorial '{runtimeInstance.TutorialGuid}'.";
 
                 return false;
             }
 
             if (saveData.GraphVersion != runtimeInstance.SourceGraph.Version)
             {
-                error =
-                    $"Tutorial progress graph version '{saveData.GraphVersion}' does not match runtime graph version " +
-                    $"'{runtimeInstance.SourceGraph.Version}'.";
+                error = $"Tutorial progress graph version '{saveData.GraphVersion}' does not match runtime graph version '{runtimeInstance.SourceGraph.Version}'.";
 
                 return false;
             }
 
-            foreach (string nodeGuid in saveData.CompletedNodeGuids)
+            HashSet<string> registeredUnitKeys = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (TutorialProgressUnitSaveData completedUnit in saveData.CompletedUnits)
             {
-                if (!TryRegisterRestoredNode(nodeGuid, restoredCompletedNodes, "completed", out error))
+                if (!TryRegisterRestoredUnit(completedUnit, registeredUnitKeys, restoredFinishedNodes, out error))
                 {
                     return false;
                 }
             }
 
-            foreach (string nodeGuid in saveData.SkippedNodeGuids)
+            if (saveData.Status == ETutorialProgressStatus.NotStarted && restoredFinishedNodes.Count > 0)
             {
-                if (!TryRegisterRestoredNode(nodeGuid, restoredSkippedNodes, "skipped", out error))
-                {
-                    return false;
-                }
-
-                if (restoredCompletedNodes.Contains(nodeGuid))
-                {
-                    error = $"Runtime node '{nodeGuid}' is both completed and skipped inside tutorial progress.";
-
-                    return false;
-                }
-            }
-
-            foreach (TutorialSequenceProgressSaveData sequenceProgress in saveData.Sequences)
-            {
-                if (!TryValidateSequenceProgress(sequenceProgress, restoredCompletedNodes, restoredSkippedNodes, restoredSequenceIndices, out error))
-                {
-                    return false;
-                }
-            }
-
-            int finishedNodeCount = restoredCompletedNodes.Count + restoredSkippedNodes.Count;
-
-            if (saveData.Status == ETutorialProgressStatus.NotStarted && (finishedNodeCount > 0 || restoredSequenceIndices.Count > 0))
-            {
-                error = "A NotStarted tutorial cannot contain saved node or sequence progress.";
+                error = "A NotStarted tutorial cannot contain completed persistent units.";
 
                 return false;
             }
 
-            if (saveData.Status == ETutorialProgressStatus.Completed && finishedNodeCount != runtimeInstance.RuntimeNodes.Count)
+            if (saveData.Status == ETutorialProgressStatus.Completed && restoredFinishedNodes.Count != runtimeInstance.RuntimeNodes.Count)
             {
-                error = "A Completed tutorial must contain a terminal progress state for every runtime node.";
+                error = "A Completed tutorial must resolve every runtime node from its completed persistent units.";
 
                 return false;
             }
 
-            if (saveData.Status == ETutorialProgressStatus.InProgress && finishedNodeCount == runtimeInstance.RuntimeNodes.Count)
+            if (saveData.Status == ETutorialProgressStatus.InProgress && restoredFinishedNodes.Count == runtimeInstance.RuntimeNodes.Count)
             {
-                error = "An InProgress tutorial cannot already contain a terminal state for every runtime node.";
+                error = "An InProgress tutorial cannot already resolve every runtime node as completed.";
 
                 return false;
             }
@@ -502,34 +487,90 @@ namespace Tutorial.Runtime.Progress
         }
 
         /// <summary>
-        /// Validate and register one restored runtime node GUID
+        /// Validate one persistent completed unit and reconstruct its finished runtime nodes
+        /// </summary>
+        /// <param name="completedUnit"></param>
+        /// <param name="registeredUnitKeys"></param>
+        /// <param name="restoredFinishedNodes"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        private bool TryRegisterRestoredUnit(TutorialProgressUnitSaveData completedUnit, HashSet<string> registeredUnitKeys, HashSet<string> restoredFinishedNodes, out string error)
+        {
+            error = string.Empty;
+
+            if (completedUnit == null)
+            {
+                error = "Tutorial progress contains a null completed unit.";
+
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(completedUnit.UnitGuid))
+            {
+                error = "Tutorial progress contains a completed unit with no GUID.";
+
+                return false;
+            }
+
+            if (completedUnit.UnitType == ETutorialProgressUnitType.None)
+            {
+                error = $"Tutorial progress unit '{completedUnit.UnitGuid}' contains no valid unit type.";
+
+                return false;
+            }
+
+            string unitKey = $"{completedUnit.UnitType}|{completedUnit.UnitGuid}";
+
+            if (!registeredUnitKeys.Add(unitKey))
+            {
+                error = $"Tutorial progress contains duplicated completed unit '{unitKey}'.";
+
+                return false;
+            }
+
+            if (completedUnit.UnitType == ETutorialProgressUnitType.Step)
+            {
+                return TryRestoreStandaloneStep(completedUnit.UnitGuid, restoredFinishedNodes, out error);
+            }
+
+            if (completedUnit.UnitType == ETutorialProgressUnitType.Sequence)
+            {
+                return TryRestoreSequence(completedUnit.UnitGuid, restoredFinishedNodes, out error);
+            }
+
+            error = $"Tutorial progress unit '{completedUnit.UnitGuid}' uses unsupported type '{completedUnit.UnitType}'.";
+
+            return false;
+        }
+
+        /// <summary>
+        /// Restore one completed standalone runtime Step
         /// </summary>
         /// <param name="nodeGuid"></param>
-        /// <param name="destination"></param>
-        /// <param name="stateName"></param>
+        /// <param name="restoredFinishedNodes"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool TryRegisterRestoredNode(string nodeGuid, HashSet<string> destination, string stateName, out string error)
+        private bool TryRestoreStandaloneStep(string nodeGuid, HashSet<string> restoredFinishedNodes, out string error)
         {
             error = string.Empty;
 
-            if (string.IsNullOrWhiteSpace(nodeGuid))
+            if (!runtimeInstance.TryGetRuntimeNode(nodeGuid, out TutorialRuntimeNode runtimeNode))
             {
-                error = $"Tutorial progress contains an empty {stateName} node GUID.";
+                error = $"Tutorial progress references unknown standalone runtime node '{nodeGuid}'.";
 
                 return false;
             }
 
-            if (!runtimeInstance.RuntimeNodes.ContainsKey(nodeGuid))
+            if (runtimeNode.IsSequenceMember || runtimeNode.IsSequence)
             {
-                error = $"Tutorial progress references unknown {stateName} runtime node '{nodeGuid}'.";
+                error = $"Tutorial progress references sequence runtime node '{nodeGuid}' as a standalone completed Step.";
 
                 return false;
             }
 
-            if (!destination.Add(nodeGuid))
+            if (!restoredFinishedNodes.Add(nodeGuid))
             {
-                error = $"Tutorial progress contains duplicated {stateName} runtime node '{nodeGuid}'.";
+                error = $"Runtime node '{nodeGuid}' was restored more than once.";
 
                 return false;
             }
@@ -538,66 +579,45 @@ namespace Tutorial.Runtime.Progress
         }
 
         /// <summary>
-        /// Validate one restored partial sequence progress entry
+        /// Restore one completed persistent sequence by marking all of its runtime nodes as finished
         /// </summary>
-        /// <param name="sequenceProgress"></param>
-        /// <param name="restoredCompletedNodes"></param>
-        /// <param name="restoredSkippedNodes"></param>
-        /// <param name="restoredSequenceIndices"></param>
+        /// <param name="sequenceGuid"></param>
+        /// <param name="restoredFinishedNodes"></param>
         /// <param name="error"></param>
         /// <returns></returns>
-        private bool TryValidateSequenceProgress(
-            TutorialSequenceProgressSaveData sequenceProgress,
-            HashSet<string> restoredCompletedNodes,
-            HashSet<string> restoredSkippedNodes,
-            Dictionary<string, int> restoredSequenceIndices,
-            out string error
-        )
+        private bool TryRestoreSequence(string sequenceGuid, HashSet<string> restoredFinishedNodes, out string error)
         {
             error = string.Empty;
+            bool sequenceFound = false;
 
-            if (sequenceProgress == null)
+            foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
             {
-                error = "Tutorial progress contains a null sequence progress entry.";
+                if (runtimeNode == null)
+                {
+                    continue;
+                }
 
-                return false;
+                bool isSequenceMember = runtimeNode.IsSequenceMember && string.Equals(runtimeNode.SequenceGuid, sequenceGuid, StringComparison.Ordinal);
+                bool isSequenceNode = runtimeNode.IsSequence && string.Equals(runtimeNode.StepGuid, sequenceGuid, StringComparison.Ordinal);
+
+                if (!isSequenceMember && !isSequenceNode)
+                {
+                    continue;
+                }
+
+                sequenceFound = true;
+
+                if (!restoredFinishedNodes.Add(runtimeNode.NodeGuid))
+                {
+                    error = $"Runtime node '{runtimeNode.NodeGuid}' was restored by multiple persistent units.";
+
+                    return false;
+                }
             }
 
-            if (string.IsNullOrWhiteSpace(sequenceProgress.NodeGuid))
+            if (!sequenceFound)
             {
-                error = "Tutorial progress contains a sequence entry with no runtime node GUID.";
-
-                return false;
-            }
-
-            if (restoredCompletedNodes.Contains(sequenceProgress.NodeGuid) || restoredSkippedNodes.Contains(sequenceProgress.NodeGuid))
-            {
-                error = $"Finished runtime node '{sequenceProgress.NodeGuid}' cannot contain partial sequence progress.";
-
-                return false;
-            }
-
-            if (!TryGetRuntimeSequence(sequenceProgress.NodeGuid, out StepSequenceSO runtimeSequence))
-            {
-                error = $"Runtime node '{sequenceProgress.NodeGuid}' does not reference a StepSequenceSO.";
-
-                return false;
-            }
-
-            if (runtimeSequence.SequenceSOList == null ||
-                sequenceProgress.NextStepIndex < 0 ||
-                sequenceProgress.NextStepIndex > runtimeSequence.SequenceSOList.Count)
-            {
-                error =
-                    $"Sequence progress index '{sequenceProgress.NextStepIndex}' is invalid for runtime node " +
-                    $"'{sequenceProgress.NodeGuid}'.";
-
-                return false;
-            }
-
-            if (!restoredSequenceIndices.TryAdd(sequenceProgress.NodeGuid, sequenceProgress.NextStepIndex))
-            {
-                error = $"Tutorial progress contains duplicated sequence node '{sequenceProgress.NodeGuid}'.";
+                error = $"Tutorial progress references unknown runtime sequence '{sequenceGuid}'.";
 
                 return false;
             }
@@ -610,17 +630,18 @@ namespace Tutorial.Runtime.Progress
         #region Completion
 
         /// <summary>
-        /// Complete tutorial progress automatically when every runtime node has reached a terminal state
+        /// Complete tutorial progress automatically when every persistent unit has been acquired
         /// </summary>
         private void EvaluateCompletion()
         {
-            if (completedNodeGuids.Count + skippedNodeGuids.Count != runtimeInstance.RuntimeNodes.Count)
+            int completedUnitCount = completedStepUnitGuids.Count + completedSequenceUnitGuids.Count;
+
+            if (completedUnitCount != expectedPersistentUnitCount)
             {
                 return;
             }
 
             status = ETutorialProgressStatus.Completed;
-            sequenceNextStepIndices.Clear();
         }
 
         /// <summary>
@@ -629,6 +650,127 @@ namespace Tutorial.Runtime.Progress
         private void NotifyChanged()
         {
             Changed?.Invoke(this);
+        }
+
+        /// <summary>
+        /// Convert one finished runtime node into persistent progress when its logical unit is complete
+        /// </summary>
+        /// <param name="runtimeNode"></param>
+        /// <returns></returns>
+        private bool FinalizePersistentNodeProgress(TutorialRuntimeNode runtimeNode)
+        {
+            if (!TryCompletePersistentUnit(runtimeNode, out bool persistentChanged))
+            {
+                return false;
+            }
+
+            if (!persistentChanged)
+            {
+                return true;
+            }
+
+            EvaluateCompletion();
+            NotifyChanged();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Complete the persistent unit represented by one finished runtime node when possible
+        /// </summary>
+        /// <param name="runtimeNode"></param>
+        /// <param name="persistentChanged"></param>
+        /// <returns></returns>
+        private bool TryCompletePersistentUnit(TutorialRuntimeNode runtimeNode, out bool persistentChanged)
+        {
+            persistentChanged = false;
+
+            if (runtimeNode == null)
+            {
+                return false;
+            }
+
+            if (runtimeNode.IsSequenceMember)
+            {
+                if (!IsRuntimeSequenceFinished(runtimeNode.SequenceGuid))
+                {
+                    return true;
+                }
+
+                persistentChanged = completedSequenceUnitGuids.Add(runtimeNode.SequenceGuid);
+
+                return true;
+            }
+
+            if (runtimeNode.IsSequence)
+            {
+                if (string.IsNullOrWhiteSpace(runtimeNode.StepGuid))
+                {
+                    return false;
+                }
+
+                persistentChanged = completedSequenceUnitGuids.Add(runtimeNode.StepGuid);
+
+                return true;
+            }
+
+            persistentChanged = completedStepUnitGuids.Add(runtimeNode.NodeGuid);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determine whether every runtime node belonging to one sequence has reached a terminal runtime state
+        /// </summary>
+        /// <param name="sequenceGuid"></param>
+        /// <returns></returns>
+        private bool IsRuntimeSequenceFinished(string sequenceGuid)
+        {
+            if (string.IsNullOrWhiteSpace(sequenceGuid))
+            {
+                return false;
+            }
+
+            bool sequenceFound = false;
+
+            foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
+            {
+                if (runtimeNode == null || !runtimeNode.IsSequenceMember)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(runtimeNode.SequenceGuid, sequenceGuid, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                sequenceFound = true;
+
+                if (!IsNodeFinished(runtimeNode.NodeGuid))
+                {
+                    return false;
+                }
+            }
+
+            return sequenceFound;
+        }
+
+        #endregion
+
+        #region Runtime Progress Snapshot
+
+        /// <summary>
+        /// Create an independent snapshot containing every runtime node already finished by persistent or current progress
+        /// </summary>
+        /// <returns></returns>
+        public IReadOnlyCollection<string> CreateFinishedNodeGuidSnapshot()
+        {
+            HashSet<string> finishedNodeGuids = new HashSet<string>(completedNodeGuids, StringComparer.Ordinal);
+
+            finishedNodeGuids.UnionWith(skippedNodeGuids);
+
+            return finishedNodeGuids;
         }
 
         #endregion

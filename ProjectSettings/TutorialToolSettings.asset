@@ -15,3 +15,5 @@ MonoBehaviour:
   stepFolderPath: Assets/Tutorial/Steps
   sequenceFolderPath: Assets/Tutorial/Sequences
   graphFolderGuid: 
+  skipScriptName: GhostTactics.Core.GameManager
+  skipMethodName: SkipTutorialStep

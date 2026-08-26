@@ -5,19 +5,25 @@
             "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
             "scriptName": "GhostTactics.UI.ButtonActionSelected",
             "methodName": "PlayTuto",
-            "stepGuid": "aca113f74cd44e46929a05f434572108"
+            "stepGuid": "5f635240e9834204a3974fd264fb98ef"
+        },
+        {
+            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "scriptName": "GhostTactics.UI.GhostDropDownButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "df475f334d7d4573bee0bb1d010f5545"
         },
         {
             "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
             "scriptName": "GhostTactics.UI.PlayerActionButton",
             "methodName": "PlayTuto",
-            "stepGuid": "9d19ff1119fc4211aa695cc0973d249a"
+            "stepGuid": "8bed5105f4f14bea802077e88f2a2795"
         },
         {
             "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
             "scriptName": "GhostTactics.UI.PlayerActionButton",
             "methodName": "PlayTuto",
-            "stepGuid": "a3377c51f130488da4ec19f729646117"
+            "stepGuid": "b8c198d3194745749c1c65046ebc6f67"
         }
     ]
 }

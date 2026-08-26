@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Catalogue.TutorialRuntimeCatalogue
   graphs:
   - graph: {fileID: 11400000, guid: 92aaf456e1143984f8ef5c89d394059c, type: 2}
+    scenePath: Assets/Scenes/Game Scene.unity

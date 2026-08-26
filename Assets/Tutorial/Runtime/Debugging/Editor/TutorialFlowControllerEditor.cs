@@ -1,3 +1,4 @@
+using Tutorial.Runtime;
 using Tutorial.Runtime.Catalogue;
 using Tutorial.Runtime.Core;
 using Tutorial.Runtime.Flow;
@@ -65,6 +66,7 @@ namespace Tutorial.Editor.Flow
             DrawCurrentRuntime();
             DrawRuntimeControls();
             DrawCatalogue();
+            DrawRuntimeGraphDebug(flowController);
         }
 
         /// <summary>
@@ -74,6 +76,7 @@ namespace Tutorial.Editor.Flow
         {
             EditorGUILayout.Space(5f);
             EditorGUILayout.LabelField("Current Runtime", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Tutorials Enabled", flowController.TutorialsEnabled.ToString());
 
             TutorialRuntimeInstance runtimeInstance = flowController.RuntimeInstance;
 
@@ -109,28 +112,37 @@ namespace Tutorial.Editor.Flow
             EditorGUILayout.Space(10f);
             EditorGUILayout.LabelField("Controls", EditorStyles.boldLabel);
 
+            string tutorialsToggleLabel = flowController.TutorialsEnabled ? "Disable Tutorials" : "Enable Tutorials";
+
+            if (GUILayout.Button(tutorialsToggleLabel))
+            {
+                TutoEventBus.Publish<OnTutorialsEnabledChanged>(new OnTutorialsEnabledChanged(!flowController.TutorialsEnabled));
+            }
+
             TutorialRuntimeInstance runtimeInstance = flowController.RuntimeInstance;
 
-            EditorGUI.BeginDisabledGroup(runtimeInstance == null || runtimeInstance.IsDisposed);
+            EditorGUI.BeginDisabledGroup(runtimeInstance == null);
 
             if (GUILayout.Button("Restart Current Graph"))
             {
                 TryRestartCurrentGraph();
             }
 
-            if (GUILayout.Button("Log Runtime Graph"))
+            if (GUILayout.Button("Reset Current Graph Progress"))
             {
-                runtimeInstance.DebugLogRuntimeGraph();
-            }
-
-            if (GUILayout.Button("Log Runtime Bindings"))
-            {
-                flowController.DebugLogRuntimeBindings();
+                TryResetCurrentGraphProgress();
             }
 
             EditorGUI.EndDisabledGroup();
 
-            bool canResume = flowController.Runner != null && flowController.Runner.Status == ETutorialRunnerStatus.WaitingForDependencies;
+            if (GUILayout.Button("Reset All Tutorial Progress"))
+            {
+                TryResetAllTutorialProgress();
+            }
+
+            bool canResume =
+                flowController.Runner != null &&
+                flowController.Runner.Status == ETutorialRunnerStatus.WaitingForDependencies;
 
             EditorGUI.BeginDisabledGroup(!canResume);
 
@@ -144,12 +156,27 @@ namespace Tutorial.Editor.Flow
 
             EditorGUI.EndDisabledGroup();
 
-            bool canReplay = runtimeInstance != null &&
-                             runtimeInstance.SourceGraph != null &&
-                             flowController.Progress != null &&
-                             flowController.Progress.IsCompleted &&
-                             runtimeInstance.SourceGraph.ReplayPolicy == ETutorialReplayPolicy.Allowed &&
-                             !flowController.IsReplaying;
+            bool canSkipCurrentStep = flowController.Runner != null && !flowController.Runner.IsTerminal;
+
+            EditorGUI.BeginDisabledGroup(!canSkipCurrentStep);
+
+            if (GUILayout.Button("Skip Current Step"))
+            {
+                if (!flowController.Runner.SkipCurrentStep())
+                {
+                    Debug.LogWarning("The current tutorial Step could not be skipped.", flowController);
+                }
+            }
+
+            EditorGUI.EndDisabledGroup();
+
+            bool canReplay =
+                runtimeInstance != null &&
+                runtimeInstance.SourceGraph != null &&
+                flowController.Progress != null &&
+                flowController.Progress.IsCompleted &&
+                runtimeInstance.SourceGraph.ReplayPolicy == ETutorialReplayPolicy.Allowed &&
+                !flowController.IsReplaying;
 
             EditorGUI.BeginDisabledGroup(!canReplay);
 
@@ -249,7 +276,7 @@ namespace Tutorial.Editor.Flow
         }
 
         /// <summary>
-        /// Restart the currently controlled tutorial graph from a fresh progress state
+        /// Reset persistent progress and explicitly restart the currently controlled tutorial graph from zero
         /// </summary>
         private void TryRestartCurrentGraph()
         {
@@ -264,14 +291,62 @@ namespace Tutorial.Editor.Flow
 
             TutorialGraphAsset sourceGraph = runtimeInstance.SourceGraph;
 
-            if (!flowController.TryStartTutorial(sourceGraph, null, out string error))
+            if (!flowController.ResetTutorialProgress(sourceGraph, out string error))
             {
                 Debug.LogError(error, flowController);
 
                 return;
             }
 
-            Debug.Log($"Tutorial graph '{sourceGraph.name}' restarted.", flowController);
+            if (!flowController.TryStartTutorial(sourceGraph, null, out error))
+            {
+                Debug.LogError(error, flowController);
+
+                return;
+            }
+
+            Debug.Log($"Tutorial graph '{sourceGraph.name}' persistent progress reset and graph restarted.", flowController);
+        }
+
+        /// <summary>
+        /// Reset persistent progress of the currently controlled tutorial graph without restarting it
+        /// </summary>
+        private void TryResetCurrentGraphProgress()
+        {
+            TutorialRuntimeInstance runtimeInstance = flowController.RuntimeInstance;
+
+            if (runtimeInstance == null || runtimeInstance.SourceGraph == null)
+            {
+                Debug.LogError("No tutorial graph is currently available to reset.", flowController);
+
+                return;
+            }
+
+            TutorialGraphAsset sourceGraph = runtimeInstance.SourceGraph;
+
+            if (!flowController.ResetTutorialProgress(sourceGraph, out string error))
+            {
+                Debug.LogError(error, flowController);
+
+                return;
+            }
+
+            Debug.Log($"Tutorial graph '{sourceGraph.name}' persistent progress reset.", flowController);
+        }
+
+        /// <summary>
+        /// Reset every persistent tutorial progress without starting a tutorial
+        /// </summary>
+        private void TryResetAllTutorialProgress()
+        {
+            if (!flowController.ResetAllTutorialProgress(out string error))
+            {
+                Debug.LogError(error, flowController);
+
+                return;
+            }
+
+            Debug.Log("Every tutorial persistent progress has been reset.", flowController);
         }
 
         /// <summary>
@@ -298,6 +373,24 @@ namespace Tutorial.Editor.Flow
             }
 
             Debug.Log($"Tutorial graph '{runtimeInstance.SourceGraph.name}' replay started.", flowController);
+        }
+
+        /// <summary>
+        /// Draw the button used to print the complete reconstructed runtime graph
+        /// </summary>
+        /// <param name="flowController"></param>
+        private static void DrawRuntimeGraphDebug(TutorialFlowController flowController)
+        {
+            bool canLogGraph = Application.isPlaying && flowController != null && flowController.RuntimeInstance != null && !flowController.RuntimeInstance.IsDisposed;
+
+            EditorGUI.BeginDisabledGroup(!canLogGraph);
+
+            if (GUILayout.Button("Log Runtime Graph"))
+            {
+                flowController.RuntimeInstance.DebugLogRuntimeGraph();
+            }
+
+            EditorGUI.EndDisabledGroup();
         }
 
         #endregion

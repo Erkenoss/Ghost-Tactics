@@ -237,6 +237,13 @@ namespace GhostTactics.Core
         #region Public Methods
 
         /// <summary>
+        /// Skip the current tutorial step
+        /// </summary>
+        public void SkipTutorialStep()
+        {
+        }
+
+        /// <summary>
         /// Update the value of player to manage the evolution of the player in the game
         /// </summary>
         /// <param name="player"></param>

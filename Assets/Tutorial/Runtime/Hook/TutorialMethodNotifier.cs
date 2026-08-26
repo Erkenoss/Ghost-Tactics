@@ -10,6 +10,7 @@ namespace Tutorial.Runtime.Hooks
         #region Events
 
         public static event Action<string> Triggered = null;
+        public static event Action SkipRequested = null;
 
         #endregion
 
@@ -27,6 +28,14 @@ namespace Tutorial.Runtime.Hooks
             }
 
             Triggered?.Invoke(stepGUID);
+        }
+
+        /// <summary>
+        /// Notify the Tutorial system that the currently controlled Step must be skipped
+        /// </summary>
+        public static void NotifySkip()
+        {
+            SkipRequested?.Invoke();
         }
 
         #endregion

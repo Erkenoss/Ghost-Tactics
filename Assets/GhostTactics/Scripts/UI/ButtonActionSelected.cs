@@ -39,7 +39,7 @@ namespace GhostTactics.UI
 
         public void PlayTuto()
         {
-            Debug.Log("PLAY TUTO => ButtonActionSelected");
+
         }
 
         /// <summary>

@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14d78c4dd1098ba40a9a8deed54c16b7, type: 3}
-  m_Name: TutorialStep 1
+  m_Name: Step 1
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSO
   stepType: 2
   completionData:
-    rid: 8642456537472696402
+    rid: 8642456551950385234
   isCompleted: 0
   isSkipped: 0
   scriptName: GhostTactics.UI.ButtonActionSelected
   methodNameToCall: PlayTuto
   tutoGUID: 71bebb2940a844e8b7ebbb990ef89922
-  stepGUID: aca113f74cd44e46929a05f434572108
+  stepGUID: 5f635240e9834204a3974fd264fb98ef
   references:
     version: 2
     RefIds:
-    - rid: 8642456537472696402
+    - rid: 8642456551950385234
       type: {class: TutorialUIButtonCompletionData, ns: Tutorial.Runtime.Data.Completion.UI, asm: Assembly-CSharp}
       data: 

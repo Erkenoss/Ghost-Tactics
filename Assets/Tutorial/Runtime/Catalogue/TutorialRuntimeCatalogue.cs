@@ -31,6 +31,45 @@ namespace Tutorial.Runtime.Catalogue
         #region Public Methods
 
         /// <summary>
+        /// Try to retrieve one runtime catalogue graph entry from its associated scene path
+        /// </summary>
+        /// <param name="scenePath"></param>
+        /// <param name="graphEntry"></param>
+        /// <returns></returns>
+        public bool TryGetGraphEntryByScenePath(string scenePath, out TutorialRuntimeGraphEntry graphEntry)
+        {
+            graphEntry = null;
+
+            if (string.IsNullOrWhiteSpace(scenePath) || graphs == null)
+            {
+                return false;
+            }
+
+            foreach (TutorialRuntimeGraphEntry candidate in graphs)
+            {
+                if (candidate == null || candidate.Graph == null)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(candidate.ScenePath, scenePath, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (graphEntry != null)
+                {
+                    return false;
+                }
+
+                graphEntry = candidate;
+            }
+
+            return graphEntry != null;
+        }
+
+
+        /// <summary>
         /// Try to retrieve one runtime catalogue graph entry from its persistent tutorial GUID
         /// </summary>
         /// <param name="graphGuid"></param>
@@ -86,10 +125,17 @@ namespace Tutorial.Runtime.Catalogue
         [SerializeField]
         private TutorialGraphAsset graph = null;
 
+        /// <summary>
+        /// Scene path associated with this tutorial graph
+        /// </summary>
+        [Tooltip("Scene path associated with this tutorial graph")]
+        [SerializeField]
+        private string scenePath = string.Empty;
+
         #endregion
 
         #region Properties
-
+        public string ScenePath => scenePath;
         public TutorialGraphAsset Graph => graph;
         public string GraphGuid => graph != null ? graph.GraphGuid : string.Empty;
 

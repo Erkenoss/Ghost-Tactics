@@ -64,6 +64,11 @@ namespace Tutorial.Runtime.Core
                 return FailBuild(createdInstance, transitionError, out runtimeInstance);
             }
 
+            if (!TryConfigureRuntimeSequenceMembership(createdInstance, sourceGraph.SaveData.Sequences, out string sequenceMembershipError))
+            {
+                return FailBuild(createdInstance, sequenceMembershipError, out runtimeInstance);
+            }
+
             if (!TryValidateRuntimeCycles(createdInstance, out string cycleError))
             {
                 return FailBuild(createdInstance, cycleError, out runtimeInstance);
@@ -77,6 +82,11 @@ namespace Tutorial.Runtime.Core
             if (!TryValidateRuntimeFlow(createdInstance, out string flowError))
             {
                 return FailBuild(createdInstance, flowError, out runtimeInstance);
+            }
+
+            foreach (TutorialRuntimeNode runtimeNode in createdInstance.RuntimeNodes.Values)
+            {
+                Debug.Log($"{runtimeNode.RuntimeStep.name} | Sequence: {runtimeNode.SequenceGuid} | Member: {runtimeNode.IsSequenceMember} | Start: {runtimeNode.IsSequenceStart} | End: {runtimeNode.IsSequenceEnd}");
             }
 
             createdInstance.SetStatus(ETutorialRuntimeInstanceStatus.Ready);
@@ -406,6 +416,180 @@ namespace Tutorial.Runtime.Core
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region Sequence Membership
+
+        /// <summary>
+        /// Reconstruct runtime sequence membership information from persistent sequence connections
+        /// </summary>
+        /// <param name="runtimeInstance"></param>
+        /// <param name="savedSequences"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        private static bool TryConfigureRuntimeSequenceMembership(TutorialRuntimeInstance runtimeInstance, IReadOnlyList<TutorialSequenceSaveData> savedSequences, out string error)
+        {
+            error = string.Empty;
+
+            if (runtimeInstance == null)
+            {
+                error = "The tutorial runtime instance is null while rebuilding sequence membership.";
+
+                return false;
+            }
+
+            if (savedSequences == null)
+            {
+                error = "The tutorial graph contains no sequence collection.";
+
+                return false;
+            }
+
+            Dictionary<string, string> sequenceGuidByNode = new Dictionary<string, string>(StringComparer.Ordinal);
+            HashSet<string> sequenceSourceNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+            HashSet<string> sequenceTargetNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+            HashSet<string> registeredSequenceGuids = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (TutorialSequenceSaveData savedSequence in savedSequences)
+            {
+                if (savedSequence == null)
+                {
+                    error = "A null sequence connection was found while rebuilding runtime sequence membership.";
+
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(savedSequence.SequenceAssetGuid))
+                {
+                    error = $"The sequence connection '{savedSequence.SourceNodeGuid}' to '{savedSequence.TargetNodeGuid}' contains no SequenceAssetGuid.";
+
+                    return false;
+                }
+
+                if (!TryRegisterSequenceMembership(savedSequence.SourceNodeGuid, savedSequence.SequenceAssetGuid, sequenceGuidByNode, out error))
+                {
+                    return false;
+                }
+
+                if (!TryRegisterSequenceMembership(savedSequence.TargetNodeGuid, savedSequence.SequenceAssetGuid, sequenceGuidByNode, out error))
+                {
+                    return false;
+                }
+
+                sequenceSourceNodeGuids.Add(savedSequence.SourceNodeGuid);
+                sequenceTargetNodeGuids.Add(savedSequence.TargetNodeGuid);
+                registeredSequenceGuids.Add(savedSequence.SequenceAssetGuid);
+            }
+
+            Dictionary<string, int> sequenceStartCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+            Dictionary<string, int> sequenceEndCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+
+            foreach (KeyValuePair<string, string> sequenceMembership in sequenceGuidByNode)
+            {
+                if (!runtimeInstance.TryGetRuntimeNode(sequenceMembership.Key, out TutorialRuntimeNode runtimeNode))
+                {
+                    error = $"Sequence member node '{sequenceMembership.Key}' could not be found inside the runtime graph.";
+
+                    return false;
+                }
+
+                bool isSequenceStart = sequenceSourceNodeGuids.Contains(sequenceMembership.Key) && !sequenceTargetNodeGuids.Contains(sequenceMembership.Key);
+                bool isSequenceEnd = sequenceTargetNodeGuids.Contains(sequenceMembership.Key) && !sequenceSourceNodeGuids.Contains(sequenceMembership.Key);
+
+                if (!runtimeNode.ConfigureSequenceMembership(sequenceMembership.Value, isSequenceStart, isSequenceEnd))
+                {
+                    error = $"Runtime node '{sequenceMembership.Key}' could not be configured as a member of sequence '{sequenceMembership.Value}'.";
+
+                    return false;
+                }
+
+                if (isSequenceStart)
+                {
+                    IncrementSequenceCount(sequenceStartCounts, sequenceMembership.Value);
+                }
+
+                if (isSequenceEnd)
+                {
+                    IncrementSequenceCount(sequenceEndCounts, sequenceMembership.Value);
+                }
+            }
+
+            foreach (string sequenceGuid in registeredSequenceGuids)
+            {
+                sequenceStartCounts.TryGetValue(sequenceGuid, out int startCount);
+                sequenceEndCounts.TryGetValue(sequenceGuid, out int endCount);
+
+                if (startCount != 1 || endCount != 1)
+                {
+                    error = $"Runtime sequence '{sequenceGuid}' must contain exactly one start node and one end node. Starts: {startCount}, Ends: {endCount}.";
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Register one runtime node as belonging to one persistent sequence
+        /// </summary>
+        /// <param name="nodeGuid"></param>
+        /// <param name="sequenceGuid"></param>
+        /// <param name="sequenceGuidByNode"></param>
+        /// <param name="error"></param>
+        /// <returns></returns>
+        private static bool TryRegisterSequenceMembership(string nodeGuid, string sequenceGuid, Dictionary<string, string> sequenceGuidByNode, out string error)
+        {
+            error = string.Empty;
+
+            if (string.IsNullOrWhiteSpace(nodeGuid))
+            {
+                error = "A runtime sequence contains an empty node GUID.";
+
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(sequenceGuid))
+            {
+                error = $"Runtime node '{nodeGuid}' contains an empty sequence GUID.";
+
+                return false;
+            }
+
+            if (!sequenceGuidByNode.TryGetValue(nodeGuid, out string registeredSequenceGuid))
+            {
+                sequenceGuidByNode.Add(nodeGuid, sequenceGuid);
+
+                return true;
+            }
+
+            if (string.Equals(registeredSequenceGuid, sequenceGuid, StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            error = $"Runtime node '{nodeGuid}' belongs to multiple sequences: '{registeredSequenceGuid}' and '{sequenceGuid}'.";
+
+            return false;
+        }
+
+        /// <summary>
+        /// Increment the number of registered nodes for one sequence
+        /// </summary>
+        /// <param name="sequenceCounts"></param>
+        /// <param name="sequenceGuid"></param>
+        private static void IncrementSequenceCount(Dictionary<string, int> sequenceCounts, string sequenceGuid)
+        {
+            if (!sequenceCounts.TryGetValue(sequenceGuid, out int currentCount))
+            {
+                sequenceCounts.Add(sequenceGuid, 1);
+
+                return;
+            }
+
+            sequenceCounts[sequenceGuid] = currentCount + 1;
         }
 
         #endregion

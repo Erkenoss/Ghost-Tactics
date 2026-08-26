@@ -31,6 +31,21 @@ namespace Tutorial.Runtime.Core
         /// </summary>
         private readonly List<string> nextNodeGuids = new List<string>();
 
+        /// <summary>
+        /// Persistent Unity asset GUID of the StepSequenceSO owning this runtime node
+        /// </summary>
+        private string sequenceGuid = string.Empty;
+
+        /// <summary>
+        /// Whether this runtime node is the first Step of its owning sequence
+        /// </summary>
+        private bool isSequenceStart = false;
+
+        /// <summary>
+        /// Whether this runtime node is the last Step of its owning sequence
+        /// </summary>
+        private bool isSequenceEnd = false;
+
         #endregion
 
         #region Properties
@@ -41,6 +56,10 @@ namespace Tutorial.Runtime.Core
         public IReadOnlyList<string> NextNodeGuids => nextNodeGuids;
         public bool IsSequence => runtimeStep is StepSequenceSO;
         public bool IsTerminal => nextNodeGuids.Count == 0;
+        public string SequenceGuid => sequenceGuid;
+        public bool IsSequenceMember => !string.IsNullOrWhiteSpace(sequenceGuid);
+        public bool IsSequenceStart => isSequenceStart;
+        public bool IsSequenceEnd => isSequenceEnd;
 
         #endregion
 
@@ -80,6 +99,32 @@ namespace Tutorial.Runtime.Core
         internal void ClearTransitions()
         {
             nextNodeGuids.Clear();
+        }
+
+        /// <summary>
+        /// Configure the runtime sequence membership of this node
+        /// </summary>
+        /// <param name="sequenceGuid"></param>
+        /// <param name="isSequenceStart"></param>
+        /// <param name="isSequenceEnd"></param>
+        /// <returns></returns>
+        internal bool ConfigureSequenceMembership(string sequenceGuid, bool isSequenceStart, bool isSequenceEnd)
+        {
+            if (string.IsNullOrWhiteSpace(sequenceGuid))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrWhiteSpace(this.sequenceGuid) && !string.Equals(this.sequenceGuid, sequenceGuid, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            this.sequenceGuid = sequenceGuid;
+            this.isSequenceStart = isSequenceStart;
+            this.isSequenceEnd = isSequenceEnd;
+
+            return true;
         }
 
         #endregion

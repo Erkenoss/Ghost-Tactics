@@ -9,6 +9,7 @@ namespace Tutorial.Runtime.Data
     {
         #region Public Fields
 
+
         public EStepType StepType { get { return stepType; } set { stepType = value; } }
         public TutorialCompletionData CompletionData { get { return completionData; } }
         public bool IsCompleted { get { return isCompleted; } set { isCompleted = value; } }
@@ -99,8 +100,8 @@ namespace Tutorial.Runtime.Data
 
         public override void OnRaised()
         {
+            Debug.Log("Raised");
             TutoEventBus.Publish<OnRaised>(new OnRaised(this));
-            Debug.Log($"RAISED => {stepGUID} === {tutoGUID}.");
         }
 
         public override void OnSkipped()
@@ -110,8 +111,8 @@ namespace Tutorial.Runtime.Data
 
         public override void OnTrigger()
         {
+            Debug.Log("Trigger");
             TutoEventBus.Publish<OnTrigger>(new OnTrigger(this));
-            Debug.Log($"TRIGGER => {stepGUID} === {tutoGUID}.");
         }
 
         /// <summary>

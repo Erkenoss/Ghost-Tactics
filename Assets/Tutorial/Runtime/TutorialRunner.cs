@@ -107,6 +107,38 @@ namespace Tutorial.Runtime.Execution
             this.stepRunnerFactory = stepRunnerFactory ?? throw new ArgumentNullException(nameof(stepRunnerFactory));
         }
 
+        /// <summary>
+        /// Create a tutorial runner from a reconstructed runtime instance, Step runner factory and previously finished runtime nodes
+        /// </summary>
+        /// <param name="runtimeInstance"></param>
+        /// <param name="stepRunnerFactory"></param>
+        /// <param name="initialFinishedNodeGuids"></param>
+        public TutorialRunner(TutorialRuntimeInstance runtimeInstance, Func<StepSO, TutorialStepRunner> stepRunnerFactory, IReadOnlyCollection<string> initialFinishedNodeGuids)
+        {
+            this.runtimeInstance = runtimeInstance != null ? runtimeInstance : throw new ArgumentNullException(nameof(runtimeInstance));
+            this.stepRunnerFactory = stepRunnerFactory ?? throw new ArgumentNullException(nameof(stepRunnerFactory));
+
+            if (initialFinishedNodeGuids == null)
+            {
+                return;
+            }
+
+            foreach (string nodeGuid in initialFinishedNodeGuids)
+            {
+                if (string.IsNullOrWhiteSpace(nodeGuid))
+                {
+                    throw new ArgumentException("Initial finished runtime nodes contain an empty GUID.", nameof(initialFinishedNodeGuids));
+                }
+
+                if (!runtimeInstance.RuntimeNodes.ContainsKey(nodeGuid))
+                {
+                    throw new ArgumentException($"Initial finished runtime node '{nodeGuid}' does not exist inside tutorial '{runtimeInstance.TutorialGuid}'.", nameof(initialFinishedNodeGuids));
+                }
+
+                finishedNodeGuids.Add(nodeGuid);
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -144,9 +176,11 @@ namespace Tutorial.Runtime.Execution
             runtimeInstance.SetStatus(ETutorialRuntimeInstanceStatus.Running);
             status = ETutorialRunnerStatus.Running;
 
+            HashSet<string> visitedFinishedNodeGuids = new HashSet<string>(StringComparer.Ordinal);
+
             foreach (string rootNodeGuid in runtimeInstance.RootNodeGuids)
             {
-                if (!TryActivateNode(rootNodeGuid, false))
+                if (!TryActivateExecutionFrontier(rootNodeGuid, false, visitedFinishedNodeGuids))
                 {
                     return false;
                 }
@@ -158,6 +192,107 @@ namespace Tutorial.Runtime.Execution
 
             return !IsFailed;
         }
+
+        /// <summary>
+        /// Skip the single Step currently executed by this tutorial
+        /// </summary>
+        /// <returns></returns>
+        public bool SkipCurrentStep()
+        {
+            if (IsTerminal || status == ETutorialRunnerStatus.Created)
+            {
+                return false;
+            }
+
+            TutorialStepRunner standaloneStepRunner = null;
+            TutorialSequenceRunner sequenceRunnerTarget = null;
+            int targetCount = 0;
+
+            foreach (TutorialStepRunner stepRunner in activeStepRunners.Values)
+            {
+                if (stepRunner == null || !stepRunner.IsRunning)
+                {
+                    continue;
+                }
+
+                standaloneStepRunner = stepRunner;
+                targetCount++;
+            }
+
+            foreach (TutorialSequenceRunner sequenceRunner in activeSequenceRunners.Values)
+            {
+                if (sequenceRunner == null || sequenceRunner.IsTerminal || sequenceRunner.CurrentStepRunner == null || !sequenceRunner.CurrentStepRunner.IsRunning)
+                {
+                    continue;
+                }
+
+                sequenceRunnerTarget = sequenceRunner;
+                targetCount++;
+            }
+
+            if (targetCount == 1)
+            {
+                if (standaloneStepRunner != null)
+                {
+                    return standaloneStepRunner.Skip();
+                }
+
+                return sequenceRunnerTarget.SkipCurrentStep();
+            }
+
+            if (targetCount > 1)
+            {
+                return false;
+            }
+
+            return SkipSingleWaitingStep();
+        }
+
+        /// <summary>
+        /// Skip one Step waiting for activation when no Step is currently running
+        /// </summary>
+        /// <returns></returns>
+        private bool SkipSingleWaitingStep()
+        {
+            TutorialStepRunner standaloneStepRunner = null;
+            TutorialSequenceRunner sequenceRunnerTarget = null;
+            int targetCount = 0;
+
+            foreach (TutorialStepRunner stepRunner in activeStepRunners.Values)
+            {
+                if (stepRunner == null || !stepRunner.IsWaiting)
+                {
+                    continue;
+                }
+
+                standaloneStepRunner = stepRunner;
+                targetCount++;
+            }
+
+            foreach (TutorialSequenceRunner sequenceRunner in activeSequenceRunners.Values)
+            {
+                if (sequenceRunner == null || sequenceRunner.IsTerminal || sequenceRunner.CurrentStepRunner == null || !sequenceRunner.CurrentStepRunner.IsWaiting)
+                {
+                    continue;
+                }
+
+                sequenceRunnerTarget = sequenceRunner;
+                targetCount++;
+            }
+
+            if (targetCount != 1)
+            {
+                return false;
+            }
+
+            if (standaloneStepRunner != null)
+            {
+                return standaloneStepRunner.Skip();
+            }
+
+            return sequenceRunnerTarget.SkipCurrentStep();
+        }
+
 
         /// <summary>
         /// Process an external trigger for one currently active tutorial Step
@@ -203,6 +338,44 @@ namespace Tutorial.Runtime.Execution
                 if (!stepRunner.Activate())
                 {
                     string error = string.IsNullOrWhiteSpace(stepRunner.LastError) ? $"Tutorial Step '{stepGuid}' could not be activated." : stepRunner.LastError;
+
+                    return FailRunner(error);
+                }
+
+                EvaluateStatus();
+
+                return true;
+            }
+
+            foreach (TutorialSequenceRunner sequenceRunner in activeSequenceRunners.Values)
+            {
+                if (sequenceRunner == null || sequenceRunner.IsTerminal || sequenceRunner.CurrentStepRunner == null)
+                {
+                    continue;
+                }
+
+                TutorialStepRunner stepRunner = sequenceRunner.CurrentStepRunner;
+                StepSO runtimeStep = stepRunner.RuntimeStep;
+
+                if (runtimeStep == null || !string.Equals(runtimeStep.StepGUID, stepGuid, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (stepRunner.IsRunning)
+                {
+                    return true;
+                }
+
+                if (!stepRunner.IsWaiting)
+                {
+                    return false;
+                }
+
+                if (!stepRunner.Activate())
+                {
+                    string error = string.IsNullOrWhiteSpace(stepRunner.LastError) ? $"Tutorial Step '{stepGuid}' contained by sequence '{sequenceRunner.RuntimeSequence.name}' could not be activated." : stepRunner.LastError;
+
                     return FailRunner(error);
                 }
 
@@ -338,6 +511,46 @@ namespace Tutorial.Runtime.Execution
             }
 
             return TryActivateStepNode(runtimeNode, activateImmediately);
+        }
+
+        /// <summary>
+        /// Traverse previously finished runtime nodes and activate the first unfinished execution nodes reachable from them
+        /// </summary>
+        /// <param name="nodeGuid"></param>
+        /// <param name="activateImmediately"></param>
+        /// <param name="visitedFinishedNodeGuids"></param>
+        /// <returns></returns>
+        private bool TryActivateExecutionFrontier(string nodeGuid, bool activateImmediately, HashSet<string> visitedFinishedNodeGuids)
+        {
+            if (string.IsNullOrWhiteSpace(nodeGuid))
+            {
+                return FailRunner("A runtime node with an empty GUID cannot be traversed.");
+            }
+
+            if (!finishedNodeGuids.Contains(nodeGuid))
+            {
+                return TryActivateNode(nodeGuid, activateImmediately);
+            }
+
+            if (!visitedFinishedNodeGuids.Add(nodeGuid))
+            {
+                return true;
+            }
+
+            if (!runtimeInstance.TryGetRuntimeNode(nodeGuid, out TutorialRuntimeNode runtimeNode))
+            {
+                return FailRunner($"Finished runtime node '{nodeGuid}' could not be found.");
+            }
+
+            foreach (string targetNodeGuid in runtimeNode.NextNodeGuids)
+            {
+                if (!TryActivateExecutionFrontier(targetNodeGuid, true, visitedFinishedNodeGuids))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

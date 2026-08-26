@@ -208,6 +208,9 @@ namespace Tutorial.Runtime.Debugging
         /// <summary>
         /// Draw the current tutorial progress snapshot
         /// </summary>
+        /// <summary>
+        /// Draw the current tutorial progress snapshot
+        /// </summary>
         private void DrawProgressState()
         {
             TutorialProgressService progress = flowController.Progress;
@@ -222,14 +225,36 @@ namespace Tutorial.Runtime.Debugging
             GUILayout.Space(5f);
             GUILayout.Label($"Progress: {progress.Status}");
 
-            if (saveData != null)
+            if (saveData == null || saveData.CompletedUnits == null)
             {
-                int completedCount = saveData.CompletedNodeGuids != null ? saveData.CompletedNodeGuids.Count : 0;
-                int skippedCount = saveData.SkippedNodeGuids != null ? saveData.SkippedNodeGuids.Count : 0;
-
-                GUILayout.Label($"Completed Nodes: {completedCount}");
-                GUILayout.Label($"Skipped Nodes: {skippedCount}");
+                return;
             }
+
+            int completedStepCount = 0;
+            int completedSequenceCount = 0;
+
+            foreach (TutorialProgressUnitSaveData completedUnit in saveData.CompletedUnits)
+            {
+                if (completedUnit == null)
+                {
+                    continue;
+                }
+
+                if (completedUnit.UnitType == ETutorialProgressUnitType.Step)
+                {
+                    completedStepCount++;
+                    continue;
+                }
+
+                if (completedUnit.UnitType == ETutorialProgressUnitType.Sequence)
+                {
+                    completedSequenceCount++;
+                }
+            }
+
+            GUILayout.Label($"Completed Units: {saveData.CompletedUnits.Count}");
+            GUILayout.Label($"Completed Steps: {completedStepCount}");
+            GUILayout.Label($"Completed Sequences: {completedSequenceCount}");
         }
 
         /// <summary>

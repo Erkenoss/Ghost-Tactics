@@ -79,11 +79,13 @@ namespace Tutorial.Runtime.Execution
         #region Constructor
 
         /// <summary>
-        /// Create a Step runner from an already resolved runtime method binding
+        /// Create a Step runner from one runtime StepSO and an already resolved runtime method binding
         /// </summary>
+        /// <param name="runtimeStep"></param>
         /// <param name="resolvedMethod"></param>
-        public TutorialStepRunner(TutorialResolvedMethod resolvedMethod)
+        public TutorialStepRunner(StepSO runtimeStep, TutorialResolvedMethod resolvedMethod)
         {
+            this.runtimeStep = runtimeStep ?? throw new ArgumentNullException(nameof(runtimeStep));
             this.resolvedMethod = resolvedMethod ?? throw new ArgumentNullException(nameof(resolvedMethod));
             identifier = resolvedMethod.Identifier ?? throw new ArgumentNullException(nameof(resolvedMethod.Identifier));
         }
@@ -172,6 +174,28 @@ namespace Tutorial.Runtime.Execution
             status = ETutorialStepRunnerStatus.Disposed;
         }
 
+        /// <summary>
+        /// Skip this Step while it is waiting for activation or currently running
+        /// </summary>
+        /// <returns></returns>
+        public bool Skip()
+        {
+            if (status != ETutorialStepRunnerStatus.WaitingForTrigger && status != ETutorialStepRunnerStatus.Running)
+            {
+                return false;
+            }
+
+            status = ETutorialStepRunnerStatus.Skipped;
+
+            Unsubscribe();
+
+            runtimeStep.OnSkipped();
+
+            Skipped?.Invoke(this);
+
+            return true;
+        }
+
         #endregion
 
         #region Signal Handling
@@ -238,23 +262,6 @@ namespace Tutorial.Runtime.Execution
             Completed?.Invoke(this);
         }
 
-        /// <summary>
-        /// Skip this Step while it is waiting or currently running
-        /// </summary>
-        private void OnSkipped()
-        {
-            if (status != ETutorialStepRunnerStatus.WaitingForTrigger && status != ETutorialStepRunnerStatus.Running)
-            {
-                return;
-            }
-
-            status = ETutorialStepRunnerStatus.Skipped;
-
-            Unsubscribe();
-
-            Skipped?.Invoke(this);
-        }
-
         #endregion
 
         #region Subscriptions
@@ -280,8 +287,6 @@ namespace Tutorial.Runtime.Execution
                 completionCondition.Completed += OnCompletionConditionCompleted;
             }
 
-            identifier.Skipped += OnSkipped;
-
             isSubscribed = true;
         }
 
@@ -306,8 +311,6 @@ namespace Tutorial.Runtime.Execution
                 completionCondition.Completed -= OnCompletionConditionCompleted;
                 completionCondition.Disarm();
             }
-
-            identifier.Skipped -= OnSkipped;
 
             isSubscribed = false;
         }
