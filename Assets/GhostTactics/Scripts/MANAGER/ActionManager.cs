@@ -145,7 +145,6 @@ namespace GhostTactics.Core
         #region Public Fields
 
         public AbilityData Data { get { return data; } }
-        public PlayerActionButton Btn { get { return btn; } }
 
         #endregion
 
@@ -155,11 +154,6 @@ namespace GhostTactics.Core
         /// Data pass in the constructor of the class to know which ability is selected by the player
         /// </summary>
         private AbilityData data = null;
-
-        /// <summary>
-        /// Btn send to manage the infos bubble
-        /// </summary>
-        private PlayerActionButton btn = null;
 
         #endregion
 
@@ -172,7 +166,7 @@ namespace GhostTactics.Core
         /// Constructor
         /// </summary>
         /// <param name="data"></param>
-        public AbilityChoice (AbilityData data, PlayerActionButton btn)
+        public AbilityChoice (AbilityData data)
         {
             this.data = data;
         }
@@ -198,13 +192,6 @@ namespace GhostTactics.Core
         /// Component to manage how many buttons can be selected in the level by the player
         /// </summary>
         private ButtonSelectedComponent buttonComponent = null;
-
-#if UNITY_ANDROID
-        /// <summary>
-        /// Current Btn selected by the player
-        /// </summary>
-        private PlayerActionButton currentBtn = null;
-#endif
 
         #endregion
 
@@ -239,35 +226,6 @@ namespace GhostTactics.Core
 
             buttonComponent = component;
         }
-
-
-#if UNITY_ANDROID
-        /// <summary>
-        /// Update the value of the currentBtn
-        /// </summary>
-        /// <param name="newBtn"></param>
-        public void UpdateCurrentBtn(PlayerActionButton newBtn)
-        {
-            if (newBtn == null)
-            {
-                return;
-            }
-
-            if (currentBtn == newBtn)
-            {
-                currentBtn.Hide();
-                currentBtn = null;
-                return;
-            }
-
-            if (currentBtn != null)
-            {
-                currentBtn.Hide();
-            }
-
-            currentBtn = newBtn;
-        }
-#endif
 
         /// <summary>
         /// Get the AbilityData from the AbilitiesContainer by the name of the ability

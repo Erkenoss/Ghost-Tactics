@@ -15,7 +15,7 @@ MonoBehaviour:
   hasPreviousDialogue: 1
   hasNextDialogue: 1
   biomeType: 1
-  levelImage: {fileID: 0}
+  levelImage: {fileID: 367384636947500847, guid: e9e30589755a32c4180185ee4068d989, type: 3}
   levelNumber: 3
   levelActionSlot: 6
   levelGhostActionSlot: 2

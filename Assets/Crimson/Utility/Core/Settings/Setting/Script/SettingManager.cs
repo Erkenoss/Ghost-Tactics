@@ -22,7 +22,8 @@ namespace Crimson.Core.Settings
         Vibration,
         CameraShake,
         ReduceFlashing,
-        Description
+        Description,
+        Tutorial
     }
 
     public class OnReceiveLoadSetting
@@ -346,7 +347,7 @@ namespace Crimson.Core.Settings
         /// <summary>
         /// Reset all the settings with the base parameter
         /// </summary>
-        private void ResetSettings(OnResetSetting reset)
+        public void ResetSettings(OnResetSetting reset)
         {
             InitSettings();
         }
@@ -423,7 +424,6 @@ namespace Crimson.Core.Settings
         /// <param name="b"></param>
         private void ChangeBoolSetting(OnBoolSettingChanges b)
         {
-
             if (b == null || settings == null || settings.BooleanDicitionary == null || settings.BooleanDicitionary.Count == 0)
             {
                 return;

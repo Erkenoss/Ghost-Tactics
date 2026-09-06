@@ -4,6 +4,7 @@ using GhostTactics.Data;
 using GhostTactics.UI;
 using System.Collections;
 using System.Collections.Generic;
+using Tutorial.Runtime.Flow;
 using UnityEngine;
 
 namespace GhostTactics.Core
@@ -311,7 +312,15 @@ namespace GhostTactics.Core
             {
                 return;
             }
-            
+
+            if (game.IsStarttingGame || (currentLevel.LevelNumber == 1 && currentLevel.BiomeType == ETypeLevelContainer.Beginning))
+            {
+                if (TutorialFlowController.Instance != null)
+                {
+                    TutorialFlowController.Instance.ResetAllTutorialProgress();
+                }
+            }
+
             StartCoroutine(LoadLevelCoroutine());
         }
 

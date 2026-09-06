@@ -1,6 +1,3 @@
-using Crimson.Core.Audio;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -34,14 +31,14 @@ namespace Crimson.Core.Settings
 
         #region MonoBehaviour Callbacks
 
-        private void Start()
+        protected virtual void OnEnable()
         {
             if (sld == null || SettingManager.Instance == null)
             {
                 return;
             }
 
-            int value = SettingManager.Instance.GetBoolSettingValue(type) ? 1 : 0; 
+            int value = SettingManager.Instance.GetBoolSettingValue(type) ? 1 : 0;
 
             sld.SetValueWithoutNotify(value);
             UpdateTextDisplay(value);

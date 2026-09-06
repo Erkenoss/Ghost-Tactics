@@ -111,7 +111,7 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - Effect
+      - Effects
       - Effets
       - 
       - 
@@ -277,6 +277,16 @@ MonoBehaviour:
       - 
       Flags: 00000000
       Languages_Touch: []
+    - Term: Main Menu/Tutorial
+      TermType: 0
+      Description: 
+      Languages:
+      - Tutorial
+      - Tutoriel
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
     - Term: Combat Scene/Idle_Infos
       TermType: 0
       Description: 
@@ -327,42 +337,2377 @@ MonoBehaviour:
       - 
       Flags: 00000000
       Languages_Touch: []
-    - Term: Dialogue/First sentence
+    - Term: Dialogue/Level 1 Entry
       TermType: 0
       Description: 
       Languages:
-      - This is the first sentence
-      - "C'est la premi\xE8re phrase"
+      - 'The cold. At first, there was only that.
+
+        A harsh white light, filtered
+        through a wall covered in condensation.
+
+        Something was beating.
+
+        Slowly...
+        Your heart.'
+      - "Le froid. D'abord, il n'y eut que cela.\nUne lumi\xE8re blanche, brutale,
+        filtr\xE9e par une paroi couverte de condensation.\nQuelque chose battait.\nLentement...
+        Ton c\u0153ur."
       - 
       - 
       Flags: 00000000
       Languages_Touch: []
-    - Term: Dialogue/Second sentence
+    - Term: Dialogue/Level 1 Second
       TermType: 0
       Description: 
       Languages:
-      - This is the second sentence
-      - C'est la seconde phrase
+      - Finally.
+      - Enfin.
       - 
       - 
       Flags: 00000000
       Languages_Touch: []
-    - Term: Dialogue/Third sentence
+    - Term: Dialogue/Level 1 Third
       TermType: 0
       Description: 
       Languages:
-      - This is the third sentence
-      - "C'est la troisi\xE8me phrase"
+      - 'The liquid drains around you.
+
+        Your feet touch the floor. Your legs
+        almost immediately give way.
+
+        You breathe in.
+
+        Once. Twice.
+
+        The
+        air burns.'
+      - "Le liquide descend autour de toi.\nTes pieds touchent le sol. Tes jambes
+        c\xE8dent presque imm\xE9diatement.\nTu inspires.\nUne fois. Deux fois.\nL'air
+        br\xFBle."
       - 
       - 
       Flags: 00000000
       Languages_Touch: []
-    - Term: Dialogue/Fourth sentence
+    - Term: Dialogue/Level 1 Fourth
       TermType: 0
       Description: 
       Languages:
-      - This is the fourth sentence
-      - "C'est la quatri\xE8me phrase"
+      - 'Don''t force it.
+
+        Your body knows how to breathe.
+
+        Even
+        if you don''t remember how yet.'
+      - "Ne force pas.\nTon corps sait comment respirer.\nM\xEAme si toi, tu ne t'en
+        souviens pas encore."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Fifth
+      TermType: 0
+      Description: 
+      Languages:
+      - '...
+
+        Where am I?'
+      - "...\nO\xF9 suis-je ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Sixth
+      TermType: 0
+      Description: 
+      Languages:
+      - Stand up.
+      - Debout.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Seventh
+      TermType: 0
+      Description: 
+      Languages:
+      - Who are you?
+      - "Qui \xEAtes-vous ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Eight
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Stand up.
+
+        We don''t have time for the rest.'
+      - 'Debout.
+
+        Nous n''avons pas le temps pour le reste.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Ninth
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The wall of the tank opens.
+
+        Before you lies a room you don''t recognize.
+
+        And
+        yet... something about this place feels familiar.
+
+        Not a memory.
+        The trace of one. A distant echo.'
+      - "La paroi de la cuve s'ouvre.\nDevant toi s'\xE9tend une pi\xE8ce que tu
+        ne reconnais pas.\nPourtant... quelque chose dans cet endroit te semble familier.\nPas
+        un souvenir. La trace d'un souvenir. Un \xE9cho lointain."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Tenth
+      TermType: 0
+      Description: 
+      Languages:
+      - I don't remember anything.
+      - Je ne me souviens de rien.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Eleventh
+      TermType: 0
+      Description: 
+      Languages:
+      - I know.
+      - Je sais.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Twelveth
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Nothing.
+
+        Not even my name.'
+      - "De rien.\nM\xEAme pas de mon nom."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Thirteenth
+      TermType: 0
+      Description: 
+      Languages:
+      - I know that too.
+      - "\xC7a aussi, je le sais."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Fourteenth
+      TermType: 0
+      Description: 
+      Languages:
+      - 'A metallic sound echoes from behind the door.
+
+        Something is coming.'
+      - "Un bruit m\xE9tallique r\xE9sonne derri\xE8re la porte.\nQuelque chose approche."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Fifteenth
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Listen to me carefully.
+
+        You''ll get your answers.
+
+        But
+        to get them...
+
+        you need to survive first.'
+      - "\xC9coute-moi attentivement.\nTu auras tes r\xE9ponses.\nMais pour les obtenir...\ntu
+        dois d'abord survivre."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Sixteenth
+      TermType: 0
+      Description: 
+      Languages:
+      - Survive what?
+      - "Survivre \xE0 quoi ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Seventeenth
+      TermType: 0
+      Description: 
+      Languages:
+      - 'HOSTILE DETECTED.
+
+        COMBAT SEQUENCE READY.'
+      - 'HOSTILE DETECTED.
+
+        COMBAT SEQUENCE READY.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/Level 1 Eighteenth
+      TermType: 0
+      Description: 
+      Languages:
+      - That.
+      - "\xC0 \xE7a."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Silence returns. The figure in front of you collapses.
+
+        For a moment,
+        nothing moves. Then you see its face.'
+      - 'Le silence revient. La silhouette devant toi s''effondre.
+
+        Pendant
+        un instant, plus rien ne bouge. Puis tu vois son visage.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_002
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_003
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Your face. The same features.
+
+        The same body.
+
+        Even the
+        same scars.'
+      - "Ton visage. Les m\xEAmes traits.\nLe m\xEAme corps.\nJusqu'aux m\xEAmes
+        cicatrices."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_004
+      TermType: 0
+      Description: 
+      Languages:
+      - What the hell...
+      - C'est quoi ce bordel...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_005
+      TermType: 0
+      Description: 
+      Languages:
+      - Keep moving.
+      - Continue d'avancer.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_006
+      TermType: 0
+      Description: 
+      Languages:
+      - That was me.
+      - "C'\xE9tait moi."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_007
+      TermType: 0
+      Description: 
+      Languages:
+      - No.
+      - Non.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_008
+      TermType: 0
+      Description: 
+      Languages:
+      - I know what I saw.
+      - Je sais ce que j'ai vu.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_009
+      TermType: 0
+      Description: 
+      Languages:
+      - 'You saw something that looked like you.
+
+        There''s a difference.'
+      - "Tu as vu quelque chose qui te ressemblait.\nIl y a une diff\xE9rence."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_010
+      TermType: 0
+      Description: 
+      Languages:
+      - Then what was it?
+      - "Alors qu'est-ce que c'\xE9tait ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_011
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Not now. '
+      - Pas maintenant.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_012
+      TermType: 0
+      Description: 
+      Languages:
+      - You keep saying that.
+      - "Tu n'arr\xEAtes pas de dire \xE7a."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_013
+      TermType: 0
+      Description: 
+      Languages:
+      - We haven't enought time. So, for now, keep listening.
+      - "Nous n'avons pas le temps. Alors pour l'instant, continue de m'\xE9couter."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_014
+      TermType: 0
+      Description: 
+      Languages:
+      - 'You look back at the body. Something about it bothers you.
+
+        Not
+        its face. Not anymore.
+
+        The way it fought. For a few brief moments...
+        you knew what it was going to do.'
+      - "Tu regardes de nouveau le corps. Quelque chose te d\xE9range.\nPas son visage.
+        Plus maintenant.\nSa fa\xE7on de combattre. Pendant quelques courts instants...
+        tu savais ce qu'il allait faire."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_015
+      TermType: 0
+      Description: 
+      Languages:
+      - I knew its movements.
+      - Je connaissais ses mouvements.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_016
+      TermType: 0
+      Description: 
+      Languages:
+      - Good.
+      - Bien.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_017
+      TermType: 0
+      Description: 
+      Languages:
+      - Why?
+      - Pourquoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue/L01E_018
+      TermType: 0
+      Description: 
+      Languages:
+      - Keep going. You'll remember.
+      - Continue. Tu t'en souviendras.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Another room. Another figure waiting in the dark.
+
+        Then it steps
+        into the light.'
+      - "Une autre pi\xE8ce. Une autre silhouette attend dans l'obscurit\xE9.\nPuis
+        elle avance dans la lumi\xE8re."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_002
+      TermType: 0
+      Description: 
+      Languages:
+      - You've got to be kidding me.
+      - C'est pas vrai...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_003
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The same face. Again.
+
+        But something is different. Its posture.
+
+        The
+        way it watches you. This one feels... more aware.'
+      - "Le m\xEAme visage. Encore.\nMais quelque chose est diff\xE9rent. Sa posture.\nLa
+        fa\xE7on dont il t'observe. Celui-ci semble... plus conscient."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_004
+      TermType: 0
+      Description: 
+      Languages:
+      - Another one.
+      - Encore un.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_005
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_006
+      TermType: 0
+      Description: 
+      Languages:
+      - And you're still not going to tell me what they are.
+      - Et tu ne vas toujours pas me dire ce qu'ils sont.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_007
+      TermType: 0
+      Description: 
+      Languages:
+      - Would the answer help you survive?
+      - "Est-ce que la r\xE9ponse t'aiderait \xE0 survivre ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_008
+      TermType: 0
+      Description: 
+      Languages:
+      - It might help me understand why I keep killing myself.
+      - "\xC7a m'aiderait peut-\xEAtre \xE0 comprendre pourquoi je continue de me
+        tuer moi-m\xEAme."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_009
+      TermType: 0
+      Description: 
+      Languages:
+      - You are not killing yourself.
+      - "Tu ne te tues pas toi-m\xEAme."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_010
+      TermType: 0
+      Description: 
+      Languages:
+      - You know what I mean.
+      - Tu sais ce que je veux dire.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02_011
+      TermType: 0
+      Description: 
+      Languages:
+      - Then survive. Ask again afterward.
+      - "Alors survis. Repose-moi la question apr\xE8s."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_001
+      TermType: 0
+      Description: 
+      Languages:
+      - "The second one falls. \nThis time, you don't look away.\nIts body begins
+        to fade just like the first."
+      - "Le deuxi\xE8me s'effondre.\nCette fois, tu ne d\xE9tournes pas le regard.\nSon
+        corps commence \xE0 dispara\xEEtre, exactement comme le premier."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_002
+      TermType: 0
+      Description: 
+      Languages:
+      - You said it wasn't me.
+      - "Tu as dit que ce n'\xE9tait pas moi."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_003
+      TermType: 0
+      Description: 
+      Languages:
+      - It wasn't.
+      - "\xC7a ne l'\xE9tait pas."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_004
+      TermType: 0
+      Description: 
+      Languages:
+      - Then why does it have my body?
+      - Alors pourquoi est-ce qu'il a mon corps ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_005
+      TermType: 0
+      Description: 
+      Languages:
+      - Because some things are easier to rebuild than others.
+      - "Parce que certaines choses sont plus faciles \xE0 reconstruire que d'autres."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_006
+      TermType: 0
+      Description: 
+      Languages:
+      - Rebuild?
+      - Reconstruire ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_007
+      TermType: 0
+      Description: 
+      Languages:
+      - Keep moving.
+      - Continue d'avancer.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_008
+      TermType: 0
+      Description: 
+      Languages:
+      - 'No. You said I could ask again afterward.
+
+        I''m asking.'
+      - "Non. Tu as dit que je pourrais reposer la question apr\xE8s.\nAlors je la
+        pose."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_009
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_010
+      TermType: 0
+      Description: 
+      Languages:
+      - How many of them are there?
+      - Combien est-ce qu'il y en a ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_011
+      TermType: 0
+      Description: 
+      Languages:
+      - More than one.
+      - Plus d'un.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_012
+      TermType: 0
+      Description: 
+      Languages:
+      - I noticed.
+      - Sans blague.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_013
+      TermType: 0
+      Description: 
+      Languages:
+      - Then you already have part of your answer.
+      - "Alors tu as d\xE9j\xE0 une partie de ta r\xE9ponse."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 2/L02E_014
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The last traces of the body disappear.
+
+        For a moment, you can still
+        see its face.
+
+        Your face. Then nothing remains.'
+      - "Les derni\xE8res traces du corps disparaissent.\nPendant un instant, tu
+        peux encore distinguer son visage.\nTon visage. Puis il ne reste plus rien."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'No darkness. No waiting.
+
+        The third one is already moving.'
+      - "Pas d'obscurit\xE9. Pas d'attente.\nLe troisi\xE8me est d\xE9j\xE0 en mouvement."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_002
+      TermType: 0
+      Description: 
+      Languages:
+      - Don't stop.
+      - "Ne t'arr\xEAte pas."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_003
+      TermType: 0
+      Description: 
+      Languages:
+      - "Another one\u2014"
+      - "Encore un\u2014"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_004
+      TermType: 0
+      Description: 
+      Languages:
+      - I know. Move.
+      - Je sais. Avance.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_005
+      TermType: 0
+      Description: 
+      Languages:
+      - "You said\u2014"
+      - "Tu avais dit\u2014"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_006
+      TermType: 0
+      Description: 
+      Languages:
+      - Later.
+      - Plus tard.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03_007
+      TermType: 0
+      Description: 
+      Languages:
+      - 'It raises its guard. So do you.
+
+        No questions this time.'
+      - 'Il se met en garde. Toi aussi.
+
+        Pas de questions cette fois.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_001
+      TermType: 0
+      Description: 
+      Languages:
+      - It falls. You barely have time to watch it hit the ground.
+      - "Il s'effondre. Tu as \xE0 peine le temps de le voir toucher le sol."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_002
+      TermType: 0
+      Description: 
+      Languages:
+      - Move. Now.
+      - Avance. Maintenant.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_003
+      TermType: 0
+      Description: 
+      Languages:
+      - What is happening?
+      - Qu'est-ce qui se passe ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_004
+      TermType: 0
+      Description: 
+      Languages:
+      - We're running out of time.
+      - Nous manquons de temps.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_005
+      TermType: 0
+      Description: 
+      Languages:
+      - Running out of time for what?
+      - De temps pour quoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_006
+      TermType: 0
+      Description: 
+      Languages:
+      - Forward.
+      - Avance.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_007
+      TermType: 0
+      Description: 
+      Languages:
+      - What happens if I don't?
+      - Et si je ne le fais pas ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_008
+      TermType: 0
+      Description: 
+      Languages:
+      - "... \nYou join them."
+      - '...
+
+        Tu les rejoindras.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 3/L03E_009
+      TermType: 0
+      Description: 
+      Languages:
+      - For once... you don't ask another question.
+      - Pour une fois... tu ne poses pas d'autre question.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_001
+      TermType: 0
+      Description: 
+      Languages:
+      - "The passage closes behind you. For the first time since the last fight...
+        \nnothing follows."
+      - "Le passage se referme derri\xE8re toi. Pour la premi\xE8re fois depuis le
+        dernier combat...\nrien ne vous poursuit."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_002
+      TermType: 0
+      Description: 
+      Languages:
+      - Are we safe?
+      - "On est en s\xE9curit\xE9 ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_003
+      TermType: 0
+      Description: 
+      Languages:
+      - For a moment.
+      - Pour un moment.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_004
+      TermType: 0
+      Description: 
+      Languages:
+      - Then talk.
+      - Alors parle.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_005
+      TermType: 0
+      Description: 
+      Languages:
+      - "A figure stands at the other end of the room. \nMotionless. Waiting. You
+        already know its face. \nBut this one doesn't attack. Not yet."
+      - "Une silhouette se tient \xE0 l'autre bout de la pi\xE8ce.\nImmobile. Elle
+        attend. Tu connais d\xE9j\xE0 son visage. \nMais celle-ci n'attaque pas.
+        Pas encore."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_006
+      TermType: 0
+      Description: 
+      Languages:
+      - Another one.
+      - Encore un.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_007
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_008
+      TermType: 0
+      Description: 
+      Languages:
+      - You said I'd join them if I stopped.
+      - "Tu as dit que je les rejoindrais si je m'arr\xEAtais."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_009
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_010
+      TermType: 0
+      Description: 
+      Languages:
+      - So they were like me.
+      - "Alors ils \xE9taient comme moi."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_011
+      TermType: 0
+      Description: 
+      Languages:
+      - Once.
+      - Autrefois.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_012
+      TermType: 0
+      Description: 
+      Languages:
+      - Once?
+      - Autrefois ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_013
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The figure slowly raises its head.
+
+        For a second, there is something
+        in its eyes.
+
+        Not rage. Not hunger. Recognition.'
+      - "La silhouette rel\xE8ve lentement la t\xEAte.\nPendant une seconde, il y
+        a quelque chose dans son regard.\nPas de la rage. Pas de la faim. De la reconnaissance."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_014
+      TermType: 0
+      Description: 
+      Languages:
+      - What happened to them?
+      - "Qu'est-ce qui leur est arriv\xE9 ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_015
+      TermType: 0
+      Description: 
+      Languages:
+      - They died. Too many times.
+      - Ils sont morts. Trop de fois.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_016
+      TermType: 0
+      Description: 
+      Languages:
+      - And?
+      - Et ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_017
+      TermType: 0
+      Description: 
+      Languages:
+      - And eventually... there was too little left to bring back.
+      - Et finalement... il ne restait plus assez d'eux pour les ramener.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_018
+      TermType: 0
+      Description: 
+      Languages:
+      - The figure takes a step toward you.
+      - La silhouette fait un pas vers toi.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_019
+      TermType: 0
+      Description: 
+      Languages:
+      - It's coming.
+      - Il arrive.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_020
+      TermType: 0
+      Description: 
+      Languages:
+      - We're not done talking.
+      - On n'a pas fini de parler.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04_021
+      TermType: 0
+      Description: 
+      Languages:
+      - Survive. Then we can continue.
+      - Survis. Ensuite, nous continuerons.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The fourth one falls.
+
+        But this time... it doesn''t fade.
+
+        Not
+        immediately.'
+      - "Le quatri\xE8me s'effondre.\nMais cette fois... il ne dispara\xEEt pas.\nPas
+        imm\xE9diatement."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_002
+      TermType: 0
+      Description: 
+      Languages:
+      - Wait.
+      - Attends.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_003
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Its body trembles.
+
+        One hand presses against the ground, as if it
+        were trying to stand again.
+
+        It fails. Then it looks at you. Really
+        looks at you.'
+      - "Son corps tremble.\nUne main s'appuie contre le sol, comme s'il essayait
+        de se relever.\nIl \xE9choue. Puis il te regarde. Il te regarde vraiment."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_004
+      TermType: 0
+      Description: 
+      Languages:
+      - A...
+      - Un...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_005
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_006
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Its jaw moves awkwardly.
+
+        The sound caught in its throat is barely
+        human.
+
+        It tries again.'
+      - "Sa m\xE2choire bouge maladroitement.\nLe son qui reste coinc\xE9 dans sa
+        gorge est \xE0 peine humain.\nIl essaie encore."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_007
+      TermType: 0
+      Description: 
+      Languages:
+      - Another... one...
+      - Un autre... encore...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_008
+      TermType: 0
+      Description: 
+      Languages:
+      - You can talk?
+      - Tu peux parler ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_009
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Something twists across its face.
+
+        Anger. Fear. Perhaps both.'
+      - "Quelque chose d\xE9forme son visage.\nDe la col\xE8re. De la peur. Peut-\xEAtre
+        les deux."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_010
+      TermType: 0
+      Description: 
+      Languages:
+      - You...
+      - Tu...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_011
+      TermType: 0
+      Description: 
+      Languages:
+      - 'It reaches toward you. Not for help.
+
+        Its fingers close as if they
+        were trying to tear something from your chest.'
+      - "Il tend la main vers toi. Pas pour demander de l'aide.\nSes doigts se referment
+        comme s'il cherchait \xE0 arracher quelque chose de ta poitrine."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_012
+      TermType: 0
+      Description: 
+      Languages:
+      - You... took...
+      - Tu as... pris...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_013
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The words die with it.
+
+        Its body begins to dissolve.'
+      - "Les mots meurent avec lui.\nSon corps commence \xE0 se dissoudre."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_014
+      TermType: 0
+      Description: 
+      Languages:
+      - Took what?
+      - Pris quoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_015
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_016
+      TermType: 0
+      Description: 
+      Languages:
+      - What did I take?!
+      - Qu'est-ce que j'ai pris ?!
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_017
+      TermType: 0
+      Description: 
+      Languages:
+      - "Nothing answers.\nThe face disappears first. \nYour face."
+      - "Rien ne r\xE9pond.\nLe visage dispara\xEEt en premier.\nTon visage."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_018
+      TermType: 0
+      Description: 
+      Languages:
+      - There was someone in there.
+      - "Il y avait quelqu'un l\xE0-dedans."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_019
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_020
+      TermType: 0
+      Description: 
+      Languages:
+      - You knew.
+      - Tu le savais.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_021
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_022
+      TermType: 0
+      Description: 
+      Languages:
+      - Who was that?
+      - "Qui \xE9tait-ce ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_023
+      TermType: 0
+      Description: 
+      Languages:
+      - Someone who came before you.
+      - Quelqu'un qui est venu avant toi.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_024
+      TermType: 0
+      Description: 
+      Languages:
+      - Before me?
+      - Avant moi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_025
+      TermType: 0
+      Description: 
+      Languages:
+      - We need to move.
+      - Nous devons avancer.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_026
+      TermType: 0
+      Description: 
+      Languages:
+      - 'No. What did it mean?
+
+        What did I take from it?'
+      - 'Non. Qu''est-ce qu''il voulait dire ?
+
+        Qu''est-ce que je lui ai
+        pris ?'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_027
+      TermType: 0
+      Description: 
+      Languages:
+      - Nothing.
+      - Rien.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_028
+      TermType: 0
+      Description: 
+      Languages:
+      - It didn't seem to agree.
+      - Il n'avait pas l'air d'accord.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_029
+      TermType: 0
+      Description: 
+      Languages:
+      - 'It has forgotten almost everything.
+
+        Pain tends to remain longer.
+
+        But
+        perhaps its anger isn''t entirely misplaced.'
+      - "Il a presque tout oubli\xE9.\nLa douleur, elle, reste plus longtemps.\nMais
+        peut-\xEAtre que sa col\xE8re n'est pas totalement injustifi\xE9e."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_030
+      TermType: 0
+      Description: 
+      Languages:
+      - What do you mean?
+      - Qu'est-ce que tu veux dire ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_031
+      TermType: 0
+      Description: 
+      Languages:
+      - Something did take everything from it.
+      - Quelque chose lui a bel et bien tout pris.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_032
+      TermType: 0
+      Description: 
+      Languages:
+      - What?
+      - Quoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_033
+      TermType: 0
+      Description: 
+      Languages:
+      - The same thing that took everything from you.
+      - "La m\xEAme chose qui t'a tout pris \xE0 toi."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_034
+      TermType: 0
+      Description: 
+      Languages:
+      - From me?
+      - "\xC0 moi ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 4/L04E_035
+      TermType: 0
+      Description: 
+      Languages:
+      - Your world.
+      - Ton monde.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Another figure stands ahead.
+
+        At first glance, it looks like the
+        others.
+
+        Then it moves. Slower.
+
+        More deliberate. Every motion
+        feels controlled.'
+      - "Une autre silhouette se tient devant toi.\nAu premier regard, elle ressemble
+        aux autres.\nPuis elle bouge. Plus lentement.\nPlus d\xE9lib\xE9r\xE9ment.
+        Chaque mouvement semble ma\xEEtris\xE9."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05_002
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Be careful.
+
+        This one survived longer than the others.'
+      - "Sois prudent.\nCelui-ci a surv\xE9cu plus longtemps que les autres."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05_003
+      TermType: 0
+      Description: 
+      Languages:
+      - How much longer?
+      - Beaucoup plus longtemps ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05_004
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Long enough.
+
+        Don''t underestimate it.'
+      - 'Assez.
+
+        Ne le sous-estime pas.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_001
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The final blow lands. The creature staggers.
+
+        But it doesn''t fall.
+        Not yet.
+
+        For a moment, it simply stands there... looking at you.'
+      - "Le dernier coup porte. La cr\xE9ature vacille.\nMais elle ne tombe pas.
+        Pas encore.\nPendant un instant, elle reste simplement l\xE0... \xE0 te regarder."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_002
+      TermType: 0
+      Description: 
+      Languages:
+      - Thank you.
+      - Merci.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_003
+      TermType: 0
+      Description: 
+      Languages:
+      - What?
+      - Quoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_004
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Its expression changes. The tension leaves its face.
+
+        For the first
+        time... there is no anger in its eyes.
+
+        Only relief.
+
+        Then
+        it falls.'
+      - "Son expression change. La tension quitte son visage.\nPour la premi\xE8re
+        fois... il n'y a plus de col\xE8re dans son regard.\nSeulement du soulagement.\nPuis
+        elle s'effondre."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_005
+      TermType: 0
+      Description: 
+      Languages:
+      - Why did it thank me?
+      - "Pourquoi est-ce qu'elle m'a remerci\xE9 ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_006
+      TermType: 0
+      Description: 
+      Languages:
+      - Because you stopped it.
+      - "Parce que tu l'as arr\xEAt\xE9e."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_007
+      TermType: 0
+      Description: 
+      Languages:
+      - Stopped it from what?
+      - "Arr\xEAt\xE9e de faire quoi ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_008
+      TermType: 0
+      Description: 
+      Languages:
+      - From dying again.
+      - "De mourir \xE0 nouveau."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_009
+      TermType: 0
+      Description: 
+      Languages:
+      - Again?
+      - "\xC0 nouveau ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_010
+      TermType: 0
+      Description: 
+      Languages:
+      - 'They came back. Again and again.
+
+        But each time, something was missing
+
+        A
+        memory. A name. A piece of what they were.'
+      - "Ils revenaient. Encore et encore.\nMais \xE0 chaque fois, quelque chose
+        manquait.\nUn souvenir. Un nom. Une partie de ce qu'ils \xE9taient."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_011
+      TermType: 0
+      Description: 
+      Languages:
+      - Until they became this.
+      - "Jusqu'\xE0 devenir \xE7a."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_012
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_013
+      TermType: 0
+      Description: 
+      Languages:
+      - And if I die enough times...
+      - Et si je meurs suffisamment de fois...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_014
+      TermType: 0
+      Description: 
+      Languages:
+      - You may follow the same path.
+      - "Tu pourrais suivre le m\xEAme chemin."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_015
+      TermType: 0
+      Description: 
+      Languages:
+      - You knew this from the beginning.
+      - "Tu le savais depuis le d\xE9but."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_016
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_017
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Then tell me who you are.
+
+        No more avoiding the question.'
+      - "Alors dis-moi qui tu es.\nPlus question d'\xE9viter la r\xE9ponse."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_018
+      TermType: 0
+      Description: 
+      Languages:
+      - You already know part of the answer.
+      - "Tu connais d\xE9j\xE0 une partie de la r\xE9ponse."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_019
+      TermType: 0
+      Description: 
+      Languages:
+      - What part?
+      - Laquelle ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_020
+      TermType: 0
+      Description: 
+      Languages:
+      - 'You asked what was taken from you.
+
+        Your world.'
+      - "Tu as demand\xE9 ce qu'on t'avait pris.\nTon monde."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_021
+      TermType: 0
+      Description: 
+      Languages:
+      - And?
+      - Et ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_022
+      TermType: 0
+      Description: 
+      Languages:
+      - 'This world was attacked.
+
+        Its cities. Its people. Its life.
+
+        Almost
+        everything was destroyed.'
+      - "Ce monde a \xE9t\xE9 attaqu\xE9.\nSes villes. Ses habitants. Sa vie.\nPresque
+        tout a \xE9t\xE9 d\xE9truit."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_023
+      TermType: 0
+      Description: 
+      Languages:
+      - How do you know?
+      - Comment tu le sais ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_024
+      TermType: 0
+      Description: 
+      Languages:
+      - Because I felt it.
+      - Parce que je l'ai ressenti.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_025
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_026
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Every wound. Every death.
+
+        Every place that went silent.'
+      - 'Chaque blessure. Chaque mort.
+
+        Chaque endroit devenu silencieux.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_027
+      TermType: 0
+      Description: 
+      Languages:
+      - Where are you?
+      - "O\xF9 es-tu ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_028
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Beneath your feet.
+
+        Around you.
+
+        Everywhere.'
+      - 'Sous tes pieds.
+
+        Autour de toi.
+
+        Partout.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_029
+      TermType: 0
+      Description: 
+      Languages:
+      - You're the planet.
+      - "Tu es la plan\xE8te."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_030
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes and no. More.
+      - "Oui et non. Plus que \xE7a."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_031
+      TermType: 0
+      Description: 
+      Languages:
+      - Then you created me.
+      - "Alors tu m'as cr\xE9\xE9."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_032
+      TermType: 0
+      Description: 
+      Languages:
+      - Your body. Yes.
+      - Ton corps. Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_033
+      TermType: 0
+      Description: 
+      Languages:
+      - My body?
+      - Mon corps ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_034
+      TermType: 0
+      Description: 
+      Languages:
+      - What is inside it... is much older.
+      - "Ce qu'il y a \xE0 l'int\xE9rieur... est bien plus ancien."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_035
+      TermType: 0
+      Description: 
+      Languages:
+      - Then what am I?
+      - Alors qu'est-ce que je suis ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_036
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Something I found.
+
+        Something your people refused to let disappear.'
+      - "Quelque chose que j'ai trouv\xE9.\nQuelque chose que ton peuple a refus\xE9
+        de laisser dispara\xEEtre."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_037
+      TermType: 0
+      Description: 
+      Languages:
+      - My people?
+      - Mon peuple ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_038
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Something flashes behind your eyes.
+
+        Not an image. A memory.'
+      - 'Quelque chose traverse ton esprit.
+
+        Pas une image. Un souvenir.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_039
+      TermType: 0
+      Description: 
+      Languages:
+      - "Wait\u2014"
+      - "Attends\u2014"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_040
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Sunlight. Real sunlight. Warm against your skin.
+
+        Voices somewhere
+        behind you.
+
+        Laughter. Buildings stretching toward a blue sky.
+
+        For
+        a moment...you know this place.'
+      - "La lumi\xE8re du soleil. La vraie. Chaude contre ta peau.\nDes voix quelque
+        part derri\xE8re toi.\nDes rires. Des b\xE2timents s'\xE9l\xE8vent sous un
+        ciel bleu.\nPendant un instant... tu connais cet endroit."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_041
+      TermType: 0
+      Description: 
+      Languages:
+      - Hey. You're going to be late.
+      - "H\xE9. Tu vas \xEAtre en retard."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_042
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_043
+      TermType: 0
+      Description: 
+      Languages:
+      - Are you listening to me?
+      - "Tu m'\xE9coutes ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_044
+      TermType: 0
+      Description: 
+      Languages:
+      - "You turn toward the voice.\nA face. Familiar. Important.\nYou almost remember\u2014"
+      - "Tu te retournes vers la voix.\nUn visage. Familier. Important.\nTu es presque
+        sur le point de te souvenir\u2014"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_045
+      TermType: 0
+      Description: 
+      Languages:
+      - 'Then it''s gone.
+
+        Cold walls. Cold air. Silence.'
+      - "Puis tout dispara\xEEt.\nLes murs froids. L'air froid. Le silence."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_046
+      TermType: 0
+      Description: 
+      Languages:
+      - '...
+
+        I remember.'
+      - '...
+
+        Je me souviens.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_047
+      TermType: 0
+      Description: 
+      Languages:
+      - What?
+      - De quoi ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_048
+      TermType: 0
+      Description: 
+      Languages:
+      - 'I don''t know. Someone.
+
+        A place. The sun.'
+      - 'Je ne sais pas. Quelqu''un.
+
+        Un endroit. Le soleil.'
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_049
+      TermType: 0
+      Description: 
+      Languages:
+      - ...
+      - ...
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_050
+      TermType: 0
+      Description: 
+      Languages:
+      - That was real. Wasn't it?
+      - "C'\xE9tait r\xE9el. N'est-ce pas ?"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_051
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_052
+      TermType: 0
+      Description: 
+      Languages:
+      - That was my world.
+      - "C'\xE9tait mon monde."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_053
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_054
+      TermType: 0
+      Description: 
+      Languages:
+      - 'The ground suddenly trembles.
+
+        Dust falls from the ceiling.
+
+        Something
+        moves far beyond the chamber.
+
+        Something vast.'
+      - "Le sol se met soudain \xE0 trembler.\nDe la poussi\xE8re tombe du plafond.\nQuelque
+        chose bouge, bien au-del\xE0 de la salle.\nQuelque chose d'immense."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_055
+      TermType: 0
+      Description: 
+      Languages:
+      - We need to go.
+      - Nous devons partir.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_056
+      TermType: 0
+      Description: 
+      Languages:
+      - No. I was someone.
+      - "Non. J'\xE9tais quelqu'un."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_057
+      TermType: 0
+      Description: 
+      Languages:
+      - Yes.
+      - Oui.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_058
+      TermType: 0
+      Description: 
+      Languages:
+      - Who?
+      - Qui ?
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Dialogue Level 5/L05E_059
+      TermType: 0
+      Description: 
+      Languages:
+      - That... you'll have to remember.
+      - "\xC7a... tu vas devoir t'en souvenir."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Start
+      TermType: 0
+      Description: 
+      Languages:
+      - Welcome to the Ghost Tactics tutorial. Click the pulsing buttons to complete
+        the tutorial. You can also skip each tutorial individually, or disable tutorials
+        entirely in the settings.
+      - "Bienvenue dans le tutoriel de Ghost Tactics. Clique sur les boutons qui
+        pulsent pour terminer le tutoriel. Tu peux aussi passer chaque tutoriel ou
+        d\xE9sactiver les tutoriels dans les options."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Second Step
+      TermType: 0
+      Description: 
+      Languages:
+      - You can change your selection at any time before the fight starts.
+      - "Tu peux annuler ton choix \xE0 tout moment tant que le combat n'est pas
+        lanc\xE9."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Fifth Step
+      TermType: 0
+      Description: 
+      Languages:
+      - You can clear the selected actions by clicking this button.
+      - Tu peux vider la liste des actions choisies en cliquant sur ce bouton.
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Ghost Step Change Selection
+      TermType: 0
+      Description: 
+      Languages:
+      - When you die, you can choose one of the skills you used during the previous
+        fight. You can change your choice at any time. But for now, let's stick with
+        Dodge.
+      - "Lorsque tu meurs, tu peux choisir l'une des comp\xE9tences que tu as utilis\xE9es
+        lors du combat pr\xE9c\xE9dent. Tu peux changer ton choix \xE0 tout moment.
+        Mais pour l'instant, restons sur l'Esquive."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Ghost Step Choice Confirm
+      TermType: 0
+      Description: 
+      Languages:
+      - For now, only Dodge can be used. The other actions will be implemented later.
+      - "Pour l'instant, seule l'esquive peut \xEAtre utilis\xE9e. Les autres actions
+        seront impl\xE9ment\xE9es plus tard."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Ghost Step Selection
+      TermType: 0
+      Description: 
+      Languages:
+      - Here, you can see which actions you've kept.
+      - "Ici, tu peux voir quelles actions tu as conserv\xE9es."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Ghost Step Action
+      TermType: 0
+      Description: 
+      Languages:
+      - When this button appears, you can use one of the actions you've kept.
+      - "Quand ce bouton appara\xEEt, cela signifie que tu peux utiliser une des
+        actions que tu as conserv\xE9es."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Previsualized
+      TermType: 0
+      Description: 
+      Languages:
+      - Currently disabled, this button will allow you to preview some of your opponent's
+        actions.
+      - "D\xE9sactiv\xE9 pour l'instant, ce bouton te permettra de pr\xE9visualiser
+        une partie des actions de ton adversaire."
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Tutorial/Confirm Tutorial
+      TermType: 0
+      Description: 
+      Languages:
+      - This game is still in development. Try different combinations and take the
+        time to read the dialogues. That's where you'll learn more about the world
+        you're in. Have fun!
+      - "Ce jeu est toujours en d\xE9veloppement. Teste plusieurs combinaisons et
+        prends le temps de lire les dialogues. C'est l\xE0 que tu comprendras l'univers
+        dans lequel tu te trouves. Bon jeu \xE0 toi !"
       - 
       - 
       Flags: 00000000
@@ -388,7 +2733,7 @@ MonoBehaviour:
     Google_WebServiceURL: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
     Google_SpreadsheetKey: 10iNmJcICE0dfy2A2-jdLMVVNeCpWhN1FapdKwl_R4kk
     Google_SpreadsheetName: I2Loc Ghost Tactics Localization
-    Google_LastUpdatedVersion: 1785535417616
+    Google_LastUpdatedVersion: 1788729419881
     Google_Password: Ghost-Tactics
     GoogleUpdateFrequency: 3
     GoogleInEditorCheckFrequency: 2

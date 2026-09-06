@@ -1,6 +1,5 @@
 using Tutorial.Runtime;
 using Tutorial.Runtime.Flow;
-using UnityEngine;
 
 namespace Crimson.Core.Settings
 {
@@ -23,7 +22,7 @@ namespace Crimson.Core.Settings
         protected override void OnValueChanged(float value)
         {
             base.OnValueChanged(value);
-            bool tutorialsEnabled = value == 0;
+            bool tutorialsEnabled = value > 0;
             TutoEventBus.Publish<OnTutorialsEnabledChanged>(new OnTutorialsEnabledChanged(tutorialsEnabled));
         }
 
