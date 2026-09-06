@@ -4,6 +4,7 @@ using System.IO;
 using Tutorial.Runtime.Catalogue;
 using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Persistence;
+using Tutorial.Editor.Settings;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,9 +18,27 @@ namespace Tutorial.Editor.Services
     {
         #region Serialized Fields
 
+        /// <summary>
+        /// Current instrumentation manifest version
+        /// </summary>
         [SerializeField]
-        private int version = 1;
+        private int version = 2;
 
+        /// <summary>
+        /// Full type name containing the global Skip Current Step method
+        /// </summary>
+        [SerializeField]
+        private string skipScriptName = string.Empty;
+
+        /// <summary>
+        /// Method used as the global Skip Current Step entry point
+        /// </summary>
+        [SerializeField]
+        private string skipMethodName = string.Empty;
+
+        /// <summary>
+        /// Tutorial Step method bindings requiring IL instrumentation
+        /// </summary>
         [SerializeField]
         private List<TutorialInjectionBindingData> bindings = new List<TutorialInjectionBindingData>();
 
@@ -28,6 +47,21 @@ namespace Tutorial.Editor.Services
         #region Properties
 
         public List<TutorialInjectionBindingData> Bindings => bindings;
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Configure the global Skip Current Step binding
+        /// </summary>
+        /// <param name="scriptName"></param>
+        /// <param name="methodName"></param>
+        public void SetSkipBinding(string scriptName, string methodName)
+        {
+            skipScriptName = scriptName ?? string.Empty;
+            skipMethodName = methodName ?? string.Empty;
+        }
 
         #endregion
     }
@@ -111,6 +145,13 @@ namespace Tutorial.Editor.Services
             {
                 TutorialInjectionManifestData manifest = new TutorialInjectionManifestData();
                 HashSet<string> registeredBindings = new HashSet<string>(StringComparer.Ordinal);
+
+                TutorialToolProjectSettings projectSettings = TutorialToolProjectSettings.instance;
+
+                if (projectSettings != null && projectSettings.HasSkipBinding)
+                {
+                    manifest.SetSkipBinding(projectSettings.SkipScriptName, projectSettings.SkipMethodName);
+                }
 
                 string[] catalogueGuids = AssetDatabase.FindAssets("t:TutorialRuntimeCatalogue");
 

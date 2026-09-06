@@ -100,7 +100,6 @@ namespace Tutorial.Runtime.Data
 
         public override void OnRaised()
         {
-            Debug.Log("Raised");
             TutoEventBus.Publish<OnRaised>(new OnRaised(this));
         }
 
@@ -111,7 +110,6 @@ namespace Tutorial.Runtime.Data
 
         public override void OnTrigger()
         {
-            Debug.Log("Trigger");
             TutoEventBus.Publish<OnTrigger>(new OnTrigger(this));
         }
 

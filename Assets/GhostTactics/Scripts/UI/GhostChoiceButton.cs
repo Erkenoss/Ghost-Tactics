@@ -70,12 +70,21 @@ namespace GhostTactics.UI
             chooseActionButton = null;
         }
 
+        /// <summary>
+        /// Play the tutorial link with this script
+        /// </summary>
+        public void PlaytTuto()
+        {
+
+        }
+
         #endregion
 
         #region Private Methods
 
         protected override void OnClick()
         {
+            PlaytTuto();
             EventBus.Publish<OnRemoveGhostChoice>(new OnRemoveGhostChoice(chooseActionButton));
             Disable();
         }

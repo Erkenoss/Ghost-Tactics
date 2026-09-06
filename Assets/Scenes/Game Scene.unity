@@ -596,7 +596,9 @@ GameObject:
   - component: {fileID: 37366086}
   - component: {fileID: 37366085}
   - component: {fileID: 37366089}
+  - component: {fileID: 37366091}
   - component: {fileID: 37366090}
+  - component: {fileID: 37366092}
   m_Layer: 5
   m_Name: Button Action (1)
   m_TagString: Untagged
@@ -742,7 +744,29 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   data: {fileID: 11400000, guid: bb7b9265576b3a84e83be44d7c6267fd, type: 2}
---- !u!114 &37366090
+--- !u!95 &37366090
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 37366082}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &37366091
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -755,9 +779,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
   targetComponent: {fileID: 37366086}
-  objectGUID: 0cfeb7dd63974d8ea2e35a048660dc6f
+  objectGUID: 515f32d435c449c1927190e627163d50
   step: {fileID: 0}
   stepSequence: {fileID: 0}
+--- !u!114 &37366092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 37366082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 37366091}
+  popUpMessage:
+    mTerm: 
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 37366089}
+  animator: {fileID: 37366090}
 --- !u!114 &42239228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -939,7 +984,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -556}
+  m_AnchoredPosition: {x: 1140, y: -556}
   m_SizeDelta: {x: 0, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &72105791
@@ -975,6 +1020,9 @@ GameObject:
   - component: {fileID: 86056715}
   - component: {fileID: 86056714}
   - component: {fileID: 86056717}
+  - component: {fileID: 86056719}
+  - component: {fileID: 86056718}
+  - component: {fileID: 86056720}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -1099,6 +1147,65 @@ MonoBehaviour:
   btn: {fileID: 86056714}
   btnClip: {fileID: 0}
   audioType: 0
+--- !u!95 &86056718
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86056711}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &86056719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86056711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 86056714}
+  objectGUID: a39dceb2450742eebabd9f1279dd4b40
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &86056720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 86056711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 86056719}
+  popUpMessage:
+    mTerm: Tutorial/Previsualized
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 86056717}
+  animator: {fileID: 86056718}
 --- !u!1 &87004934
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,7 +1239,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -972}
+  m_AnchoredPosition: {x: 1140, y: -972}
   m_SizeDelta: {x: 0, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &87004936
@@ -1199,8 +1306,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -444}
-  m_SizeDelta: {x: 2340, y: 128}
+  m_AnchoredPosition: {x: 1140, y: -444}
+  m_SizeDelta: {x: 2280, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &109821067
 MonoBehaviour:
@@ -1857,14 +1964,16 @@ GameObject:
   - component: {fileID: 152052678}
   - component: {fileID: 152052677}
   - component: {fileID: 152052681}
+  - component: {fileID: 152052683}
   - component: {fileID: 152052682}
+  - component: {fileID: 152052684}
   m_Layer: 5
   m_Name: Button Action
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &152052675
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1880,10 +1989,10 @@ RectTransform:
   - {fileID: 24384554}
   m_Father: {fileID: 1049206429}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 72, y: -64}
+  m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &152052677
 MonoBehaviour:
@@ -2003,7 +2112,29 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   data: {fileID: 11400000, guid: c37587dd400f4364d81b560b344de2a5, type: 2}
---- !u!114 &152052682
+--- !u!95 &152052682
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152052674}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &152052683
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2016,9 +2147,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
   targetComponent: {fileID: 152052678}
-  objectGUID: 49fd7754253649cf8f179769c1e47902
+  objectGUID: ff588e8a21d046cfb1a0e3b8d9ad0c16
   step: {fileID: 0}
   stepSequence: {fileID: 0}
+--- !u!114 &152052684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152052674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 152052683}
+  popUpMessage:
+    mTerm: '-'
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 152052681}
+  animator: {fileID: 152052682}
 --- !u!1 &157712472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2318,7 +2470,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -332}
+  m_AnchoredPosition: {x: 1140, y: -332}
   m_SizeDelta: {x: 0, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &173512540
@@ -2378,7 +2530,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 845, y: -64}
+  m_AnchoredPosition: {x: 1090, y: -64}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &176726653
@@ -2530,6 +2682,9 @@ GameObject:
   - component: {fileID: 185922399}
   - component: {fileID: 185922398}
   - component: {fileID: 185922397}
+  - component: {fileID: 185922402}
+  - component: {fileID: 185922401}
+  - component: {fileID: 185922400}
   m_Layer: 5
   m_Name: Button Parent
   m_TagString: Untagged
@@ -2620,6 +2775,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   buttonImage: {fileID: 1452146450}
+--- !u!95 &185922400
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185922395}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &185922401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185922395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 413760322}
+  objectGUID: d0c8559d46f74ea8bc76b8c933369b8b
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &185922402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 185922395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 185922401}
+  popUpMessage:
+    mTerm: Tutorial/Ghost Step Change Selection
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 185922399}
+  animator: {fileID: 185922400}
 --- !u!1 &194387369
 GameObject:
   m_ObjectHideFlags: 0
@@ -3188,6 +3402,9 @@ GameObject:
   - component: {fileID: 256681716}
   - component: {fileID: 256681715}
   - component: {fileID: 256681719}
+  - component: {fileID: 256681721}
+  - component: {fileID: 256681720}
+  - component: {fileID: 256681722}
   m_Layer: 5
   m_Name: Confirm Button
   m_TagString: Untagged
@@ -3212,7 +3429,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -876}
+  m_AnchoredPosition: {x: 1140, y: -876}
   m_SizeDelta: {x: 192, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &256681715
@@ -3333,6 +3550,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   playerDie: {fileID: 1783683009}
+--- !u!95 &256681720
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256681713}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &256681721
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256681713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 256681716}
+  objectGUID: ec51621acf9e4ea5a1ef9175784ea3e2
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &256681722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256681713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 256681721}
+  popUpMessage:
+    mTerm: Tutorial/Ghost Step Choice Confirm
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 256681719}
+  animator: {fileID: 256681720}
 --- !u!1 &268636720
 GameObject:
   m_ObjectHideFlags: 0
@@ -3687,8 +3963,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -256}
-  m_SizeDelta: {x: 1380, y: 512}
+  m_AnchoredPosition: {x: 960, y: -256}
+  m_SizeDelta: {x: 960, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &291246863
 MonoBehaviour:
@@ -4213,6 +4489,9 @@ GameObject:
   - component: {fileID: 412616834}
   - component: {fileID: 412616833}
   - component: {fileID: 412616832}
+  - component: {fileID: 412616837}
+  - component: {fileID: 412616836}
+  - component: {fileID: 412616835}
   m_Layer: 5
   m_Name: Button Parent (1)
   m_TagString: Untagged
@@ -4238,7 +4517,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 715, y: -64}
+  m_AnchoredPosition: {x: 960, y: -64}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &412616832
@@ -4303,6 +4582,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   buttonImage: {fileID: 1920748736}
+--- !u!95 &412616835
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412616830}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &412616836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412616830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 412616837}
+  popUpMessage:
+    mTerm: '-'
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 412616834}
+  animator: {fileID: 412616835}
+--- !u!114 &412616837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 412616830}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 118502903}
+  objectGUID: 02ef34862afa481da907dc5154c398a8
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &413408035
 GameObject:
   m_ObjectHideFlags: 0
@@ -5195,8 +5533,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -220}
-  m_SizeDelta: {x: 2340, y: 128}
+  m_AnchoredPosition: {x: 1140, y: -220}
+  m_SizeDelta: {x: 2280, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &538778662
 MonoBehaviour:
@@ -5860,7 +6198,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -668}
+  m_AnchoredPosition: {x: 1140, y: -668}
   m_SizeDelta: {x: 0, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &582395888
@@ -6148,7 +6486,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -108}
+  m_AnchoredPosition: {x: 1140, y: -108}
   m_SizeDelta: {x: 0, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &615469929
@@ -6445,10 +6783,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 643530975}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
 --- !u!224 &643530971 stripped
 RectTransform:
@@ -6460,44 +6795,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4760075535077494454, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
   m_PrefabInstance: {fileID: 643530970}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 643530974}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8bdc394f7d3972745bb15eea65264292, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.UI.ButtonActionSelected
---- !u!114 &643530973 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3283650330403747119, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
-  m_PrefabInstance: {fileID: 643530970}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
---- !u!1 &643530974 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
-  m_PrefabInstance: {fileID: 643530970}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &643530975
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 643530974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
-  targetComponent: {fileID: 643530973}
-  objectGUID: 13dbcbbd394943b0b3e293d4945059d3
-  step: {fileID: 0}
-  stepSequence: {fileID: 0}
 --- !u!1 &674767787
 GameObject:
   m_ObjectHideFlags: 0
@@ -6948,6 +7251,9 @@ GameObject:
   - component: {fileID: 754356943}
   - component: {fileID: 754356942}
   - component: {fileID: 754356946}
+  - component: {fileID: 754356948}
+  - component: {fileID: 754356947}
+  - component: {fileID: 754356949}
   m_Layer: 5
   m_Name: Button Action (2)
   m_TagString: Untagged
@@ -7093,6 +7399,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   data: {fileID: 11400000, guid: abc78e5d674a89b48bee5b7b337cc505, type: 2}
+--- !u!95 &754356947
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754356939}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &754356948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754356939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 754356943}
+  objectGUID: aa25dd97583541429ad2199ad6fa26fc
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &754356949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 754356939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 754356948}
+  popUpMessage:
+    mTerm: 
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 754356946}
+  animator: {fileID: 754356947}
 --- !u!1 &756727839
 GameObject:
   m_ObjectHideFlags: 0
@@ -7240,7 +7605,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 2663.81}
+  m_SizeDelta: {x: 0, y: 3822.91}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &799468505
 MonoBehaviour:
@@ -7492,8 +7857,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -284}
-  m_SizeDelta: {x: 2340, y: 568}
+  m_AnchoredPosition: {x: 960, y: -464}
+  m_SizeDelta: {x: 1920, y: 928}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &813244941
 MonoBehaviour:
@@ -8147,6 +8512,9 @@ GameObject:
   - component: {fileID: 1080659325}
   - component: {fileID: 1080659324}
   - component: {fileID: 1080659328}
+  - component: {fileID: 1080659329}
+  - component: {fileID: 1080659331}
+  - component: {fileID: 1080659330}
   m_Layer: 5
   m_Name: Next Dialogue Button
   m_TagString: Untagged
@@ -8290,6 +8658,65 @@ MonoBehaviour:
   btn: {fileID: 1080659325}
   btnClip: {fileID: 0}
   audioType: 0
+--- !u!114 &1080659329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080659322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 1080659325}
+  objectGUID: 5eee7068b1ef4fdfa5b591553fc9301b
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!95 &1080659330
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080659322}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1080659331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080659322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1080659329}
+  popUpMessage:
+    mTerm: Tutorial/Start
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 1080659328}
+  animator: {fileID: 1080659330}
 --- !u!1 &1120700281
 GameObject:
   m_ObjectHideFlags: 0
@@ -8399,8 +8826,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 690, y: -1331.905}
-  m_SizeDelta: {x: 1380, y: 2663.81}
+  m_AnchoredPosition: {x: 480, y: -1911.455}
+  m_SizeDelta: {x: 960, y: 3822.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1130741323
 MonoBehaviour:
@@ -9058,7 +9485,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 585, y: -64}
+  m_AnchoredPosition: {x: 830, y: -64}
   m_SizeDelta: {x: 128, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1204114841
@@ -9137,6 +9564,9 @@ GameObject:
   - component: {fileID: 1204262065}
   - component: {fileID: 1204262068}
   - component: {fileID: 1204262070}
+  - component: {fileID: 1204262072}
+  - component: {fileID: 1204262073}
+  - component: {fileID: 1204262071}
   m_Layer: 5
   m_Name: Back Main Menu
   m_TagString: Untagged
@@ -9281,6 +9711,65 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!95 &1204262071
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204262063}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1204262072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204262063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 1204262065}
+  objectGUID: a7e0f6aa8c6548c0a3eb33f93a7a6e48
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &1204262073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204262063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1204262072}
+  popUpMessage:
+    mTerm: Tutorial/Confirm Tutorial
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 1204262068}
+  animator: {fileID: 1204262071}
 --- !u!1 &1207262093
 GameObject:
   m_ObjectHideFlags: 0
@@ -10732,8 +11221,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -568}
-  m_SizeDelta: {x: 2340, y: 0}
+  m_AnchoredPosition: {x: 960, y: -928}
+  m_SizeDelta: {x: 1920, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1499749334
 MonoBehaviour:
@@ -11105,6 +11594,9 @@ GameObject:
   - component: {fileID: 1576717168}
   - component: {fileID: 1576717167}
   - component: {fileID: 1576717171}
+  - component: {fileID: 1576717173}
+  - component: {fileID: 1576717172}
+  - component: {fileID: 1576717174}
   m_Layer: 5
   m_Name: Button Action (4)
   m_TagString: Untagged
@@ -11250,6 +11742,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   data: {fileID: 11400000, guid: 719bb04cda14e8846a68e83e51e50025, type: 2}
+--- !u!95 &1576717172
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576717164}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1576717173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576717164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 1576717168}
+  objectGUID: b849ae8140144f5880b06630529cbb35
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &1576717174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576717164}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1576717173}
+  popUpMessage:
+    mTerm: 
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 1576717171}
+  animator: {fileID: 1576717172}
 --- !u!1 &1584340238
 GameObject:
   m_ObjectHideFlags: 0
@@ -13378,6 +13929,9 @@ GameObject:
   - component: {fileID: 1743940450}
   - component: {fileID: 1743940449}
   - component: {fileID: 1743940453}
+  - component: {fileID: 1743940456}
+  - component: {fileID: 1743940455}
+  - component: {fileID: 1743940454}
   m_Layer: 5
   m_Name: Reset Button
   m_TagString: Untagged
@@ -13521,6 +14075,65 @@ MonoBehaviour:
   btn: {fileID: 1743940450}
   btnClip: {fileID: 0}
   audioType: 0
+--- !u!95 &1743940454
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743940447}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1743940455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743940447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1743940456}
+  popUpMessage:
+    mTerm: Tutorial/Fifth Step
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 1743940453}
+  animator: {fileID: 1743940454}
+--- !u!114 &1743940456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1743940447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 1743940450}
+  objectGUID: d6a20424747f436298961d3a9f7a44a5
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &1746754549
 GameObject:
   m_ObjectHideFlags: 0
@@ -13649,6 +14262,7 @@ GameObject:
   - component: {fileID: 1764741542}
   - component: {fileID: 1764741544}
   - component: {fileID: 1764741543}
+  - component: {fileID: 1764741546}
   - component: {fileID: 1764741545}
   m_Layer: 5
   m_Name: Ghost Dropdown
@@ -13839,9 +14453,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
   targetComponent: {fileID: 1764741539}
-  objectGUID: 0b71c236b53d4135be76deaa2e5da1d7
+  objectGUID: 3105d59d4456471c9b33699ce6f7d34f
   step: {fileID: 0}
   stepSequence: {fileID: 0}
+--- !u!114 &1764741546
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764741535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1764741545}
+  popUpMessage:
+    mTerm: Tutorial/Ghost Step Selection
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 1764741544}
+  animator: {fileID: 1764741543}
 --- !u!1 &1767719964
 GameObject:
   m_ObjectHideFlags: 0
@@ -14050,6 +14685,10 @@ GameObject:
   - component: {fileID: 1774282293}
   - component: {fileID: 1774282294}
   - component: {fileID: 1774282295}
+  - component: {fileID: 1774282299}
+  - component: {fileID: 1774282298}
+  - component: {fileID: 1774282297}
+  - component: {fileID: 1774282296}
   m_Layer: 5
   m_Name: Ghost Slot
   m_TagString: Untagged
@@ -14113,6 +14752,77 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
   m_AspectMode: 1
   m_AspectRatio: 1
+--- !u!114 &1774282296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774282292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f24e9020e13b20145a5f440f15a22cf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.GhostButtonTutorial
+--- !u!95 &1774282297
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774282292}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1774282298
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774282292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 1774282299}
+  popUpMessage:
+    mTerm: 
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 604248763}
+  animator: {fileID: 1774282297}
+--- !u!114 &1774282299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774282292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 1738334365}
+  objectGUID: c2ccc96f640e46fca0f4c2a1a98740c7
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
 --- !u!1 &1776804334
 GameObject:
   m_ObjectHideFlags: 0
@@ -15476,7 +16186,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 2100, y: -256}
+  m_AnchoredPosition: {x: 1680, y: -256}
   m_SizeDelta: {x: 480, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1899284679
@@ -16310,6 +17020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b1580add5e165e40bbe7a6b17b3b9c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameSceneController
+  tutorialEntry: {fileID: 152052681}
   dialogueUI: {fileID: 1994769710}
   dialogueBackground: {fileID: 1658474712}
   combatArea: {fileID: 561652326}
@@ -16327,6 +17038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1e8a47036ef9e84e8c9810bd78a1f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.UI.DialogueUI
+  background: {fileID: 1658474714}
   playerPortrait: {fileID: 1786335195}
   otherPortrait: {fileID: 1897171844}
   dialogueText: {fileID: 1130741323}
@@ -16394,8 +17106,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -824}
-  m_SizeDelta: {x: 2340, y: 512}
+  m_AnchoredPosition: {x: 960, y: -1184}
+  m_SizeDelta: {x: 1920, y: 512}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2025950583
 MonoBehaviour:
@@ -16767,6 +17479,9 @@ GameObject:
   - component: {fileID: 2092528386}
   - component: {fileID: 2092528385}
   - component: {fileID: 2092528389}
+  - component: {fileID: 2092528391}
+  - component: {fileID: 2092528390}
+  - component: {fileID: 2092528392}
   m_Layer: 5
   m_Name: Button Action (3)
   m_TagString: Untagged
@@ -16912,6 +17627,65 @@ MonoBehaviour:
   btnClip: {fileID: 0}
   audioType: 0
   data: {fileID: 11400000, guid: 5f8b98ee37fa38a4dbda7292bee3caf5, type: 2}
+--- !u!95 &2092528390
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092528382}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2092528391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092528382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b759c7ea590595b4c94c8b1fc89dc5c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
+  targetComponent: {fileID: 2092528386}
+  objectGUID: ae7a6de04b36430bb899ef937d0a0158
+  step: {fileID: 0}
+  stepSequence: {fileID: 0}
+--- !u!114 &2092528392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092528382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 2092528391}
+  popUpMessage:
+    mTerm: 
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 2092528389}
+  animator: {fileID: 2092528390}
 --- !u!1 &2093715052
 GameObject:
   m_ObjectHideFlags: 0
@@ -17047,7 +17821,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1170, y: -780}
+  m_AnchoredPosition: {x: 1140, y: -780}
   m_SizeDelta: {x: 0, y: 96}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2107768874
@@ -17585,7 +18359,13 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 6798719349748559750}
+    - targetCorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 6798719349748559747}
+    - targetCorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6798719349748559749}
   m_SourcePrefab: {fileID: 100100000, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
 --- !u!114 &6798719349748559745 stripped
 MonoBehaviour:
@@ -17603,7 +18383,61 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8992498355661310813, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
   m_PrefabInstance: {fileID: 6798719349748559744}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6798719349748559747
+--- !u!95 &6798719349748559747
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6798719349748559746}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d1cbcc66774c9ed42beba57fadab1721, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6798719349748559748 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3283650330403747119, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
+  m_PrefabInstance: {fileID: 6798719349748559744}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &6798719349748559749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6798719349748559746}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d0b63505e0aab944a260868ad4744bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Tutorial.TutorialButton
+  targetIdentifier: {fileID: 6798719349748559750}
+  popUpMessage:
+    mTerm: Tutorial/Second Step
+    mRTL_IgnoreArabicFix: 0
+    mRTL_MaxLineLength: 0
+    mRTL_ConvertNumbers: 0
+    m_DontLocalizeParameters: 0
+  btn: {fileID: 6798719349748559745}
+  animator: {fileID: 6798719349748559747}
+--- !u!114 &6798719349748559750
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -17616,20 +18450,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Components.TutoIdentifier
   targetComponent: {fileID: 6798719349748559748}
-  objectGUID: 71bebb2940a844e8b7ebbb990ef89922
+  objectGUID: e246d3223964412f9314536c544c2e6c
   step: {fileID: 0}
   stepSequence: {fileID: 0}
---- !u!114 &6798719349748559748 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3283650330403747119, guid: c2470584edd786540af8ef6a3e6197ef, type: 3}
-  m_PrefabInstance: {fileID: 6798719349748559744}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

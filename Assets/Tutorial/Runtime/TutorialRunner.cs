@@ -693,8 +693,6 @@ namespace Tutorial.Runtime.Execution
                 return;
             }
 
-            runtimeNode.RuntimeStep.OnTrigger();
-
             NodeStarted?.Invoke(this, runtimeNode);
         }
 

@@ -7526,6 +7526,7 @@ MonoBehaviour:
   btn: {fileID: 1085340085}
   btnClip: {fileID: 8300000, guid: 07ee2dc26223fad408eba0acac1c8ea5, type: 3}
   audioType: 4
+  isStartingGame: 1
 --- !u!1 &1085865769
 GameObject:
   m_ObjectHideFlags: 0
@@ -9994,6 +9995,7 @@ GameObject:
   - component: {fileID: 1417771602}
   - component: {fileID: 1417771601}
   - component: {fileID: 1417771599}
+  - component: {fileID: 1417771604}
   m_Layer: 5
   m_Name: Progress Button
   m_TagString: Untagged
@@ -10036,8 +10038,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: -1
   m_MinHeight: -1
-  m_PreferredWidth: 576
-  m_PreferredHeight: 128
+  m_PreferredWidth: 864
+  m_PreferredHeight: 192
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -10123,6 +10125,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1417771597}
   m_CullTransparentMesh: 1
+--- !u!114 &1417771604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1417771597}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d74ead2685dbcfb4a853766beece5ace, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.UI.PlayButton
+  btn: {fileID: 1417771601}
+  btnClip: {fileID: 8300000, guid: 07ee2dc26223fad408eba0acac1c8ea5, type: 3}
+  audioType: 4
+  isStartingGame: 0
 --- !u!1 &1441986930
 GameObject:
   m_ObjectHideFlags: 0
@@ -14994,7 +15012,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Continu
+  m_text: Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -15021,8 +15039,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 56
-  m_fontSizeBase: 56
+  m_fontSize: 84
+  m_fontSizeBase: 84
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -15448,7 +15466,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 481ab606793a67349be805c13febeba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: I2.Loc::I2.Loc.LocalizeTarget_TextMeshPro_UGUI
-  mTarget: {fileID: 1072944563}
+  mTarget: {fileID: 1143028076}
   mAlignment_RTL: 514
   mAlignment_LTR: 514
   mAlignmentWasRTL: 0

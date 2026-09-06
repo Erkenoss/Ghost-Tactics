@@ -7,6 +7,29 @@ using Unity.CompilationPipeline.Common.ILPostProcessing;
 namespace Tutorial.CodeGen
 {
     /// <summary>
+    /// Global Skip Current Step method binding read from the generated instrumentation manifest
+    /// </summary>
+    internal sealed class TutorialInstrumentationSkipBinding
+    {
+        #region Properties
+
+        public string ScriptName { get; }
+        public string MethodName { get; }
+
+        #endregion
+
+        #region Constructor
+
+        public TutorialInstrumentationSkipBinding(string scriptName, string methodName)
+        {
+            ScriptName = scriptName;
+            MethodName = methodName;
+        }
+
+        #endregion
+    }
+
+    /// <summary>
     /// One tutorial method binding read from the generated instrumentation manifest
     /// </summary>
     internal sealed class TutorialInstrumentationBinding
@@ -49,9 +72,10 @@ namespace Tutorial.CodeGen
         /// <summary>
         /// Read every tutorial method binding stored inside the generated manifest
         /// </summary>
-        public static bool TryRead(ICompiledAssembly compiledAssembly, out List<TutorialInstrumentationBinding> bindings, out string failureReason)
+        public static bool TryRead(ICompiledAssembly compiledAssembly, out List<TutorialInstrumentationBinding> bindings, out TutorialInstrumentationSkipBinding skipBinding, out string failureReason)
         {
             bindings = new List<TutorialInstrumentationBinding>();
+            skipBinding = null;
             failureReason = string.Empty;
 
             if (!TryFindManifestPath(compiledAssembly, out string manifestPath))
@@ -69,15 +93,68 @@ namespace Tutorial.CodeGen
                     return false;
                 }
 
-                return TryParseBindings(json, bindings, out failureReason);
+                if (!TryParseSkipBinding(json, out skipBinding, out failureReason))
+                {
+                    return false;
+                }
+
+                if (!TryParseBindings(json, bindings, out failureReason))
+                {
+                    skipBinding = null;
+                    return false;
+                }
+
+                return true;
             }
             catch (Exception exception)
             {
                 failureReason = $"Unable to read tutorial instrumentation manifest: {exception.Message}";
                 bindings.Clear();
+                skipBinding = null;
 
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Parse the optional global Skip Current Step binding
+        /// </summary>
+        private static bool TryParseSkipBinding(string json, out TutorialInstrumentationSkipBinding skipBinding, out string failureReason)
+        {
+            skipBinding = null;
+            failureReason = string.Empty;
+
+            bool hasScriptProperty = TryReadStringProperty(json, "skipScriptName", out string scriptName);
+            bool hasMethodProperty = TryReadStringProperty(json, "skipMethodName", out string methodName);
+
+            if (!hasScriptProperty && !hasMethodProperty)
+            {
+                return true;
+            }
+
+            if (!hasScriptProperty || !hasMethodProperty)
+            {
+                failureReason = "The tutorial instrumentation manifest contains an incomplete global Skip binding.";
+                return false;
+            }
+
+            scriptName = scriptName.Trim();
+            methodName = methodName.Trim();
+
+            if (string.IsNullOrWhiteSpace(scriptName) && string.IsNullOrWhiteSpace(methodName))
+            {
+                return true;
+            }
+
+            if (string.IsNullOrWhiteSpace(scriptName) || string.IsNullOrWhiteSpace(methodName))
+            {
+                failureReason = "The tutorial instrumentation manifest contains an invalid global Skip binding.";
+                return false;
+            }
+
+            skipBinding = new TutorialInstrumentationSkipBinding(scriptName, methodName);
+
+            return true;
         }
 
         #endregion

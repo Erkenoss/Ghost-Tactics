@@ -1160,35 +1160,6 @@ namespace Tutorial.Runtime.Flow
         }
 
         /// <summary>
-        /// Resolve the runtime StepSO associated with a Step GUID
-        /// </summary>
-        /// <param name="stepGUID"></param>
-        /// <returns></returns>
-        private StepSO ResolveStep(string stepGUID)
-        {
-            if (string.IsNullOrWhiteSpace(stepGUID) || runtimeInstance == null || runtimeInstance.IsDisposed)
-            {
-                return null;
-            }
-
-            foreach (TutorialRuntimeNode runtimeNode in runtimeInstance.RuntimeNodes.Values)
-            {
-                if (runtimeNode == null || runtimeNode.RuntimeStep == null)
-                {
-                    continue;
-                }
-
-                if (string.Equals(runtimeNode.StepGuid, stepGUID, StringComparison.Ordinal))
-                {
-                    return runtimeNode.RuntimeStep;
-                }
-            }
-
-            return null;
-        }
-
-
-        /// <summary>
         /// Register one TutoIdentifier when it becomes available
         /// </summary>
         /// <param name="identifier"></param>

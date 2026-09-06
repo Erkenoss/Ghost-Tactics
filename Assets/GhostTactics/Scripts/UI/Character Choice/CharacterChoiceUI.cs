@@ -97,11 +97,12 @@ namespace GhostTactics.UI
                 return;
             }
 
+            EventBus.Publish<OnResetPlayer>(new OnResetPlayer());
+
             GameManager.Instance.Player.UpdateGender(characterGender);
-            GameManager.Instance.Player.UpdateHasBeenAlreadyCreated(true);
             GameManager.Instance.Player.Save();
 
-            EventBus.Publish<StartGameEvent>(new StartGameEvent());
+            EventBus.Publish<StartGameEvent>(new StartGameEvent(false));
         }
 
         /// <summary>

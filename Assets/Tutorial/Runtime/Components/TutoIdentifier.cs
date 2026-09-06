@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Tutorial.Runtime.Activity;
 using Tutorial.Runtime.Data;
 using Tutorial.Runtime.Resolution;
 using UnityEngine;
@@ -73,6 +75,11 @@ namespace Tutorial.Runtime.Components
         [SerializeField]
         private StepSequenceSO stepSequence = null;
 
+        /// <summary>
+        /// List of every activity manage with this tutorial step
+        /// </summary>
+        private List<ITutorialActivity> activities = new List<ITutorialActivity>();
+
         #endregion
 
         #region Runtime Initialization
@@ -118,6 +125,89 @@ namespace Tutorial.Runtime.Components
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Register activity in the list activities
+        /// </summary>
+        /// <param name="activity"></param>
+        public void ActivityRegister(ITutorialActivity activity)
+        {
+            if (activity == null || activities.Contains(activity))
+            {
+                return;
+            }
+
+            activities.Add(activity);
+        }
+
+        /// <summary>
+        /// Unregsiter activity in activities
+        /// </summary>
+        /// <param name="activity"></param>
+        public void ActivityUnregister(ITutorialActivity activity)
+        {
+            if (activity == null || !activities.Contains(activity))
+            {
+                return;
+            }
+
+            activities.Remove(activity);
+        }
+
+        /// <summary>
+        /// Trigger every tutorial Activity registered on this identifier
+        /// </summary>
+        public void TriggerActivities()
+        {
+            if (activities == null || activities.Count == 0)
+            {
+                return;
+            }
+
+            ITutorialActivity[] registeredActivities = activities.ToArray();
+
+            foreach (ITutorialActivity activity in registeredActivities)
+            {
+                activity?.Trigger();
+            }
+        }
+
+        /// <summary>
+        /// Raise every tutorial Activity registered on this identifier
+        /// </summary>
+        public void RaiseActivities()
+        {
+            if (activities == null || activities.Count == 0)
+            {
+                return;
+            }
+
+            ITutorialActivity[] registeredActivities = activities.ToArray();
+
+            foreach (ITutorialActivity activity in registeredActivities)
+            {
+                activity?.Raised();
+            }
+        }
+
+        /// <summary>
+        /// Skip every tutorial Activity registered on this identifier
+        /// </summary>
+        public void SkipActivities()
+        {
+            if (activities == null || activities.Count == 0)
+            {
+                return;
+            }
+
+            ITutorialActivity[] registeredActivities = activities.ToArray();
+
+            foreach (ITutorialActivity activity in registeredActivities)
+            {
+                activity?.Skipped();
+            }
+        }
+
 
         /// <summary>
         /// Raise the current tutorial step or sequence

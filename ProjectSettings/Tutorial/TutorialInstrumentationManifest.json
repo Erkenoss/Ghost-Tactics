@@ -1,29 +1,133 @@
 {
-    "version": 1,
+    "version": 2,
+    "skipScriptName": "GhostTactics.Core.GameManager",
+    "skipMethodName": "SkipTutorialStep",
     "bindings": [
         {
-            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.Core.Dialogue.DialogueNextButton",
+            "methodName": "StartTuto",
+            "stepGuid": "06d977d84d8542aa96f61f2010e6c8c0"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.Tutorial.BackMainMenu",
+            "methodName": "PlayTuto",
+            "stepGuid": "ecfa16067ce7401796763a079eca7f46"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.Tutorial.GhostButtonTutorial",
+            "methodName": "PlayTuto",
+            "stepGuid": "e4d02d2edf384de4b6fa58cef4875470"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
             "scriptName": "GhostTactics.UI.ButtonActionSelected",
             "methodName": "PlayTuto",
-            "stepGuid": "5f635240e9834204a3974fd264fb98ef"
+            "stepGuid": "5d1dbcc7cdaa41cbab3e705c3f58d935"
         },
         {
-            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.ChooseActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "ac3bb81b32c34fe8aa55e7281aedab5d"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.ChooseActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "e7e3ce362a124f5bb0132047650eb2c2"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.ConfirmActionGhost",
+            "methodName": "PlayTuto",
+            "stepGuid": "ed65e0d3fad8422c8268c0811c8be962"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.GhostChoiceButton",
+            "methodName": "PlaytTuto",
+            "stepGuid": "6c1f00a625cf4256a4db45f151a1e11b"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
             "scriptName": "GhostTactics.UI.GhostDropDownButton",
             "methodName": "PlayTuto",
-            "stepGuid": "df475f334d7d4573bee0bb1d010f5545"
+            "stepGuid": "a00d0fd5705e4297a91e12ef3e49147d"
         },
         {
-            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
             "scriptName": "GhostTactics.UI.PlayerActionButton",
             "methodName": "PlayTuto",
-            "stepGuid": "8bed5105f4f14bea802077e88f2a2795"
+            "stepGuid": "363278ba4b144cfcae4fdb58ec856397"
         },
         {
-            "graphGuid": "e22a35b524fc4b5ba869ac8faa162e6a",
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
             "scriptName": "GhostTactics.UI.PlayerActionButton",
             "methodName": "PlayTuto",
-            "stepGuid": "b8c198d3194745749c1c65046ebc6f67"
+            "stepGuid": "6983e92f5a03414d9af936e4e49386e6"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "a987a5643ee9455486797fccbb01e774"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "af70135c99bf481caf4702f0b784b52b"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "b05162da615d48f0b07f5024d292eb7a"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "bdd9e8b6d004424ba775d5e1fd7c00ae"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "d4f5b5127c00470ea3c019381bdadcb1"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "dcb2cb1f74c04d1d82eea3f494df4af9"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "f25e18e2d8924b0ca2b5c68d0e41c8ff"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.PlayerActionButton",
+            "methodName": "PlayTuto",
+            "stepGuid": "ffe336df1a014182bfa7082acd6b11b3"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.Previsualized",
+            "methodName": "PlayTuto",
+            "stepGuid": "af8f80c6d24e4b4893accb732c1a3b10"
+        },
+        {
+            "graphGuid": "76efb763f75f4216b9c04c76e2c42952",
+            "scriptName": "GhostTactics.UI.ResetButton",
+            "methodName": "PLayTuto",
+            "stepGuid": "d370d1cac0b947ec8439b9104d5c6033"
         }
     ]
 }

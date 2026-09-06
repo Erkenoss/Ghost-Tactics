@@ -32,7 +32,12 @@ namespace GhostTactics.Core
 
     public class StartGameEvent
     {
+        public bool IsStarttingGame = false;
 
+        public StartGameEvent(bool isStartingGame)
+        {
+            IsStarttingGame = isStartingGame;
+        }
     }
 
     public class ConfirmTry
@@ -289,16 +294,16 @@ namespace GhostTactics.Core
         /// <param name="game"></param>
         public void LoadLevel(StartGameEvent game)
         {
-            if (player == null)
+            if (player == null || game.IsStarttingGame)
             {
-                return;
+                EventBus.Publish<OnResetPlayer>(new OnResetPlayer());
             }
 
-            if (!player.HasBeenAlreadyCreated)
-            {
-                EventBus.Publish<OnNeedCharacterGender>(new OnNeedCharacterGender());
-                return;
-            }
+            //if (game.IsStarttingGame)
+            //{
+            //    EventBus.Publish<OnNeedCharacterGender>(new OnNeedCharacterGender());
+            //    return;
+            //}
 
             currentLevel = GetContainer(player.Biome, player.CurrentLevel);
 
@@ -402,29 +407,42 @@ namespace GhostTactics.Core
 
             LevelData next = GetContainer(currentLevel.BiomeType, currentLevel.LevelNumber + 1);
 
-            if (next.EnnemyLevel == null)
-            {
-                EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
-                return;
-            }
-
             if (next == null)
             {
                 LevelContainer nextContainer = GetLevelContainer(currentContainer);
 
-                if (nextContainer == null)
+                if (nextContainer == null ||
+                    nextContainer.Container == null ||
+                    nextContainer.Container.Count == 0)
                 {
+                    EventBus.Publish<OnResetPlayer>(new OnResetPlayer());
                     EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
                     return;
                 }
 
                 next = nextContainer.Container[0];
-                
+
+                if (next == null)
+                {
+                    EventBus.Publish<OnResetPlayer>(new OnResetPlayer());
+                    EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
+                    return;
+                }
+
                 currentContainer = nextContainer;
-                currentLevel = next;
+            }
+
+            if (next.EnnemyLevel == null)
+            {
+                EventBus.Publish<OnResetPlayer>(new OnResetPlayer());
+                EventBus.Publish<OnSceneToLoad>(new OnSceneToLoad(mainMenu));
+                return;
             }
 
             currentLevel = next;
+            player.UpdatePlayerLevel(next.LevelNumber);
+            player.Save();
+
             LoadLevel();
         }
 

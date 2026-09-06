@@ -1,0 +1,454 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbf3e7be544d3284e9f7b97bc72ed6c1, type: 3}
+  m_Name: Ghost Tactic Tutorial Game Graph
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Persistence.TutorialGraphAsset
+  graphGuid: 76efb763f75f4216b9c04c76e2c42952
+  saveData:
+    Version: 1
+    Nodes:
+    - NodeGuid: 83f97d2c1d73487e90bcf9d436de583e
+      NodeType: 1
+      AssetGuid: 90257d6174b412a40bb3a705d3e07a82
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 71.2, y: 32}
+    - NodeGuid: 93f1bac22eaa492cbf2419b4478ca8ef
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ff588e8a21d046cfb1a0e3b8d9ad0c16
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 295.2, y: 147.19998}
+    - NodeGuid: 3b5e4dcf803c4f84908b341e44ecbbf1
+      NodeType: 1
+      AssetGuid: 14b493c62dc873d40a0f264b8b1ddbd8
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 72, y: 140}
+    - NodeGuid: 2435cecb47174e49965ceaaff12dd75d
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: e246d3223964412f9314536c544c2e6c
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 292, y: 232}
+    - NodeGuid: 397e1f7c3dbf4319999cefc9d231c6c7
+      NodeType: 1
+      AssetGuid: 64f9a3ed5371c2d42bbe56118ba54a2b
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 70.4, y: 228}
+    - NodeGuid: 46a16f667ba142b8b1f300d89ee65b4d
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: aa25dd97583541429ad2199ad6fa26fc
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 290.4, y: 315.99997}
+    - NodeGuid: 43b10bdaf9b24a90909535dd4ef43702
+      NodeType: 1
+      AssetGuid: 0b72010dc4e03ad47aab3342a96f34e9
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 68, y: 312.80002}
+    - NodeGuid: f3d3017689794bb0b993f2fe538c99c3
+      NodeType: 1
+      AssetGuid: 3da4f49cd326fe245a39b2e2047f4047
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 68.8, y: 393.6}
+    - NodeGuid: 3d3bbeca86d3439db8782c0a2958d166
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ae7a6de04b36430bb899ef937d0a0158
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 292.8, y: 399.99997}
+    - NodeGuid: b2ded85ad3a5485cb02e67ae6bf689d5
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ff588e8a21d046cfb1a0e3b8d9ad0c16
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 290.4, y: 485.6}
+    - NodeGuid: 3b0f3d4b98fd444b9dc09d2c42711b6f
+      NodeType: 1
+      AssetGuid: 722322ecb703a9949b3eece11bbbd87c
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 66.4, y: 480.80002}
+    - NodeGuid: c2020ed3e645458eb0d6e8c43cf1da00
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: d6a20424747f436298961d3a9f7a44a5
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 288, y: 569.6}
+    - NodeGuid: be1dbaea16df4277a75f9399ea23bfc7
+      NodeType: 1
+      AssetGuid: 7b0d51194a16f99478b5ac07baea7223
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 68, y: 568}
+    - NodeGuid: 7ce77e98b88e4d158d283c8c23878140
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: aa25dd97583541429ad2199ad6fa26fc
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 746.4, y: 35.19998}
+    - NodeGuid: f01e3ecefaae4279aeff2717f17e5042
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ae7a6de04b36430bb899ef937d0a0158
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 746.4, y: 117.600006}
+    - NodeGuid: 51606042cc3a4626a9c2d0e0410a2850
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ff588e8a21d046cfb1a0e3b8d9ad0c16
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 744.8, y: 200.79999}
+    - NodeGuid: 108cf334379c4e87bfc0052ba7e28c0c
+      NodeType: 1
+      AssetGuid: af50fa1257850104895da996af887a43
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 535.2, y: 33.59999}
+    - NodeGuid: 408dbf72b1814720831061f377eb1030
+      NodeType: 1
+      AssetGuid: 07c82cb7dd38a814f93e72c3691ea276
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 535.2, y: 115.19998}
+    - NodeGuid: 6c720eaea9894f67aeac5383327263ff
+      NodeType: 1
+      AssetGuid: 57989101131465846b4c745694127e94
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 535.2, y: 196.79999}
+    - NodeGuid: 37a6ec31ce8e4cb284595c25c14d4dee
+      NodeType: 1
+      AssetGuid: e3586f46732740e4aaab3a106cc3a079
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 979.2, y: 32.799988}
+    - NodeGuid: f22c321806154f96a82db5c350440467
+      NodeType: 1
+      AssetGuid: 46ef20c4150e9bb48963c4dff256acd9
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 979.2, y: 115.19998}
+    - NodeGuid: ac827533b6b5497992c6e79ffd214c56
+      NodeType: 1
+      AssetGuid: 3f8140a4c451a52458dc9b76fb8ab35c
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 978.4, y: 196}
+    - NodeGuid: 4e1cc20c1d45440cb944430297e27909
+      NodeType: 1
+      AssetGuid: 4caed5ad8b420c44590dcb98739b957b
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 976, y: 277.6}
+    - NodeGuid: e7d2b06e4daf48d7bddc988be6b782f3
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 02ef34862afa481da907dc5154c398a8
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1195.2, y: 32}
+    - NodeGuid: 3214848eeba74a30a1d77e63fc3bd98e
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: d0c8559d46f74ea8bc76b8c933369b8b
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1194.4, y: 116}
+    - NodeGuid: 60d01813e67844e6aa0bf4c8c5eb0e68
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 02ef34862afa481da907dc5154c398a8
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1194.4, y: 196}
+    - NodeGuid: 598aa19cd01b43a3af0bfd29be290c86
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ec51621acf9e4ea5a1ef9175784ea3e2
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1192.8, y: 276.8}
+    - NodeGuid: 31ab50c50f6e47b99464860c19f297c8
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 5eee7068b1ef4fdfa5b591553fc9301b
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 296.8, y: 32}
+    - NodeGuid: 191f61b4655243c2b8e6f398a56760d8
+      NodeType: 1
+      AssetGuid: 0d9ed854faf7dea4ab38a53184cf03c9
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 979.2, y: 360.80002}
+    - NodeGuid: 4c57fe51aca2417d8378e499ff38969c
+      NodeType: 1
+      AssetGuid: d680a98b393373d4192f453582342adb
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 978.4, y: 445.6}
+    - NodeGuid: 7d3aadf9568845c3aa3d8755bbbba006
+      NodeType: 1
+      AssetGuid: c9cb082944a8a6e41a2f3a1e2f9ddb14
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 979.2, y: 532.80005}
+    - NodeGuid: 5f362637f269444aa60fef08b613b162
+      NodeType: 1
+      AssetGuid: 940bbeb176a375d4f8e6ed016bcc44ff
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 979.2, y: 620}
+    - NodeGuid: 906596531c0846d39816e0124a644c37
+      NodeType: 1
+      AssetGuid: 203ce3272eb05d14d9605df13f4d425c
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 532, y: 317.6}
+    - NodeGuid: 2c97b789f381430f82af1c546ab8177a
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: c2ccc96f640e46fca0f4c2a1a98740c7
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 747.2, y: 319.19998}
+    - NodeGuid: ae76a71d06ff4cb484af1b61aa7a2420
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: 3105d59d4456471c9b33699ce6f7d34f
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1192.8, y: 361.6}
+    - NodeGuid: e5cd11789e3f4eac9adddc09b5305c89
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ff588e8a21d046cfb1a0e3b8d9ad0c16
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1194.4, y: 620}
+    - NodeGuid: 94112005087b4f22ae2ea5b02cb1fa32
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: aa25dd97583541429ad2199ad6fa26fc
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1192.8, y: 448.80002}
+    - NodeGuid: 567c78220ebc4a7eb9b24174d565f9aa
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: ae7a6de04b36430bb899ef937d0a0158
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 1195.2, y: 535.19995}
+    - NodeGuid: 1c59c7d542a54968ac55a86b7dcc7a70
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: a39dceb2450742eebabd9f1279dd4b40
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 744.8, y: 524}
+    - NodeGuid: 7e0cca29f0534359a56cbd402311a321
+      NodeType: 1
+      AssetGuid: 86f8a937b2ff2ba45acc19c0f4f81a02
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 532, y: 523.19995}
+    - NodeGuid: b6d2fe90f89d4e1887805853a01dbf8e
+      NodeType: 1
+      AssetGuid: 3b2614d45372c794ca993d4c48e45074
+      ObjectGuid: 
+      SceneAssetGuid: 
+      ScenePath: 
+      Position: {x: 531.2, y: 407.99997}
+    - NodeGuid: 287915914d5546139793473bbb135b33
+      NodeType: 2
+      AssetGuid: 
+      ObjectGuid: a7e0f6aa8c6548c0a3eb33f93a7a6e48
+      SceneAssetGuid: a44e4ae6c74226d4a8ffadd42e3af66d
+      ScenePath: Assets/Scenes/Game Scene.unity
+      Position: {x: 747.2, y: 411.99997}
+    Bindings:
+    - SourceNodeGuid: 3b5e4dcf803c4f84908b341e44ecbbf1
+      TargetNodeGuid: 93f1bac22eaa492cbf2419b4478ca8ef
+    - SourceNodeGuid: 397e1f7c3dbf4319999cefc9d231c6c7
+      TargetNodeGuid: 2435cecb47174e49965ceaaff12dd75d
+    - SourceNodeGuid: 43b10bdaf9b24a90909535dd4ef43702
+      TargetNodeGuid: 46a16f667ba142b8b1f300d89ee65b4d
+    - SourceNodeGuid: f3d3017689794bb0b993f2fe538c99c3
+      TargetNodeGuid: 3d3bbeca86d3439db8782c0a2958d166
+    - SourceNodeGuid: 3b0f3d4b98fd444b9dc09d2c42711b6f
+      TargetNodeGuid: b2ded85ad3a5485cb02e67ae6bf689d5
+    - SourceNodeGuid: be1dbaea16df4277a75f9399ea23bfc7
+      TargetNodeGuid: c2020ed3e645458eb0d6e8c43cf1da00
+    - SourceNodeGuid: 108cf334379c4e87bfc0052ba7e28c0c
+      TargetNodeGuid: 7ce77e98b88e4d158d283c8c23878140
+    - SourceNodeGuid: 408dbf72b1814720831061f377eb1030
+      TargetNodeGuid: f01e3ecefaae4279aeff2717f17e5042
+    - SourceNodeGuid: 6c720eaea9894f67aeac5383327263ff
+      TargetNodeGuid: 51606042cc3a4626a9c2d0e0410a2850
+    - SourceNodeGuid: 37a6ec31ce8e4cb284595c25c14d4dee
+      TargetNodeGuid: e7d2b06e4daf48d7bddc988be6b782f3
+    - SourceNodeGuid: f22c321806154f96a82db5c350440467
+      TargetNodeGuid: 3214848eeba74a30a1d77e63fc3bd98e
+    - SourceNodeGuid: ac827533b6b5497992c6e79ffd214c56
+      TargetNodeGuid: 60d01813e67844e6aa0bf4c8c5eb0e68
+    - SourceNodeGuid: 4e1cc20c1d45440cb944430297e27909
+      TargetNodeGuid: 598aa19cd01b43a3af0bfd29be290c86
+    - SourceNodeGuid: 83f97d2c1d73487e90bcf9d436de583e
+      TargetNodeGuid: 31ab50c50f6e47b99464860c19f297c8
+    - SourceNodeGuid: 906596531c0846d39816e0124a644c37
+      TargetNodeGuid: 2c97b789f381430f82af1c546ab8177a
+    - SourceNodeGuid: 191f61b4655243c2b8e6f398a56760d8
+      TargetNodeGuid: ae76a71d06ff4cb484af1b61aa7a2420
+    - SourceNodeGuid: 5f362637f269444aa60fef08b613b162
+      TargetNodeGuid: e5cd11789e3f4eac9adddc09b5305c89
+    - SourceNodeGuid: 4c57fe51aca2417d8378e499ff38969c
+      TargetNodeGuid: 94112005087b4f22ae2ea5b02cb1fa32
+    - SourceNodeGuid: 7d3aadf9568845c3aa3d8755bbbba006
+      TargetNodeGuid: 567c78220ebc4a7eb9b24174d565f9aa
+    - SourceNodeGuid: 7e0cca29f0534359a56cbd402311a321
+      TargetNodeGuid: 1c59c7d542a54968ac55a86b7dcc7a70
+    - SourceNodeGuid: b6d2fe90f89d4e1887805853a01dbf8e
+      TargetNodeGuid: 287915914d5546139793473bbb135b33
+    Sequences:
+    - SourceNodeGuid: 3b5e4dcf803c4f84908b341e44ecbbf1
+      TargetNodeGuid: 397e1f7c3dbf4319999cefc9d231c6c7
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 397e1f7c3dbf4319999cefc9d231c6c7
+      TargetNodeGuid: 43b10bdaf9b24a90909535dd4ef43702
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 43b10bdaf9b24a90909535dd4ef43702
+      TargetNodeGuid: f3d3017689794bb0b993f2fe538c99c3
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: f3d3017689794bb0b993f2fe538c99c3
+      TargetNodeGuid: 3b0f3d4b98fd444b9dc09d2c42711b6f
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 3b0f3d4b98fd444b9dc09d2c42711b6f
+      TargetNodeGuid: be1dbaea16df4277a75f9399ea23bfc7
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: be1dbaea16df4277a75f9399ea23bfc7
+      TargetNodeGuid: 108cf334379c4e87bfc0052ba7e28c0c
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 108cf334379c4e87bfc0052ba7e28c0c
+      TargetNodeGuid: 408dbf72b1814720831061f377eb1030
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 408dbf72b1814720831061f377eb1030
+      TargetNodeGuid: 6c720eaea9894f67aeac5383327263ff
+      SequenceAssetGuid: 26813c38224e79f46a8417c482ae730f
+    - SourceNodeGuid: 37a6ec31ce8e4cb284595c25c14d4dee
+      TargetNodeGuid: f22c321806154f96a82db5c350440467
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: f22c321806154f96a82db5c350440467
+      TargetNodeGuid: ac827533b6b5497992c6e79ffd214c56
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: ac827533b6b5497992c6e79ffd214c56
+      TargetNodeGuid: 4e1cc20c1d45440cb944430297e27909
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 4e1cc20c1d45440cb944430297e27909
+      TargetNodeGuid: 191f61b4655243c2b8e6f398a56760d8
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 191f61b4655243c2b8e6f398a56760d8
+      TargetNodeGuid: 4c57fe51aca2417d8378e499ff38969c
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 4c57fe51aca2417d8378e499ff38969c
+      TargetNodeGuid: 7d3aadf9568845c3aa3d8755bbbba006
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 7d3aadf9568845c3aa3d8755bbbba006
+      TargetNodeGuid: 5f362637f269444aa60fef08b613b162
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 5f362637f269444aa60fef08b613b162
+      TargetNodeGuid: 7e0cca29f0534359a56cbd402311a321
+      SequenceAssetGuid: 3dc3f149073eaf34fa367d2f1d66285b
+    - SourceNodeGuid: 906596531c0846d39816e0124a644c37
+      TargetNodeGuid: b6d2fe90f89d4e1887805853a01dbf8e
+      SequenceAssetGuid: 24d9ebf6350e06f4cb679882b97d3607
+    View:
+      PanPosition: {x: 0, y: 0}
+      Zoom: 1
+  replayPolicy: 0
+  runtimeNodeReferences:
+  - nodeGuid: 108cf334379c4e87bfc0052ba7e28c0c
+    step: {fileID: 11400000, guid: af50fa1257850104895da996af887a43, type: 2}
+  - nodeGuid: 191f61b4655243c2b8e6f398a56760d8
+    step: {fileID: 11400000, guid: 0d9ed854faf7dea4ab38a53184cf03c9, type: 2}
+  - nodeGuid: 37a6ec31ce8e4cb284595c25c14d4dee
+    step: {fileID: 11400000, guid: e3586f46732740e4aaab3a106cc3a079, type: 2}
+  - nodeGuid: 397e1f7c3dbf4319999cefc9d231c6c7
+    step: {fileID: 11400000, guid: 64f9a3ed5371c2d42bbe56118ba54a2b, type: 2}
+  - nodeGuid: 3b0f3d4b98fd444b9dc09d2c42711b6f
+    step: {fileID: 11400000, guid: 722322ecb703a9949b3eece11bbbd87c, type: 2}
+  - nodeGuid: 3b5e4dcf803c4f84908b341e44ecbbf1
+    step: {fileID: 11400000, guid: 14b493c62dc873d40a0f264b8b1ddbd8, type: 2}
+  - nodeGuid: 408dbf72b1814720831061f377eb1030
+    step: {fileID: 11400000, guid: 07c82cb7dd38a814f93e72c3691ea276, type: 2}
+  - nodeGuid: 43b10bdaf9b24a90909535dd4ef43702
+    step: {fileID: 11400000, guid: 0b72010dc4e03ad47aab3342a96f34e9, type: 2}
+  - nodeGuid: 4c57fe51aca2417d8378e499ff38969c
+    step: {fileID: 11400000, guid: d680a98b393373d4192f453582342adb, type: 2}
+  - nodeGuid: 4e1cc20c1d45440cb944430297e27909
+    step: {fileID: 11400000, guid: 4caed5ad8b420c44590dcb98739b957b, type: 2}
+  - nodeGuid: 5f362637f269444aa60fef08b613b162
+    step: {fileID: 11400000, guid: 940bbeb176a375d4f8e6ed016bcc44ff, type: 2}
+  - nodeGuid: 6c720eaea9894f67aeac5383327263ff
+    step: {fileID: 11400000, guid: 57989101131465846b4c745694127e94, type: 2}
+  - nodeGuid: 7d3aadf9568845c3aa3d8755bbbba006
+    step: {fileID: 11400000, guid: c9cb082944a8a6e41a2f3a1e2f9ddb14, type: 2}
+  - nodeGuid: 7e0cca29f0534359a56cbd402311a321
+    step: {fileID: 11400000, guid: 86f8a937b2ff2ba45acc19c0f4f81a02, type: 2}
+  - nodeGuid: 83f97d2c1d73487e90bcf9d436de583e
+    step: {fileID: 11400000, guid: 90257d6174b412a40bb3a705d3e07a82, type: 2}
+  - nodeGuid: 906596531c0846d39816e0124a644c37
+    step: {fileID: 11400000, guid: 203ce3272eb05d14d9605df13f4d425c, type: 2}
+  - nodeGuid: ac827533b6b5497992c6e79ffd214c56
+    step: {fileID: 11400000, guid: 3f8140a4c451a52458dc9b76fb8ab35c, type: 2}
+  - nodeGuid: b6d2fe90f89d4e1887805853a01dbf8e
+    step: {fileID: 11400000, guid: 3b2614d45372c794ca993d4c48e45074, type: 2}
+  - nodeGuid: be1dbaea16df4277a75f9399ea23bfc7
+    step: {fileID: 11400000, guid: 7b0d51194a16f99478b5ac07baea7223, type: 2}
+  - nodeGuid: f22c321806154f96a82db5c350440467
+    step: {fileID: 11400000, guid: 46ef20c4150e9bb48963c4dff256acd9, type: 2}
+  - nodeGuid: f3d3017689794bb0b993f2fe538c99c3
+    step: {fileID: 11400000, guid: 3da4f49cd326fe245a39b2e2047f4047, type: 2}

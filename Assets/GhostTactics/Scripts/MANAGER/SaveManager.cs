@@ -6,6 +6,11 @@ using Crimson.Core.Settings;
 
 namespace GhostTactics.Core
 {
+    public class OnResetPlayer
+    {
+
+    }
+
     public class OnSavePlayer
     {
 
@@ -97,7 +102,6 @@ namespace GhostTactics.Core
             PlayerLevel = player.CurrentLevel;
             VisualizationValue = player.VisualizationValue;
             PlayerGender = player.Gender;
-            HasBeenAlreadyCreated = player.HasBeenAlreadyCreated;
             PlayerTryResult = player.TryResult;
             GhostActions = player.PlayerGhost.AbilitiesName;
         }
@@ -168,6 +172,26 @@ namespace GhostTactics.Core
             Debug.Log($"SAVE JSON:\n{json}");
         }
 
+        /// <summary>
+        /// Reset the different value in the player
+        /// </summary>
+        public void ResetPlayer(OnResetPlayer player)
+        {
+            Player startPlayer = new Player();
+            startPlayer.UpdatePlayerBiome(ETypeLevelContainer.Beginning);
+            startPlayer.UpdatePlayerLevel(1);
+            startPlayer.UpdateVisualizationValue(0);
+            startPlayer.UpdateResult(0);
+            startPlayer.UpdateGender(1);
+            startPlayer.CreateGhost(null);
+            startPlayer.Save();
+            
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.UpdatePlayer(startPlayer);
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -179,20 +203,7 @@ namespace GhostTactics.Core
         {
             if (!System.IO.File.Exists(saveFilePath))
             {
-                Player startPlayer = new Player();
-                startPlayer.UpdatePlayerBiome(ETypeLevelContainer.Beginning);
-                startPlayer.UpdatePlayerLevel(1);
-                startPlayer.UpdateVisualizationValue(0);
-                startPlayer.UpdateResult(0);
-                startPlayer.UpdateGender(0);
-                startPlayer.UpdateHasBeenAlreadyCreated(false);
-                startPlayer.CreateGhost(null);
-
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.UpdatePlayer(startPlayer);
-                }
-
+                ResetPlayer(null);   
                 return;
             }
 
@@ -201,22 +212,7 @@ namespace GhostTactics.Core
 
             if (playerData == null)
             {
-                Debug.LogError("Save corrupted, creating new player");
-
-                Player newPlayer = new Player();
-                newPlayer.UpdatePlayerBiome(ETypeLevelContainer.Beginning);
-                newPlayer.UpdatePlayerLevel(1);
-                newPlayer.UpdateVisualizationValue(0);
-                newPlayer.UpdateResult(0);
-                newPlayer.UpdateGender(0);
-                newPlayer.UpdateHasBeenAlreadyCreated(false);
-                newPlayer.CreateGhost(null);
-
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.UpdatePlayer(newPlayer);
-                }
-
+                ResetPlayer(null);
                 return;
             }
 
@@ -227,7 +223,6 @@ namespace GhostTactics.Core
             player.UpdateVisualizationValue(playerData.VisualizationValue);
             player.UpdateResult(playerData.PlayerTryResult);
             player.UpdateGender(playerData.PlayerGender);
-            player.UpdateHasBeenAlreadyCreated(playerData.HasBeenAlreadyCreated);
             player.CreateGhost(playerData.GhostActions);
 
             if (GameManager.Instance != null)
@@ -290,6 +285,7 @@ namespace GhostTactics.Core
             EventBus.Subscribe<OnLoadPlayer>(LoadPlayer);
             EventBus.Subscribe<OnSaveSettings>(SaveSettings);
             EventBus.Subscribe<OnLoadSettings>(LoadSetting);
+            EventBus.Subscribe<OnResetPlayer>(ResetPlayer);
         }
 
         /// <summary>
@@ -301,6 +297,7 @@ namespace GhostTactics.Core
             EventBus.Unsubscribe<OnLoadPlayer>(LoadPlayer);
             EventBus.Unsubscribe<OnSaveSettings>(SaveSettings);
             EventBus.Unsubscribe<OnLoadSettings>(LoadSetting);
+            EventBus.Unsubscribe<OnResetPlayer>(ResetPlayer);
         }
 
         #endregion

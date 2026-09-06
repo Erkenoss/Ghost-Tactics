@@ -148,6 +148,8 @@ namespace Tutorial.Runtime.Execution
                 return false;
             }
 
+            runtimeStep.OnTrigger();
+            identifier.TriggerActivities();
             Triggered?.Invoke(this);
 
             return true;
@@ -175,7 +177,7 @@ namespace Tutorial.Runtime.Execution
         }
 
         /// <summary>
-        /// Skip this Step while it is waiting for activation or currently running
+        /// Skip this Step while it is currently running
         /// </summary>
         /// <returns></returns>
         public bool Skip()
@@ -190,7 +192,7 @@ namespace Tutorial.Runtime.Execution
             Unsubscribe();
 
             runtimeStep.OnSkipped();
-
+            identifier.SkipActivities();
             Skipped?.Invoke(this);
 
             return true;
@@ -238,7 +240,7 @@ namespace Tutorial.Runtime.Execution
             status = ETutorialStepRunnerStatus.Completed;
 
             Unsubscribe();
-
+            identifier.RaiseActivities();
             Completed?.Invoke(this);
         }
 
@@ -258,7 +260,7 @@ namespace Tutorial.Runtime.Execution
             Unsubscribe();
 
             runtimeStep.OnRaised();
-
+            identifier.RaiseActivities();
             Completed?.Invoke(this);
         }
 

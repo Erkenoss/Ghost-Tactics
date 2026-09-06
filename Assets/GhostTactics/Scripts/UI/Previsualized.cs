@@ -33,6 +33,14 @@ namespace GhostTactics.UI
         #endregion
 
         #region Public Methods
+        
+        /// <summary>
+        /// Play the tutorial link with this button
+        /// </summary>
+        public void PlayTuto()
+        {
+        }
+        
         #endregion
 
         #region Private Methods
@@ -47,6 +55,8 @@ namespace GhostTactics.UI
                 visualization = 0;
                 DisableButton();
             }
+
+            PlayTuto();
         }
 
         /// <summary>

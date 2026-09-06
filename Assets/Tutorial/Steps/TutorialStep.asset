@@ -14,16 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSO
   stepType: 2
   completionData:
-    rid: 8642456615917191248
+    rid: 8642456775185924176
   isCompleted: 0
   isSkipped: 0
-  scriptName: GhostTactics.UI.GhostDropDownButton
-  methodNameToCall: PlayTuto
-  tutoGUID: 0b71c236b53d4135be76deaa2e5da1d7
-  stepGUID: df475f334d7d4573bee0bb1d010f5545
+  scriptName: GhostTactics.Core.Dialogue.DialogueNextButton
+  methodNameToCall: StartTuto
+  tutoGUID: 5eee7068b1ef4fdfa5b591553fc9301b
+  stepGUID: 06d977d84d8542aa96f61f2010e6c8c0
   references:
     version: 2
     RefIds:
-    - rid: 8642456615917191248
+    - rid: 8642456775185924176
       type: {class: TutorialUIButtonCompletionData, ns: Tutorial.Runtime.Data.Completion.UI, asm: Assembly-CSharp}
       data: 

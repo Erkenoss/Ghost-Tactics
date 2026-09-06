@@ -50,7 +50,6 @@ namespace GhostTactics.UI
 
         public void PlayTuto()
         {
-            Debug.Log("Here");
         }
 
         #endregion

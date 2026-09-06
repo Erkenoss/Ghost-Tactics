@@ -22,7 +22,8 @@ namespace Tutorial.CodeGen
         private const string TargetAssemblyName = "Assembly-CSharp";
 
         private const string NotifierTypeName = "Tutorial.Runtime.Hooks.TutorialMethodNotifier";
-        private const string NotifierMethodName = "Notify";
+        private const string StepNotifierMethodName = "Notify";
+        private const string SkipNotifierMethodName = "NotifySkip";
 
         private const string DiagnosticPrefix = "[Tutorial Unified IL Hook]";
 
@@ -57,13 +58,13 @@ namespace Tutorial.CodeGen
 
             try
             {
-                if (!TutorialInstrumentationManifestReader.TryRead(compiledAssembly, out List<TutorialInstrumentationBinding> bindings, out string manifestFailureReason))
+                if (!TutorialInstrumentationManifestReader.TryRead(compiledAssembly, out List<TutorialInstrumentationBinding> bindings, out TutorialInstrumentationSkipBinding skipBinding, out string manifestFailureReason))
                 {
                     AddDiagnostic(DiagnosticType.Error, $"{DiagnosticPrefix} {manifestFailureReason}");
                     return ReturnUnmodified(compiledAssembly);
                 }
 
-                if (bindings.Count == 0)
+                if (bindings.Count == 0 && skipBinding == null)
                 {
                     return ReturnUnmodified(compiledAssembly);
                 }
@@ -92,7 +93,8 @@ namespace Tutorial.CodeGen
                 using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(peInput, readerParameters);
 
                 ModuleDefinition module = assembly.MainModule;
-                MethodReference notifyMethod = FindNotifierMethod(module);
+                MethodReference notifyMethod = bindings.Count > 0 ? FindStepNotifierMethod(module) : null;
+                MethodReference notifySkipMethod = skipBinding != null ? FindSkipNotifierMethod(module) : null;
                 bool assemblyModified = false;
 
                 foreach (TutorialInstrumentationBinding binding in bindings)
@@ -125,6 +127,30 @@ namespace Tutorial.CodeGen
 
                     InjectNotify(targetMethod, notifyMethod, binding.StepGuid);
                     assemblyModified = true;
+                }
+
+                if (skipBinding != null)
+                {
+                    TypeDefinition skipTargetType = FindType(module, skipBinding.ScriptName);
+
+                    if (skipTargetType == null)
+                    {
+                        AddDiagnostic(DiagnosticType.Warning, $"{DiagnosticPrefix} Type '{skipBinding.ScriptName}' was not found for the global Skip Current Step binding.");
+                    }
+                    else
+                    {
+                        MethodDefinition skipTargetMethod = FindTargetMethod(skipTargetType, skipBinding.MethodName);
+
+                        if (skipTargetMethod == null)
+                        {
+                            AddDiagnostic(DiagnosticType.Warning, $"{DiagnosticPrefix} Method '{skipBinding.ScriptName}.{skipBinding.MethodName}' was not found or is not compatible for the global Skip Current Step binding.");
+                        }
+                        else if (!IsSkipAlreadyInstrumented(skipTargetMethod, notifySkipMethod))
+                        {
+                            InjectSkipNotify(skipTargetMethod, notifySkipMethod);
+                            assemblyModified = true;
+                        }
+                    }
                 }
 
                 if (!assemblyModified)
@@ -269,7 +295,10 @@ namespace Tutorial.CodeGen
             return null;
         }
 
-        private static MethodReference FindNotifierMethod(ModuleDefinition module)
+        /// <summary>
+        /// Find the Step notification method used by injected tutorial bindings
+        /// </summary>
+        private static MethodReference FindStepNotifierMethod(ModuleDefinition module)
         {
             TypeDefinition notifierType = FindType(module, NotifierTypeName);
 
@@ -280,7 +309,7 @@ namespace Tutorial.CodeGen
 
             foreach (MethodDefinition method in notifierType.Methods)
             {
-                if (!string.Equals(method.Name, NotifierMethodName, StringComparison.Ordinal))
+                if (!string.Equals(method.Name, StepNotifierMethodName, StringComparison.Ordinal))
                 {
                     continue;
                 }
@@ -293,12 +322,82 @@ namespace Tutorial.CodeGen
                 return module.ImportReference(method);
             }
 
-            throw new InvalidOperationException($"Notifier method '{NotifierTypeName}.{NotifierMethodName}(string)' was not found.");
+            throw new InvalidOperationException($"Notifier method '{NotifierTypeName}.{StepNotifierMethodName}(string)' was not found.");
+        }
+
+        /// <summary>
+        /// Find the global Skip notification method
+        /// </summary>
+        private static MethodReference FindSkipNotifierMethod(ModuleDefinition module)
+        {
+            TypeDefinition notifierType = FindType(module, NotifierTypeName);
+
+            if (notifierType == null)
+            {
+                throw new InvalidOperationException($"Notifier type '{NotifierTypeName}' was not found inside Assembly-CSharp.");
+            }
+
+            foreach (MethodDefinition method in notifierType.Methods)
+            {
+                if (!string.Equals(method.Name, SkipNotifierMethodName, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (!method.IsPublic || !method.IsStatic || method.Parameters.Count != 0 || method.ReturnType.MetadataType != MetadataType.Void || !method.HasBody)
+                {
+                    continue;
+                }
+
+                return module.ImportReference(method);
+            }
+
+            throw new InvalidOperationException($"Notifier method '{NotifierTypeName}.{SkipNotifierMethodName}()' was not found.");
         }
 
         #endregion
 
         #region Injection
+
+        /// <summary>
+        /// Determine whether the global Skip notifier is already injected inside one method
+        /// </summary>
+        private static bool IsSkipAlreadyInstrumented(MethodDefinition method, MethodReference notifySkipMethod)
+        {
+            if (method == null || !method.HasBody)
+            {
+                return false;
+            }
+
+            foreach (Instruction instruction in method.Body.Instructions)
+            {
+                if (instruction.OpCode != OpCodes.Call || instruction.Operand is not MethodReference calledMethod)
+                {
+                    continue;
+                }
+
+                bool sameType = string.Equals(calledMethod.DeclaringType.FullName, notifySkipMethod.DeclaringType.FullName, StringComparison.Ordinal);
+                bool sameMethod = string.Equals(calledMethod.Name, notifySkipMethod.Name, StringComparison.Ordinal);
+
+                if (sameType && sameMethod)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Inject the global Skip Current Step notification at the beginning of one gameplay method
+        /// </summary>
+        private static void InjectSkipNotify(MethodDefinition method, MethodReference notifySkipMethod)
+        {
+            ILProcessor processor = method.Body.GetILProcessor();
+            Instruction firstInstruction = method.Body.Instructions[0];
+
+            processor.InsertBefore(firstInstruction, processor.Create(OpCodes.Call, notifySkipMethod));
+        }
 
         private static bool IsAlreadyInstrumented(MethodDefinition method, MethodReference notifyMethod, string stepGUID)
         {

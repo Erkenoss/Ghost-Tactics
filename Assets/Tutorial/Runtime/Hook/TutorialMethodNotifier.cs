@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Tutorial.Runtime.Hooks
 {
@@ -35,6 +36,7 @@ namespace Tutorial.Runtime.Hooks
         /// </summary>
         public static void NotifySkip()
         {
+            Debug.Log("NOTIFY SKIP");
             SkipRequested?.Invoke();
         }
 

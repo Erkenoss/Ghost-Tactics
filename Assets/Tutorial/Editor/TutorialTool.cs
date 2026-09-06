@@ -10,6 +10,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.Compilation;
 
 namespace Tutorial.Editor
 {
@@ -817,7 +818,32 @@ namespace Tutorial.Editor
                 return;
             }
 
+            RebuildInstrumentationManifest();
             RefreshSkipBindingStatus(projectSettings);
+        }
+
+        /// <summary>
+        /// Rebuild the IL instrumentation manifest and request compilation when its content changed
+        /// </summary>
+        private void RebuildInstrumentationManifest()
+        {
+            if (injectionManifestService == null)
+            {
+                return;
+            }
+
+            if (!injectionManifestService.TryRebuild(out bool manifestChanged, out string failureReason))
+            {
+                Debug.LogError($"Unable to rebuild Tutorial instrumentation manifest. {failureReason}");
+                return;
+            }
+
+            if (!manifestChanged)
+            {
+                return;
+            }
+
+            CompilationPipeline.RequestScriptCompilation();
         }
 
         /// <summary>

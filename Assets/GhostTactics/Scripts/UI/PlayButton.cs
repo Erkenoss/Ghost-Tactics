@@ -1,14 +1,20 @@
 using Crimson.Core;
 using GhostTactics.Core;
+using UnityEngine;
 
 namespace GhostTactics.UI
 {
-    public class StartButton : ButtonParent
+    public class PlayButton : ButtonParent
     {
         #region Public Fields
         #endregion
 
         #region Private Fields
+
+        [Tooltip("Indicates whether the game is starting.")]
+        [SerializeField]
+        private bool isStartingGame = false;
+
         #endregion
 
         #region MonoBehaviour Callbacks
@@ -22,7 +28,7 @@ namespace GhostTactics.UI
         protected override void OnClick()
         {
             base.OnClick();
-            EventBus.Publish<StartGameEvent>(new StartGameEvent());
+            EventBus.Publish<StartGameEvent>(new StartGameEvent(isStartingGame));
         }
 
         #endregion

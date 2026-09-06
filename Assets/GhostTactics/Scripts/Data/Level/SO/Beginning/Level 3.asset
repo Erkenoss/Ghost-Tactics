@@ -12,10 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f838a7d0e0fb6e4e8f29d6beca8b291, type: 3}
   m_Name: Level 3
   m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Data.LevelData
+  hasPreviousDialogue: 1
+  hasNextDialogue: 1
   biomeType: 1
   levelImage: {fileID: 0}
   levelNumber: 4
-  levelActionSlot: 8
+  levelActionSlot: 7
   levelGhostActionSlot: 1
   getVisual: 0
-  ennemyLevel: {fileID: 0}
+  ennemyLevel: {fileID: 11400000, guid: 5d5eb1a94cc7d1c4187b07d8b57d7088, type: 2}
+  dialogueContainer: {fileID: 11400000, guid: c9c63c2a97427c84f94c37dcc74734ad, type: 2}

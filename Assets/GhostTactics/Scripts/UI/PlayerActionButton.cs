@@ -2,6 +2,7 @@ using Crimson.Core;
 using GhostTactics.Data;
 using UnityEngine;
 using GhostTactics.Core;
+using Tutorial.Runtime.Flow;
 
 namespace GhostTactics.UI
 {
@@ -19,13 +20,25 @@ namespace GhostTactics.UI
         #endregion
 
         #region MonoBehaviour Callbacks
+
+        protected override void Start()
+        {
+            base.Start();
+
+            if (TutorialFlowController.Instance == null || TutorialFlowController.Instance.Runner != null && TutorialFlowController.Instance.Runner.IsCompleted)
+            {
+                return;
+            }
+
+            PlayTuto();
+        }
+
         #endregion
 
         #region Public Methods
 
         public void PlayTuto()
         {
-            Debug.Log("PLAY TUTO => PlayerActionButton");
         }
 
         #endregion
@@ -34,7 +47,6 @@ namespace GhostTactics.UI
 
         protected override void OnClick()
         {
-            PlayTuto();
             EventBus.Publish(new AbilityChoice(data));
         }
 

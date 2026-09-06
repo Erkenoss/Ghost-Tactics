@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14d78c4dd1098ba40a9a8deed54c16b7, type: 3}
+  m_Name: TutorialStep 6
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSO
+  stepType: 2
+  completionData:
+    rid: 8642456775185924185
+  isCompleted: 0
+  isSkipped: 0
+  scriptName: GhostTactics.UI.ResetButton
+  methodNameToCall: PLayTuto
+  tutoGUID: d6a20424747f436298961d3a9f7a44a5
+  stepGUID: d370d1cac0b947ec8439b9104d5c6033
+  references:
+    version: 2
+    RefIds:
+    - rid: 8642456775185924185
+      type: {class: TutorialUIButtonCompletionData, ns: Tutorial.Runtime.Data.Completion.UI, asm: Assembly-CSharp}
+      data: 

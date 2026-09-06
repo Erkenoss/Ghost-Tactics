@@ -6,7 +6,15 @@ namespace Crimson.Core
 {
     public class OnDisableButton
     {
+        /// <summary>
+        /// Btn we want to not disable
+        /// </summary>
+        public ButtonParent Btn = null;
 
+        public OnDisableButton(ButtonParent btn)
+        {
+            Btn = btn;
+        }
     }
 
     public class OnEnableButton
@@ -72,7 +80,7 @@ namespace Crimson.Core
         /// <param name="d"></param>
         protected virtual void DisableButton(OnDisableButton d)
         {
-            if (btn == null)
+            if (btn == null || (d.Btn != null && d.Btn == this))
             {
                 return;
             }
