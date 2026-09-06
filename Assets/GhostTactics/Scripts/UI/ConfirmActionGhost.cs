@@ -20,6 +20,15 @@ namespace GhostTactics.UI
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// PLqy the tutorial link with this script
+        /// </summary>
+        public void PlayTuto()
+        {
+
+        }
+
         #endregion
 
         #region Private Methods
@@ -33,6 +42,7 @@ namespace GhostTactics.UI
 
             base.OnClick();
 
+            PlayTuto();
             playerDie.SaveGhostList();
 
         }

@@ -47,6 +47,11 @@ namespace GhostTactics.UI
         #endregion
 
         #region Public Methods
+
+        public void PlayTuto()
+        {
+        }
+
         #endregion
 
         #region Private Methods
@@ -151,6 +156,7 @@ namespace GhostTactics.UI
 
             isOpen = !isOpen;
             animator.SetBool("IsOpen", isOpen);
+            PlayTuto();
         }
 
         #endregion

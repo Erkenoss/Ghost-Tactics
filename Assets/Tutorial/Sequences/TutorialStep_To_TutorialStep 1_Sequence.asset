@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94fe7f71ae43f6345b7628b0feec415f, type: 3}
+  m_Name: TutorialStep_To_TutorialStep 1_Sequence
+  m_EditorClassIdentifier: Assembly-CSharp::Tutorial.Runtime.Data.StepSequenceSO
+  stepType: 0
+  completionData:
+    rid: -2
+  isCompleted: 0
+  isSkipped: 0
+  scriptName: 
+  methodNameToCall: 
+  tutoGUID: 
+  stepGUID: 781bb0b5a163496eb03368be673376fd
+  sequenceType: 0
+  sequenceSOList:
+  - {fileID: 11400000, guid: 14b493c62dc873d40a0f264b8b1ddbd8, type: 2}
+  - {fileID: 11400000, guid: 64f9a3ed5371c2d42bbe56118ba54a2b, type: 2}
+  - {fileID: 11400000, guid: 0b72010dc4e03ad47aab3342a96f34e9, type: 2}
+  - {fileID: 11400000, guid: 3da4f49cd326fe245a39b2e2047f4047, type: 2}
+  - {fileID: 11400000, guid: 722322ecb703a9949b3eece11bbbd87c, type: 2}
+  - {fileID: 11400000, guid: 7b0d51194a16f99478b5ac07baea7223, type: 2}
+  - {fileID: 11400000, guid: af50fa1257850104895da996af887a43, type: 2}
+  - {fileID: 11400000, guid: 07c82cb7dd38a814f93e72c3691ea276, type: 2}
+  - {fileID: 11400000, guid: 57989101131465846b4c745694127e94, type: 2}
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

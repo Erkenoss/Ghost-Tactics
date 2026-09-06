@@ -1,8 +1,10 @@
 using Crimson.Core;
-using UnityEngine;
-using GhostTactics.UI;
 using Crimson.Core.Audio;
 using GhostTactics.Data;
+using GhostTactics.Tutorial;
+using GhostTactics.UI;
+using Tutorial.Runtime.Flow;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace GhostTactics.Core
@@ -28,6 +30,10 @@ namespace GhostTactics.Core
         #endregion
 
         #region Private Fields
+
+        [Tooltip("Use to manage the entry of the tutorial")]
+        [SerializeField]
+        private PlayerActionButton tutorialEntry = null;
 
         [Tooltip("Reference of the DialogueUI script in the scene")]
         [SerializeField]
@@ -71,6 +77,11 @@ namespace GhostTactics.Core
         private void Awake()
         {
             Subscribe();
+
+            if (TutorialFlowController.Instance != null && TutorialFlowController.Instance.Runner == null)
+            {
+                EventBus.Publish<OnTutorialNotrequired>(new OnTutorialNotrequired());
+            }
         }
 
         private void OnDestroy()
@@ -95,7 +106,6 @@ namespace GhostTactics.Core
             {
                 return;
             }
-
 
             currentLevel = level.Data;
 
@@ -187,6 +197,22 @@ namespace GhostTactics.Core
 
                 EventBus.Publish<OnSwitchLevel>(new OnSwitchLevel());
             }
+
+            EnableTutorialEntry();
+        }
+
+        /// <summary>
+        /// Use to enable the button action after the dialogue is done
+        /// </summary>
+        private void EnableTutorialEntry()
+        {
+            if (TutorialFlowController.Instance == null || TutorialFlowController.Instance.Runner != null && TutorialFlowController.Instance.Runner.IsCompleted || tutorialEntry == null)
+            {
+                EventBus.Publish<OnTutorialNotrequired>(new OnTutorialNotrequired());
+                return;
+            }
+            
+            tutorialEntry.gameObject.SetActive(true);
         }
 
         /// <summary>

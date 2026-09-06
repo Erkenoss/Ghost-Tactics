@@ -1,0 +1,267 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3f58039cfe84444195273f3e34a8700, type: 3}
+  m_Name: Dialogue Level 2
+  m_EditorClassIdentifier: Assembly-CSharp::GhostTactics.Core.Dialogue.DialogueLevelContainer
+  prevDialogueLines:
+  - portrait: {fileID: 0}
+    characterName: Narrator
+    line:
+      mTerm: Dialogue Level 2/L02_001
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 0
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02_002
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: Narrator
+    line:
+      mTerm: Dialogue Level 2/L02_003
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 0
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02_004
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02_005
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02_006
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02_007
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02_008
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02_009
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02_010
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02_011
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  nextDialogueLines:
+  - portrait: {fileID: 0}
+    characterName: Narrator
+    line:
+      mTerm: Dialogue Level 2/L02E_001
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 0
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_002
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_003
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_004
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_005
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 0
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_006
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_007
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_008
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_009
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_010
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_011
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 991402883507596428, guid: 792f178b63ee7b946b8797ba16057b26, type: 3}
+    characterName: You
+    line:
+      mTerm: Dialogue Level 2/L02E_012
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 1
+    isThinking: 0
+  - portrait: {fileID: 0}
+    characterName: ???
+    line:
+      mTerm: Dialogue Level 2/L02E_013
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 1
+  - portrait: {fileID: 0}
+    characterName: Narrator
+    line:
+      mTerm: Dialogue Level 2/L02E_014
+      mRTL_IgnoreArabicFix: 0
+      mRTL_MaxLineLength: 0
+      mRTL_ConvertNumbers: 0
+      m_DontLocalizeParameters: 0
+    isplayer: 0
+    isThinking: 0
+  level: 1

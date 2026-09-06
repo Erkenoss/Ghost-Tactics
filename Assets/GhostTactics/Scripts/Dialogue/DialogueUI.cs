@@ -21,6 +21,11 @@ namespace GhostTactics.UI
 
         #region Private Fields
 
+
+        [Tooltip("Background image of the dialogue")]
+        [SerializeField]
+        private Image background = null;
+
         [Tooltip("The image where the player will be display")]
         [SerializeField]
         private Image playerPortrait = null;
@@ -280,6 +285,14 @@ namespace GhostTactics.UI
             dialogueScroll.verticalNormalizedPosition = 0f;
         }
 
+        /// <summary>
+        /// Update the background of the dialogue
+        /// </summary>
+        private void UpdateBackground(NextLevel lvl)
+        {
+            background.sprite = lvl.Data.LevelImage;
+        }
+
         #endregion
 
         #region Private Methods
@@ -290,6 +303,7 @@ namespace GhostTactics.UI
         private void Subscribe()
         {
             EventBus.Subscribe<OnNextLine>(UpdateView);
+            EventBus.Subscribe<NextLevel>(UpdateBackground);
         }
 
         /// <summary>
@@ -298,6 +312,7 @@ namespace GhostTactics.UI
         private void Unsubscribe()
         {
             EventBus.Unsubscribe<OnNextLine>(UpdateView);
+            EventBus.Unsubscribe<NextLevel>(UpdateBackground);
         }
 
         #endregion

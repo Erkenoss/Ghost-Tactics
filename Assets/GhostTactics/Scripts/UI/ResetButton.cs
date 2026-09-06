@@ -15,12 +15,22 @@ namespace GhostTactics.UI
         #endregion
 
         #region Public Methods
+
+        /// <summary>
+        /// Play the tutorial we need
+        /// </summary>
+        public void PLayTuto()
+        {
+
+        }
+
         #endregion
 
         #region Private Methods
 
         protected override void OnClick()
         {
+            PLayTuto();
             EventBus.Publish(new ResetAll());
         }
 

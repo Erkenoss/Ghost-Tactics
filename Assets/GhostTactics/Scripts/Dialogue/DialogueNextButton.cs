@@ -1,6 +1,6 @@
 using Crimson.Core;
 using GhostTactics.UI;
-using UnityEngine;
+using Tutorial.Runtime.Flow;
 
 namespace GhostTactics.Core.Dialogue
 {
@@ -13,9 +13,28 @@ namespace GhostTactics.Core.Dialogue
         #endregion
 
         #region MonoBehaviour Callbacks
+
+        protected override void Start()
+        {
+            base.Start();
+            
+            if (TutorialFlowController.Instance == null || TutorialFlowController.Instance.Runner != null && TutorialFlowController.Instance.Runner.IsCompleted)
+            {
+                return;
+            }
+
+            StartTuto();
+        }
+
         #endregion
 
         #region Public Methods
+
+        public void StartTuto()
+        {
+
+        }
+
         #endregion
 
         #region Private Methods

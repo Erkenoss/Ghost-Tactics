@@ -29,7 +29,6 @@ namespace GhostTactics.Core
         public int TryResult { get { return tryResult; } }
         public int VisualizationValue { get { return visualizationValue; } }
         public int Gender { get { return gender; } }
-        public bool HasBeenAlreadyCreated { get { return hasBeenAlreadyCreated; } }
         public Ghost PlayerGhost { get { return playerGhost; } }
 
         #endregion
@@ -60,11 +59,6 @@ namespace GhostTactics.Core
         /// Gender of the player, 0 for male, 1 for female
         /// </summary>
         private int gender = 0;
-
-        /// <summary>
-        /// True, if the plauyer has already choose his gender. Else, false
-        /// </summary>
-        private bool hasBeenAlreadyCreated = false;
 
         /// <summary>
         /// Reference of the ghost that the player is currently playing with
@@ -170,15 +164,6 @@ namespace GhostTactics.Core
         public void UpdateGender(int g)
         {
             gender = g;
-        }
-
-        /// <summary>
-        /// Update when the player choose his gender
-        /// </summary>
-        /// <param name="created"></param>
-        public void UpdateHasBeenAlreadyCreated(bool created)
-        {
-            hasBeenAlreadyCreated = created;
         }
 
         /// <summary>

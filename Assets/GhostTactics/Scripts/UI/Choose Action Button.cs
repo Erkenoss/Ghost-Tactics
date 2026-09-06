@@ -1,5 +1,6 @@
 using Crimson.Core;
 using GhostTactics.Data;
+using Tutorial.Runtime.Flow;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,17 @@ namespace GhostTactics.UI
         #endregion
 
         #region MonoBehaviour Callbacks
+
+        private void Awake()
+        {
+            if (TutorialFlowController.Instance == null || TutorialFlowController.Instance.Runner != null && TutorialFlowController.Instance.Runner.IsCompleted)
+            {
+                return;
+            }
+
+            PlayTuto();
+        }
+
         #endregion
 
         #region Public Methods
@@ -83,6 +95,14 @@ namespace GhostTactics.UI
             }
 
             btn.enabled = false;
+        }
+
+        /// <summary>
+        /// Play the tutorial link with this script
+        /// </summary>
+        public void PlayTuto()
+        {
+
         }
 
         #endregion

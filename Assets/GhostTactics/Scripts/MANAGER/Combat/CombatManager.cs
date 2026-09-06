@@ -433,12 +433,12 @@ namespace GhostTactics.Core
                     state.EnnemyHealth -= playerDamage;
                     tryState.PlayerHitEnnemy = true;
 
-                    EventBus.Publish(new OnEnnemyIsHit(playerDamage));
+                    EventBus.Publish<OnEnnemyIsHit>(new OnEnnemyIsHit(playerDamage));
 
                     waitingForGhost = true;
 
-                    EventBus.Publish(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
-                    EventBus.Publish(new OnDisableButton());
+                    EventBus.Publish<OnGhostAction>(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
+                    EventBus.Publish<OnDisableButton>(new OnDisableButton(null));
 
                     return;
                 }
@@ -454,7 +454,7 @@ namespace GhostTactics.Core
                         waitingForGhost = true;
 
                         EventBus.Publish<OnGhostAction>(new OnGhostAction(state.Player.PlayerGhost, ghostAttack));
-                        EventBus.Publish<OnDisableButton>(new OnDisableButton());
+                        EventBus.Publish<OnDisableButton>(new OnDisableButton(null));
                         return;
                     }
                 }
@@ -475,7 +475,7 @@ namespace GhostTactics.Core
                     waitingForGhost = true;
 
                     EventBus.Publish<OnGhostAction>(new OnGhostAction(state.Player.PlayerGhost, ghostDodge));
-                    EventBus.Publish<OnDisableButton>(new OnDisableButton());
+                    EventBus.Publish<OnDisableButton>(new OnDisableButton(null));
                     return;
                 }
 

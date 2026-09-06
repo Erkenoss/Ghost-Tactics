@@ -47,7 +47,6 @@ namespace GhostTactics.UI
             animator.SetBool("Pulse", check.Check);
         }
 
-
         protected override void SubscribeEvent()
         {
             base.SubscribeEvent();
