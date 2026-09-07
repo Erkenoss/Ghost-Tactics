@@ -313,14 +313,6 @@ namespace GhostTactics.Core
                 return;
             }
 
-            if (game.IsStarttingGame || (currentLevel.LevelNumber == 1 && currentLevel.BiomeType == ETypeLevelContainer.Beginning))
-            {
-                if (TutorialFlowController.Instance != null)
-                {
-                    TutorialFlowController.Instance.ResetAllTutorialProgress();
-                }
-            }
-
             StartCoroutine(LoadLevelCoroutine());
         }
 

@@ -369,7 +369,12 @@ namespace Crimson.Core.Settings
                     continue;
                 }
 
-                Debug.Log(set.ToString());
+                if (set == SettingBoolType.Tutorial)
+                {
+                    settings.BooleanDicitionary.Add(new BoolSetting(1, set.ToString()));
+                    EventBus.Publish<OnUpdateBoolSlider>(new OnUpdateBoolSlider(1, set));
+                    continue;
+                }
 
                 settings.BooleanDicitionary.Add(new BoolSetting(0, set.ToString()));
                 EventBus.Publish<OnUpdateBoolSlider>(new OnUpdateBoolSlider(0, set));

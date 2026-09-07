@@ -277,12 +277,32 @@ MonoBehaviour:
       - 
       Flags: 00000000
       Languages_Touch: []
-    - Term: Main Menu/Tutorial
+    - Term: Main Menu/Enable Tutorial
       TermType: 0
       Description: 
       Languages:
-      - Tutorial
-      - Tutoriel
+      - Disable/Enable Tutorial
+      - "D\xE9sactiver/Activer Tutoriel"
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Reset Tutorial
+      TermType: 0
+      Description: 
+      Languages:
+      - Reset Tutorial
+      - Reset Tutoriel
+      - 
+      - 
+      Flags: 00000000
+      Languages_Touch: []
+    - Term: Main Menu/Reset
+      TermType: 0
+      Description: 
+      Languages:
+      - Reset
+      - Reset
       - 
       - 
       Flags: 00000000
@@ -2733,7 +2753,7 @@ MonoBehaviour:
     Google_WebServiceURL: https://script.google.com/macros/s/AKfycbyHX52w1eV6SR0KmjuUzHo31IjY_rK-IM3NwgGeQW1A1y6KFUZRG9VUmiHF_bncQQQ9/exec
     Google_SpreadsheetKey: 10iNmJcICE0dfy2A2-jdLMVVNeCpWhN1FapdKwl_R4kk
     Google_SpreadsheetName: I2Loc Ghost Tactics Localization
-    Google_LastUpdatedVersion: 1788729419881
+    Google_LastUpdatedVersion: 1788780341283
     Google_Password: Ghost-Tactics
     GoogleUpdateFrequency: 3
     GoogleInEditorCheckFrequency: 2

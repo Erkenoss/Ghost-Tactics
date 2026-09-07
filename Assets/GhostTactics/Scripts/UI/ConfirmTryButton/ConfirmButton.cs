@@ -63,7 +63,12 @@ namespace GhostTactics.UI
 
         protected override void OnClick()
         {
-            EventBus.Publish<ConfirmTry>(new ConfirmTry());
+            if (btn.enabled)
+            {
+                EventBus.Publish<ConfirmTry>(new ConfirmTry());
+            }
+
+            btn.enabled = false;
         }
 
         #endregion
